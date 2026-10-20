@@ -1,0 +1,150 @@
+@use "../../styles/mixins" as *;
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  gap: 16px;
+
+  @include down($bp-md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.main {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  min-height: 440px;
+  border-radius: 40px;
+  overflow: hidden;
+  color: #fff;
+  transition: box-shadow var(--t-base) ease;
+
+  @include hover {
+    box-shadow: var(--sh-hover);
+
+    .mainImage {
+      transform: scale(1.03);
+    }
+  }
+
+  @include down($bp-md) {
+    min-height: 300px;
+  }
+}
+
+// Изображения статей в макете - градиенты-заглушки; здесь будет <img object-fit: cover>
+.mainImage {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(160deg, #ffa53a 0%, #ff6a00 100%);
+  transition: transform var(--t-base) ease;
+}
+
+.mainBody {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 11px;
+  padding: 0 40px 34px;
+}
+
+.tagLight,
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 12px;
+  border-radius: 14px 14px 14px 4px;
+  font-size: 12.5px;
+  font-weight: 900;
+}
+
+.tagLight {
+  background: #fff;
+  color: var(--c-ink-3);
+}
+
+.tag {
+  background: #fff2e6;
+  color: var(--c-peach-ink);
+}
+
+.mainTitle {
+  max-width: 520px;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.12;
+  letter-spacing: -0.5px;
+}
+
+.meta {
+  display: flex;
+  gap: 14px;
+  font-size: 12.5px;
+  font-weight: 800;
+  opacity: 0.85;
+
+  > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .item & {
+    color: var(--c-muted);
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 13px 22px 13px 12px;
+  border-radius: 999px 36px 36px 999px;
+  background: #fff;
+  box-shadow: var(--sh-soft);
+  transition:
+    transform var(--t-base) ease,
+    box-shadow var(--t-base) ease;
+
+  @include hover {
+    transform: translateX(4px);
+    box-shadow: var(--sh);
+  }
+}
+
+.thumb {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.itemBody {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.itemTitle {
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.28;
+  color: var(--c-ink-3);
+}

@@ -1,0 +1,234 @@
+@use "../../styles/mixins" as *;
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 28px 32px 20px;
+  border-radius: var(--r-3);
+  background: #fff;
+  box-shadow: var(--sh);
+}
+
+.top {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr)) minmax(0, 1.5fr);
+  gap: 20px;
+  align-items: start;
+
+  @include down($bp-lg) {
+    grid-template-columns: minmax(0, 1.4fr) repeat(3, minmax(0, 1fr));
+
+    .bonus {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @include down($bp-md) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+
+    .brand {
+      grid-column: 1 / 3;
+    }
+
+    .bonus {
+      grid-column: 3 / 4;
+      grid-row: 1;
+    }
+  }
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.logo img {
+  width: 164px;
+  height: 44px;
+}
+
+.about {
+  max-width: 240px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--c-muted);
+}
+
+.socials {
+  display: flex;
+  gap: 8px;
+  padding-top: 7px;
+}
+
+.social {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #f3f4f6;
+  transition: background var(--t-fast) ease;
+
+  @include hover {
+    background: var(--c-peach);
+  }
+
+  @media (pointer: coarse) {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+.col {
+}
+
+.colTitle {
+  font-size: 14px;
+  font-weight: 900;
+  list-style: none;
+  pointer-events: none;
+
+  &::-webkit-details-marker {
+    display: none;
+  }
+
+  // на мобильных колонки - аккордеон
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  padding-top: 12px;
+
+  a {
+    display: block;
+    padding: 5px 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--c-muted);
+    transition: color var(--t-fast) ease;
+
+    @include hover {
+      color: var(--c-ink);
+    }
+  }
+}
+
+.bonus {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px 16px 12px;
+  border-radius: 28px 28px 28px 8px;
+  background: var(--c-peach);
+
+  @include down($bp-md) {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+.bonusMascot {
+  margin-right: 8px;
+}
+
+.bonusBody {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+
+  // когда карточка на всю ширину, кнопка не растягивается
+  @include down($bp-lg) {
+    align-items: flex-start;
+  }
+
+  @include down($bp-md) {
+    align-items: stretch;
+  }
+}
+
+.bonusTitle {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: -0.3px;
+  color: var(--c-peach-ink);
+}
+
+.bonusText {
+  padding-bottom: 10px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-loader-text);
+}
+
+.bonusBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 40px;
+  padding: 0 6px 0 16px;
+  border-radius: var(--r-pill);
+  background: var(--g-orange);
+  box-shadow: 0 10px 12px rgba(255, 110, 0, 0.28);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  transition:
+    filter var(--t-fast) ease,
+    transform 0.1s ease;
+
+  @include hover {
+    filter: brightness(1.05);
+
+    .bonusArrow img {
+      transform: translateX(3px);
+    }
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.bonusArrow {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+
+  img {
+    transition: transform var(--t-fast) ease;
+  }
+}
+
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px 20px;
+  padding-top: 18px;
+  border-top: 1px solid var(--c-line);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-muted-2);
+}
+
+.legal {
+  display: flex;
+  gap: 20px;
+
+  a {
+    transition: color var(--t-fast) ease;
+
+    @include hover {
+      color: var(--c-ink);
+    }
+  }
+}

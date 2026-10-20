@@ -1,0 +1,36 @@
+.root {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.cell {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  min-width: 46px;
+  height: 40px;
+  padding: 0 8px;
+  border-radius: 12px 12px 12px 4px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+.value {
+  font-size: 18px;
+  font-weight: 900;
+  // смена цифры - короткий slide-up (ключ меняется вместе со значением)
+  animation: tick 200ms ease;
+}
+
+.unit {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@keyframes tick {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}

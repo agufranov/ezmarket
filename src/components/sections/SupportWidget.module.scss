@@ -1,0 +1,362 @@
+@use "../../styles/mixins" as *;
+
+.toggle {
+  position: fixed;
+  right: 0;
+  top: 50%;
+  z-index: var(--z-support);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 110px;
+  padding: 0 9px 0 21px;
+  border-radius: 30px 0 0 30px;
+  background: #fff;
+  box-shadow:
+    -6px 8px 28px rgba(120, 60, 20, 0.16),
+    inset 0 0 0 1px rgba(255, 170, 100, 0.25);
+  transform: translateY(-50%);
+
+  @include hover {
+    .tooltip {
+      opacity: 1;
+    }
+  }
+
+  @include down($bp-md) {
+    width: 80px;
+    height: 88px;
+    padding-left: 16px;
+  }
+}
+
+.stripe {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  width: 4px;
+  height: 28px;
+  border-radius: 2px;
+  background: var(--c-peach-2);
+  transform: translateY(-50%);
+}
+
+.mascotWrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  background: rgba(255, 122, 0, 0.2);
+  animation: float 3.4s ease-in-out infinite;
+
+  @include down($bp-md) {
+    transform: scale(0.8);
+  }
+}
+
+.mascot {
+  filter: drop-shadow(0 6px 5px rgba(200, 80, 0, 0.25));
+}
+
+.eyes {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: blink 4s infinite;
+}
+
+@keyframes blink {
+  0%,
+  92%,
+  100% {
+    transform: scaleY(1);
+  }
+  95% {
+    transform: scaleY(0.1);
+  }
+}
+
+.cloud {
+  position: absolute;
+  left: -13px;
+  top: -10px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  height: 24px;
+  padding: 0 6.3px;
+  border-radius: 12px 12px 4px 12px;
+  background: #fff;
+  box-shadow: 0 4px 6px rgba(20, 24, 32, 0.15);
+  animation: pulse 3s ease-in-out infinite;
+
+  i {
+    width: 4.2px;
+    height: 4.2px;
+    border-radius: 50%;
+    background: var(--c-orange);
+    animation: dot 1.2s ease-in-out infinite;
+
+    &:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+  }
+}
+
+@keyframes pulse {
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+@keyframes dot {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+.tooltip {
+  position: absolute;
+  right: calc(100% + 10px);
+  top: 50%;
+  padding: 8px 12px;
+  border-radius: 12px 12px 4px 12px;
+  background: var(--c-ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(-50%);
+  transition: opacity var(--t-base) ease;
+}
+
+// --- панель чата ---
+
+.panel {
+  position: fixed;
+  right: 112px;
+  top: 50%;
+  z-index: var(--z-support);
+  display: flex;
+  flex-direction: column;
+  width: 360px;
+  max-height: min(560px, calc(100vh - 32px));
+  border-radius: var(--r-3);
+  background: #fff;
+  box-shadow: var(--sh-hover);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-50%) scale(0.96);
+  transform-origin: right center;
+  transition:
+    opacity var(--t-base) ease,
+    transform var(--t-base) ease,
+    visibility var(--t-base);
+
+  &[data-open] {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-50%) scale(1);
+  }
+
+  @include down($bp-md) {
+    right: 92px;
+  }
+
+  // на мобильных - на весь экран (bottom-sheet)
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 16px 14px 20px;
+  border-bottom: 1px solid var(--c-line);
+}
+
+.headMascot {
+  width: 44px;
+  height: 44px;
+  flex: none;
+}
+
+.headTitle {
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--c-muted);
+
+  i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--c-green);
+  }
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  margin-left: auto;
+  border-radius: 50%;
+  background: var(--c-fill);
+  font-size: 13px;
+  transition: background var(--t-fast) ease;
+
+  @include hover {
+    background: var(--c-fill-2);
+  }
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 140px;
+  padding: 16px 20px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.bot,
+.me {
+  max-width: 85%;
+  padding: 10px 14px;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.bot {
+  align-self: flex-start;
+  border-radius: 18px 18px 18px 6px;
+  background: var(--c-fill);
+}
+
+.me {
+  align-self: flex-end;
+  border-radius: 18px 18px 6px 18px;
+  background: var(--g-orange);
+  color: #fff;
+}
+
+.quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 20px 12px;
+}
+
+.chip {
+  height: 32px;
+  padding: 0 12px;
+  border-radius: var(--r-pill);
+  background: #fff;
+  box-shadow: inset 0 0 0 1px var(--c-peach-2);
+  color: var(--c-peach-ink);
+  font-size: 12.5px;
+  font-weight: 800;
+  transition: background var(--t-fast) ease;
+
+  @include hover {
+    background: var(--c-peach);
+  }
+}
+
+.form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px 12px;
+  padding: 0 6px 0 10px;
+  height: 48px;
+  border-radius: var(--r-pill);
+  background: var(--c-fill);
+  transition:
+    background var(--t-fast) ease,
+    box-shadow var(--t-fast) ease;
+
+  &:focus-within {
+    background: #fff;
+    box-shadow: var(--ring-focus);
+  }
+
+  input {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: none;
+    outline: none;
+    font-size: 14px;
+    font-weight: 700;
+  }
+}
+
+.clip {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--c-muted);
+}
+
+.send {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--g-orange);
+  transition:
+    filter var(--t-fast) ease,
+    transform 0.1s ease;
+
+  @include hover {
+    filter: brightness(1.05);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.contacts {
+  display: flex;
+  gap: 8px;
+  padding: 0 16px 16px;
+
+  a {
+    flex: 1;
+    display: grid;
+    place-items: center;
+    height: 40px;
+    border-radius: var(--r-pill);
+    background: var(--c-fill);
+    font-size: 13px;
+    font-weight: 800;
+    transition: background var(--t-fast) ease;
+
+    @include hover {
+      background: var(--c-fill-2);
+    }
+  }
+}

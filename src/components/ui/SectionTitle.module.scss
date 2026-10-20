@@ -1,0 +1,30 @@
+@use "../../styles/mixins" as *;
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.drop {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px 20px 20px 12px;
+  background: var(--g-orange-2);
+  box-shadow: 0 8px 18px rgba(255, 110, 0, 0.25);
+  flex: none;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: -0.4px;
+  color: var(--c-ink-3);
+}
+
+.action {
+  margin-left: auto;
+}

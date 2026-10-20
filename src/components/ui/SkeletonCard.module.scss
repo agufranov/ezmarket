@@ -1,0 +1,56 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.bar {
+  display: block;
+  border-radius: 8px;
+  background: linear-gradient(90deg, #f6f7f9 0%, #fbfbfc 45%, #f6f7f9 90%);
+  background-size: 220% 100%;
+  animation: shimmer 1.6s linear infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    background: #f1f2f4;
+  }
+}
+
+.cover {
+  height: 140px;
+  border-radius: var(--r-2);
+}
+
+.meta {
+  width: 60%;
+  height: 10px;
+  margin: 16px 4px 0;
+}
+
+.title {
+  width: 80%;
+  height: 12px;
+  margin: 10px 4px 0;
+}
+
+.price {
+  width: 35%;
+  height: 16px;
+  margin: 16px 4px 0;
+}
+
+.btn {
+  height: 40px;
+  margin-top: 18px;
+  border-radius: var(--r-pill);
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -120% 0;
+  }
+}

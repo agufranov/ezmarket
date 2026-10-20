@@ -1,0 +1,105 @@
+@use "../../styles/mixins" as *;
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 26px;
+  border-radius: 36px;
+  background: #fff;
+  box-shadow: var(--sh-soft);
+  transition:
+    transform var(--t-base) ease,
+    box-shadow var(--t-base) ease;
+
+  // у средней карточки в макете срезан нижний левый угол
+  &:nth-child(2) {
+    border-radius: 36px 36px 36px 10px;
+  }
+
+  @include hover {
+    transform: translateY(-4px);
+    box-shadow: var(--sh);
+  }
+}
+
+.art {
+  position: relative;
+  width: 160px;
+  height: 120px;
+  flex: none;
+}
+
+.halo {
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: #fff2e6;
+}
+
+.dash {
+  position: absolute;
+  left: 92px;
+  top: -4px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px dashed #ffb46b;
+}
+
+.dot {
+  position: absolute;
+  left: 140px;
+  top: 70px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #ffd2a6;
+}
+
+.drop {
+  position: absolute;
+  left: 20px;
+  top: 24px;
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 35px 35px 35px 16px;
+  background: var(--g-orange-2);
+  box-shadow: 0 12px 14px rgba(255, 110, 0, 0.32);
+
+  .card:nth-child(2) & {
+    border-radius: 35px 35px 16px 35px;
+  }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+.title {
+  padding-top: 6px;
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--c-ink-3);
+}
+
+.desc {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--c-muted);
+}
