@@ -3,6 +3,7 @@
 import { ModalProvider } from "@/lib/modal";
 import { Header } from "./sections/Header";
 import { Hero } from "./sections/Hero";
+import { SteamBar } from "./sections/SteamBar";
 import s from "./HomePage.module.scss";
 
 export function HomePage() {
@@ -12,6 +13,7 @@ export function HomePage() {
       <Header onHelp={() => console.log("[support] open")} />
       <main className={`container ${s.main}`}>
         <Hero />
+        <SteamBar />
       </main>
     </ModalProvider>
   );
