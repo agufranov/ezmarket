@@ -7,6 +7,7 @@ import { routes } from "@/config/routes";
 import { site } from "@/config/site";
 import { useModal } from "@/lib/modal";
 import { Icon } from "@/components/ui/Icon";
+import { MaskIcon } from "@/components/ui/MaskIcon";
 import s from "./Header.module.scss";
 
 type Props = { onHelp: () => void };
@@ -142,14 +143,14 @@ export function Header({ onHelp }: Props) {
                   className={[s.cat, i === 0 && s.catActive, c.accent && s.catAccent].filter(Boolean).join(" ")}
                   aria-current={i === 0 ? "page" : undefined}
                 >
-                  <Icon src={c.icon} size={16} />
+                  <MaskIcon src={c.icon} size={16} />
                   {c.label}
                 </a>
               </li>
             ))}
           </ul>
           <button type="button" className={s.help} onClick={onHelp}>
-            <Icon src="/img/icons/cat-help.svg" size={16} />
+            <MaskIcon src="/img/icons/cat-help.svg" size={16} />
             Помощь
             <span className={s.tooltip} role="tooltip">
               Поддержка онлайн 24/7 · ответ 1 мин
