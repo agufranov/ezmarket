@@ -23,6 +23,11 @@
   overflow: hidden;
   background: var(--g-orange);
   color: #fff;
+
+  // на оранжевом фоне оранжевое кольцо фокуса не видно
+  :focus-visible {
+    outline-color: #fff;
+  }
 }
 
 .ring {

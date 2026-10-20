@@ -134,9 +134,16 @@ ul {
   padding: 0;
 }
 
+// Фокус через outline: не конфликтует с box-shadow кнопок и повторяет их скругление
 :focus-visible {
+  outline: 2px solid var(--c-orange);
+  outline-offset: 2px;
+}
+
+// У полей кольцо (--ring-focus из ТЗ) рисует обертка через :focus-within - у самого input его нет
+input:focus-visible,
+textarea:focus-visible {
   outline: none;
-  box-shadow: var(--ring-focus);
 }
 
 .container {

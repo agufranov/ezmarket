@@ -19,6 +19,7 @@
 
 .logo {
   flex: none;
+  border-radius: 8px;
 
   img {
     width: 164px;
@@ -316,6 +317,7 @@
 
 .cat {
   position: relative;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -370,6 +372,7 @@
 
 .help {
   position: relative;
+  border-radius: 8px;
   --icon-color: var(--c-muted-2);
   display: flex;
   align-items: center;
