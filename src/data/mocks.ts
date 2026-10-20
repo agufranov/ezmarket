@@ -18,7 +18,6 @@ export const heroSlides = [
     title: ["Пополняй Steam", "за минуту"],
     text: "Любая сумма от 100 ₽ · скидка 5% на первое пополнение",
     cta: "Пополнить",
-    art: "/img/banners/hero-steam-art.png",
   },
   {
     id: "keys",
@@ -26,7 +25,6 @@ export const heroSlides = [
     title: ["Ключи игр", "по лучшей цене"],
     text: "Мгновенная выдача после оплаты · гарантия активации",
     cta: "Смотреть",
-    art: "/img/banners/hero-steam-art.png",
   },
   {
     id: "donate",
@@ -34,7 +32,6 @@ export const heroSlides = [
     title: ["Донат в игры", "по ID"],
     text: "PUBG, Genshin, Mobile Legends и еще 40+ игр",
     cta: "Выбрать игру",
-    art: "/img/banners/hero-steam-art.png",
   },
 ];
 

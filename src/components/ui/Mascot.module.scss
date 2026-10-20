@@ -1,0 +1,187 @@
+// Все размеры в em: 1em = size / 112 px (база - маскот бонусной плашки 112×112)
+$blob: radial-gradient(
+  circle at 32% 24%,
+  #ffcf8f 0%,
+  #ffb557 19%,
+  #ffa73b 28.5%,
+  #ff9a1f 38%,
+  #ff8710 55%,
+  #ff7300 72%,
+  #f05f00 100%
+);
+
+.mascot {
+  position: relative;
+  width: 112em;
+  height: 112em;
+  flex: none;
+}
+
+.float {
+  animation: float var(--float-d, 3.6s) ease-in-out infinite;
+}
+
+.body {
+  position: absolute;
+  inset: 0;
+  border-radius: 56em 56em 56em 17.92em;
+  background: $blob;
+  box-shadow:
+    0 13.44em 31.36em rgba(255, 110, 0, 0.28),
+    inset -5.6em -7.84em 0 rgba(120, 40, 0, 0.12);
+}
+
+.eyes {
+  position: absolute;
+  left: 31.07em;
+  top: 33.17em;
+  display: flex;
+  gap: 8.97em;
+}
+
+.eye {
+  position: relative;
+  width: 21.27em;
+  height: 25.75em;
+  border-radius: 11.76em;
+  background: #fff;
+  overflow: hidden;
+
+  // зрачок с бликом
+  &::before {
+    content: "";
+    position: absolute;
+    left: 5.04em;
+    top: 7.27em;
+    width: 11.19em;
+    height: 13.44em;
+    border-radius: 6.16em;
+    background: #1e2229;
+  }
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 11.2em;
+    top: 9.5em;
+    width: 3.91em;
+    height: 3.91em;
+    border-radius: 50%;
+    background: #fff;
+  }
+}
+
+.cheek {
+  position: absolute;
+  top: 61.17em;
+  width: 12.31em;
+  height: 7.27em;
+  border-radius: 4.89em;
+  background: #ffd0b8;
+  opacity: 0.75;
+}
+
+.cheekL {
+  left: 19.87em;
+}
+
+.cheekR {
+  left: 81.47em;
+}
+
+.mouth {
+  position: absolute;
+  left: 42.28em;
+  top: 64.53em;
+  width: 30.23em;
+  height: 14.55em;
+  border-radius: 0 0 15.68em 15.68em;
+  background: #1e2229;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 7.83em;
+    bottom: -3.36em;
+    width: 14.55em;
+    height: 7.83em;
+    border-radius: 5.6em;
+    background: #ff6b6b;
+  }
+}
+
+// "удивленный" рот - кружок (лоадер, рейтинг)
+.mouthO {
+  position: absolute;
+  left: 48.7em;
+  top: 63em;
+  width: 17.9em;
+  height: 17.9em;
+  border-radius: 50%;
+  background: #1e2229;
+  overflow: hidden;
+
+  &::after {
+    content: "";
+    position: absolute;
+    left: 7.8em;
+    bottom: -3.4em;
+    width: 14.5em;
+    height: 7.8em;
+    border-radius: 5.6em;
+    background: #ff6b6b;
+  }
+}
+
+.hand {
+  position: absolute;
+  bottom: 2.66em;
+  width: 22.39em;
+  height: 22.39em;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ffb35c 0%, #ff972e 50%, #ff7a00 100%);
+  box-shadow: inset -2em -2em 0 rgba(120, 40, 0, 0.12);
+  z-index: 2;
+}
+
+.handL {
+  left: 21em;
+}
+
+.handR {
+  right: 19.31em;
+}
+
+.sideHand {
+  position: absolute;
+  right: -13.4em;
+  top: 47em;
+  width: 24.6em;
+  height: 24.6em;
+  border-radius: 50%;
+  background: #ff8a00;
+  box-shadow: inset -3.4em -3.4em 0 rgba(120, 40, 0, 0.12);
+}
+
+.coin {
+  position: absolute;
+  left: 50%;
+  bottom: -13.02em;
+  transform: translateX(-50%);
+  display: grid;
+  place-items: center;
+  width: 38.08em;
+  height: 38.08em;
+  border-radius: 19.04em 19.04em 19.04em 8.38em;
+  background: var(--c-ink);
+  box-shadow: 0 0 0 2.8em #fff;
+  z-index: 1;
+}
+
+.coinText {
+  color: #fff;
+  font-size: 21.3em;
+  font-weight: 900;
+  line-height: 1;
+}

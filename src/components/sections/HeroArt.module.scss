@@ -1,0 +1,76 @@
+// Координаты слоев из Figma, контейнер 360×360 прижат к правому краю баннера
+.art {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 360px;
+  height: 360px;
+  pointer-events: none;
+}
+
+.halo {
+  position: absolute;
+  right: 56px;
+  top: 60px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.steam {
+  position: absolute;
+  right: 76px;
+  top: 80px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(120, 40, 0, 0.35);
+
+  img {
+    width: 100%;
+    height: 100%;
+  }
+}
+
+.rub {
+  position: absolute;
+  left: 20px;
+  top: 56px;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 28px 28px 28px 12.32px;
+  background: var(--c-ink);
+  color: #fff;
+  font-size: 26px;
+  font-weight: 900;
+  transform: rotate(-10deg);
+}
+
+.mascot {
+  position: absolute !important;
+  left: 30px;
+  bottom: 44px;
+}
+
+.chip {
+  position: absolute;
+  right: 30px;
+  bottom: 96px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 14px 0 8px;
+  border-radius: 20px 20px 20px 6px;
+  background: #fff;
+  box-shadow:
+    0 1px 1px rgba(20, 24, 32, 0.04),
+    0 10px 15px rgba(20, 24, 32, 0.06);
+  color: var(--c-ink);
+  font-size: 18px;
+  font-weight: 900;
+}

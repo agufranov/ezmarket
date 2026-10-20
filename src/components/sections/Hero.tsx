@@ -7,6 +7,7 @@ import { routes } from "@/config/routes";
 import { site } from "@/config/site";
 import { Icon } from "@/components/ui/Icon";
 import { Button } from "@/components/ui/Button";
+import { HeroArt } from "./HeroArt";
 import s from "./Hero.module.scss";
 
 export function Hero() {
@@ -48,18 +49,10 @@ export function Hero() {
       >
         <span className={s.ring} aria-hidden />
         <span className={s.dashed} aria-hidden />
+        <HeroArt className={s.art} />
 
         {heroSlides.map((slide, i) => (
           <div key={slide.id} className={s.slide} data-active={i === active || undefined} aria-hidden={i !== active}>
-            <Image
-              src={slide.art}
-              alt=""
-              width={360}
-              height={361}
-              className={s.art}
-              priority={i === 0}
-              sizes="360px"
-            />
             <div className={s.content}>
               <span className={s.badge}>
                 <Icon src="/img/icons/bolt.svg" size={14} />
