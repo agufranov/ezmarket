@@ -223,6 +223,18 @@
   padding: 26px;
   border-radius: var(--r-3);
   overflow: hidden;
+
+  // на узком десктопе баннеры ниже (150 px) - ужимаем отступы, чтобы текст не наезжал на кнопку
+  @include down($bp-lg) {
+    padding: 20px;
+
+    .cardBtn {
+      left: 20px;
+      bottom: 18px;
+      width: 36px;
+      height: 36px;
+    }
+  }
 }
 
 .dark {
@@ -274,7 +286,7 @@
   line-height: 1.1;
 
   @include down($bp-lg) {
-    font-size: 21px;
+    font-size: 20px;
   }
 }
 
