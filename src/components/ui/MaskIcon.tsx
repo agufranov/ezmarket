@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { asset } from "@/lib/asset";
 
 type Props = { src: string; size?: number; className?: string };
 
@@ -11,8 +12,8 @@ export function MaskIcon({ src, size = 16, className }: Props) {
     flex: "none",
     display: "inline-block",
     background: "var(--icon-color, currentColor)",
-    maskImage: `url(${src})`,
-    WebkitMaskImage: `url(${src})`,
+    maskImage: `url(${asset(src)})`,
+    WebkitMaskImage: `url(${asset(src)})`,
     maskSize: "contain",
     WebkitMaskSize: "contain",
     maskRepeat: "no-repeat",

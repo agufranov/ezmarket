@@ -1,4 +1,6 @@
 /* eslint-disable @next/next/no-img-element -- мелкие SVG-иконки, оптимизация next/image не нужна */
+import { asset } from "@/lib/asset";
+
 type Props = {
   src: string;
   size?: number;
@@ -11,7 +13,7 @@ type Props = {
 export function Icon({ src, size = 16, width, height, alt = "", className }: Props) {
   return (
     <img
-      src={src}
+      src={asset(src)}
       width={width ?? size}
       height={height ?? size}
       alt={alt}
