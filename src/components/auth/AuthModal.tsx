@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { auth, authProviders, type AuthProviderId } from "@/config/auth";
+import { useAuth } from "@/lib/auth";
 import { Modal } from "@/lib/modal";
 import { requestCode, oauthLogin, type AuthError } from "@/services/auth.mock";
 import { Mascot } from "@/components/ui/Mascot";
@@ -47,6 +48,7 @@ const normalizePromo = (v: string) => v.toUpperCase().replace(/[^A-Z0-9-]/g, "")
 // Вход и регистрация - одно окно с переключателем (ТЗ 12.7-12.9).
 // Email общий для обеих вкладок, промокод не теряется при переключении.
 export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose: () => void }) {
+  const { login } = useAuth();
   const [mode, setMode] = useState<Mode>(initialMode);
   const [email, setEmail] = useState("");
   const [promo, setPromo] = useState("");
@@ -281,6 +283,8 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
                         onClick={async () => {
                           setProvider(p.id);
                           await oauthLogin(p.id);
+                          // вход мок-пользователем (ТЗ 12.7, п. 6) - шапка переключается в «Авторизован»
+                          login();
                           setProvider(null);
                           close();
                         }}

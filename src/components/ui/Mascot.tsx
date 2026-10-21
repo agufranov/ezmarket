@@ -2,7 +2,7 @@ import s from "./Mascot.module.scss";
 
 type Props = {
   size: number;
-  mood?: "happy" | "surprised";
+  mood?: "happy" | "surprised" | "sleepy";
   // Аксессуары из макета: монета-₽ и руки (бонусы), рука сбоку (футер, hero)
   coin?: boolean;
   hands?: boolean;
@@ -23,12 +23,12 @@ export function Mascot({ size, mood = "happy", coin, hands, sideHand, float, flo
     >
       <div className={s.body} />
       <div className={s.eyes}>
-        <span className={s.eye} />
-        <span className={s.eye} />
+        <span className={mood === "sleepy" ? s.eyeClosed : s.eye} />
+        <span className={mood === "sleepy" ? s.eyeClosed : s.eye} />
       </div>
       <span className={`${s.cheek} ${s.cheekL}`} />
       <span className={`${s.cheek} ${s.cheekR}`} />
-      <span className={mood === "happy" ? s.mouth : s.mouthO} />
+      <span className={mood === "happy" ? s.mouth : mood === "sleepy" ? s.mouthSleep : s.mouthO} />
       {hands && (
         <>
           <span className={`${s.hand} ${s.handL}`} />

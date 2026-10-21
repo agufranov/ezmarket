@@ -5,20 +5,23 @@ import Image from "next/image";
 import { categories } from "@/data/mocks";
 import { routes } from "@/config/routes";
 import { currencies, loadCurrency, saveCurrency, type Currency } from "@/config/currencies";
+import { useAuth } from "@/lib/auth";
 import { useModal } from "@/lib/modal";
 import { Icon } from "@/components/ui/Icon";
 import { MaskIcon } from "@/components/ui/MaskIcon";
 import { CatalogMenu } from "./CatalogMenu";
 import { SearchBox } from "./SearchBox";
+import { HeaderUser, type UserPopover } from "./HeaderUser";
 import s from "./Header.module.scss";
 
 type Props = { onHelp: () => void };
 
 export function Header({ onHelp }: Props) {
   const { openModal, current: modalOpen } = useModal();
+  const { user, logout } = useAuth();
   const [currency, setCurrency] = useState<Currency>(currencies[0]);
   // один поповер шапки за раз (ТЗ 12.1)
-  const [popover, setPopover] = useState<"catalog" | "currency" | null>(null);
+  const [popover, setPopover] = useState<"catalog" | "currency" | UserPopover | null>(null);
   const catalogOpen = popover === "catalog";
   const currencyOpen = popover === "currency";
   const setCurrencyOpen = useCallback((v: boolean) => setPopover((p) => (v ? "currency" : p === "currency" ? null : p)), []);
@@ -189,12 +192,29 @@ export function Header({ onHelp }: Props) {
             </div>
           </div>
 
-          <button type="button" className={s.login} onClick={() => openModal("login")}>
-            <span className={s.loginText}>Войти</span>
-            <span className={s.loginArrow} aria-hidden>
-              <Icon src="/img/icons/arrow-login.svg" width={8} height={12} />
+          {/* до чтения сессии - скелетон, чтобы авторизованный не видел «Войти» на долю секунды (12.4) */}
+          {user === undefined ? (
+            <span className={s.userSkeleton} aria-hidden>
+              <i />
+              <i />
             </span>
-          </button>
+          ) : user ? (
+            <HeaderUser
+              user={user}
+              open={popover === "profile" || popover === "notif" ? popover : null}
+              setOpen={setPopover}
+              rowRef={rowRef}
+              onLogout={logout}
+              onHelp={onHelp}
+            />
+          ) : (
+            <button type="button" className={s.login} onClick={() => openModal("login")}>
+              <span className={s.loginText}>Войти</span>
+              <span className={s.loginArrow} aria-hidden>
+                <Icon src="/img/icons/arrow-login.svg" width={8} height={12} />
+              </span>
+            </button>
+          )}
         </div>
       </div>
 

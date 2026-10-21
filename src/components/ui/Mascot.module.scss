@@ -111,6 +111,25 @@ $blob: radial-gradient(
   }
 }
 
+// спящий: глаза-черточки и маленький рот («Пока тихо»)
+.eyeClosed {
+  width: 21.27em;
+  height: 4.5em;
+  margin-top: 12em;
+  border-radius: 2.25em;
+  background: #1e2229;
+}
+
+.mouthSleep {
+  position: absolute;
+  left: 51.5em;
+  top: 66em;
+  width: 11em;
+  height: 9em;
+  border-radius: 50%;
+  background: #1e2229;
+}
+
 // "удивленный" рот - кружок (лоадер, рейтинг)
 .mouthO {
   position: absolute;

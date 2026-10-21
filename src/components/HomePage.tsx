@@ -1,5 +1,6 @@
 "use client";
 
+import { AuthProvider } from "@/lib/auth";
 import { ModalProvider } from "@/lib/modal";
 import { Header } from "./sections/Header";
 import { Hero } from "./sections/Hero";
@@ -19,20 +20,22 @@ const openSupport = () => console.log("[support] open");
 
 export function HomePage() {
   return (
-    <ModalProvider>
-      <Header onHelp={openSupport} />
-      <main className={`container ${s.main}`}>
-        <Hero />
-        <SteamBar />
-        <Hits />
-        <BonusBar />
-        <Recommend />
-        <Articles />
-        <Reviews />
-        <Advantages />
-        <Footer />
-      </main>
-      <SupportWidget onOpen={openSupport} />
-    </ModalProvider>
+    <AuthProvider>
+      <ModalProvider>
+        <Header onHelp={openSupport} />
+        <main className={`container ${s.main}`}>
+          <Hero />
+          <SteamBar />
+          <Hits />
+          <BonusBar />
+          <Recommend />
+          <Articles />
+          <Reviews />
+          <Advantages />
+          <Footer />
+        </main>
+        <SupportWidget onOpen={openSupport} />
+      </ModalProvider>
+    </AuthProvider>
   );
 }

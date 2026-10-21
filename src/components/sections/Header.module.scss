@@ -407,6 +407,25 @@
   }
 }
 
+// скелетон правой части до чтения сессии: круг 48 + плашка 120×48
+.userSkeleton {
+  display: flex;
+  flex: none;
+  gap: 10px;
+
+  i {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--c-fill);
+
+    &:last-child {
+      width: 120px;
+      border-radius: var(--r-pill);
+    }
+  }
+}
+
 .loginArrow {
   display: grid;
   place-items: center;
