@@ -55,7 +55,7 @@
     transform: scale(0.97);
   }
 
-  &[aria-pressed="true"] .dots {
+  &[aria-expanded="true"] .dots {
     transform: rotate(45deg);
   }
 

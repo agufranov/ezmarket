@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { categories } from "@/data/mocks";
 import { routes } from "@/config/routes";
@@ -8,15 +8,24 @@ import { currencies, loadCurrency, saveCurrency, type Currency } from "@/config/
 import { useModal } from "@/lib/modal";
 import { Icon } from "@/components/ui/Icon";
 import { MaskIcon } from "@/components/ui/MaskIcon";
+import { CatalogMenu } from "./CatalogMenu";
 import s from "./Header.module.scss";
 
 type Props = { onHelp: () => void };
 
 export function Header({ onHelp }: Props) {
   const { openModal, current: modalOpen } = useModal();
-  const [catalogOpen, setCatalogOpen] = useState(false);
   const [currency, setCurrency] = useState<Currency>(currencies[0]);
-  const [currencyOpen, setCurrencyOpen] = useState(false);
+  // один поповер шапки за раз (ТЗ 12.1)
+  const [popover, setPopover] = useState<"catalog" | "currency" | null>(null);
+  const catalogOpen = popover === "catalog";
+  const currencyOpen = popover === "currency";
+  const setCurrencyOpen = useCallback((v: boolean) => setPopover((p) => (v ? "currency" : p === "currency" ? null : p)), []);
+  const catalogBtnRef = useRef<HTMLButtonElement>(null);
+  const closeCatalog = useCallback((returnFocus?: boolean) => {
+    setPopover((p) => (p === "catalog" ? null : p));
+    if (returnFocus) catalogBtnRef.current?.focus();
+  }, []);
   const searchRef = useRef<HTMLInputElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const currencyBtnRef = useRef<HTMLButtonElement>(null);
@@ -72,10 +81,10 @@ export function Header({ onHelp }: Props) {
       window.removeEventListener("resize", place);
       mq.removeEventListener("change", onBp);
     };
-  }, [currencyOpen]);
+  }, [currencyOpen, setCurrencyOpen]);
 
   useEffect(() => {
-    if (modalOpen) setCurrencyOpen(false);
+    if (modalOpen) setPopover(null);
   }, [modalOpen]);
 
   const pickCurrency = (c: Currency) => {
@@ -97,10 +106,17 @@ export function Header({ onHelp }: Props) {
           </a>
 
           <button
+            ref={catalogBtnRef}
             type="button"
             className={s.catalog}
-            aria-pressed={catalogOpen}
-            onClick={() => setCatalogOpen((v) => !v)}
+            aria-expanded={catalogOpen}
+            aria-controls="catalog-menu"
+            onClick={(e) => {
+              setPopover(catalogOpen ? null : "catalog");
+              // открыли с клавиатуры - фокус на активную категорию
+              if (!catalogOpen && e.detail === 0)
+                requestAnimationFrame(() => document.querySelector<HTMLElement>("#catalog-menu [data-active]")?.focus());
+            }}
           >
             <span className={s.dots} aria-hidden>
               <i />
@@ -132,6 +148,8 @@ export function Header({ onHelp }: Props) {
             />
             <kbd className={s.kbd}>/</kbd>
           </form>
+
+          <CatalogMenu open={catalogOpen} onClose={closeCatalog} triggerRef={catalogBtnRef} />
 
           <button
             ref={currencyBtnRef}
