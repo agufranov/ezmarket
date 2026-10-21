@@ -41,8 +41,11 @@
 
       .buy {
         color: #fff;
-        background: var(--g-orange);
         box-shadow: var(--sh-orange);
+
+        &::before {
+          opacity: 1;
+        }
       }
     }
   }

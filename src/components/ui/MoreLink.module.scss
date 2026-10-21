@@ -18,9 +18,20 @@
   background: #fff;
   box-shadow: var(--sh);
   flex: none;
-  transition: background var(--t-fast) ease;
+
+  // оранжевый градиент проявляется слоем: background-градиент плавно не анимируется
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: var(--g-orange);
+    opacity: 0;
+    transition: opacity var(--t-fast) ease;
+  }
 
   img {
+    position: relative;
     grid-area: 1 / 1;
     transition:
       opacity var(--t-fast) ease,
@@ -36,8 +47,8 @@
   .link:hover {
     color: var(--c-orange);
 
-    .circle {
-      background: var(--g-orange);
+    .circle::before {
+      opacity: 1;
     }
 
     .dark {

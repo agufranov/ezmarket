@@ -101,16 +101,32 @@
   box-shadow: 0 8px 10px rgba(0, 0, 0, 0.12);
 }
 
+// Градиент на hover проявляется слоем ::before (opacity 0→1): сам background-градиент плавно не анимируется
 .soft {
+  isolation: isolate;
   color: var(--c-peach-ink);
   background: var(--c-peach);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--g-orange);
+    opacity: 0;
+    transition: opacity var(--t-fast) ease;
+  }
 
   @media (hover: hover) {
     &:hover:not(:disabled) {
       color: #fff;
-      background: var(--g-orange);
       box-shadow: var(--sh-orange);
       filter: none;
+
+      &::before {
+        opacity: 1;
+      }
     }
   }
 }

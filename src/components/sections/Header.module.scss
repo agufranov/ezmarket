@@ -21,6 +21,11 @@
 .logo {
   flex: none;
   border-radius: 8px;
+  transition: opacity var(--t-fast) ease;
+
+  @include hover {
+    opacity: 0.85;
+  }
 
   img {
     width: 164px;

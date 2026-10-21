@@ -44,9 +44,10 @@
     transition: transform 400ms ease;
   }
 
+  // при наведении парение сменяется покачиванием ±6° (ТЗ 12.21)
   @include hover {
     > div {
-      animation-name: sway;
+      animation: sway 400ms ease-in-out;
     }
   }
 }
@@ -577,11 +578,10 @@
 }
 
 @keyframes sway {
-  0%,
-  100% {
-    transform: rotate(0);
+  25% {
+    transform: rotate(-6deg);
   }
-  50% {
-    transform: rotate(-4deg);
+  75% {
+    transform: rotate(6deg);
   }
 }
