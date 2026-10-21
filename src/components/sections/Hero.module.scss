@@ -80,7 +80,8 @@
   flex-direction: column;
   align-items: flex-start;
   gap: 10.8px;
-  max-width: 430px;
+  // H1 54px в макете заходит под арт: «Пополняй Steam» должно влезать в одну строку
+  max-width: 500px;
   height: 100%;
   padding: 48px 0 0 40px;
 

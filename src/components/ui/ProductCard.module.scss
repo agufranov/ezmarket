@@ -5,14 +5,30 @@
   min-width: 0;
   border-radius: var(--r-2);
   background: var(--c-card);
-  transition:
-    transform var(--t-base) ease,
-    box-shadow var(--t-base) ease;
+  isolation: isolate;
+  transition: transform var(--t-base) ease;
+
+  // Подложка при наведении шире карточки на 8 px: кнопка и картинка не упираются в край,
+  // а сетка остается как в макете
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -8px;
+    z-index: -1;
+    border-radius: calc(var(--r-2) + 8px);
+    background: var(--c-card);
+    box-shadow: var(--sh-hover);
+    opacity: 0;
+    transition: opacity var(--t-base) ease;
+  }
 
   @media (hover: hover) {
     &:hover {
       transform: translateY(-4px);
-      box-shadow: var(--sh-hover);
+
+      &::before {
+        opacity: 1;
+      }
 
       .art,
       .brandTile {
