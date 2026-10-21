@@ -438,6 +438,8 @@
   @include down($bp-lg) {
     @include h-scroll;
     flex: 1;
+    // место под полоску последнего пункта, которая выходит за текст
+    padding-right: 6px;
     // градиентная "тень" у правого края
     mask-image: linear-gradient(90deg, #000 calc(100% - 32px), transparent);
   }
@@ -466,11 +468,12 @@
   // иконка по ТЗ: серая, на hover и у активного пункта - оранжевая
   --icon-color: var(--c-muted-2);
 
+  // полоска заходит за текст на 6 px: слева ее начало закрывает иконка, справа нужен такой же «запас»
   &::after {
     content: "";
     position: absolute;
     left: 0;
-    right: 0;
+    right: -6px;
     bottom: 0;
     height: 3px;
     border-radius: 3px 3px 0 0;
