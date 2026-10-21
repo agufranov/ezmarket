@@ -431,7 +431,8 @@
 .cats {
   position: relative;
   display: flex;
-  gap: 18px;
+  // шаг пунктов по макету: «Пополнить Steam» 150 + 16
+  gap: 16px;
   min-width: 0;
 
   @include down($bp-lg) {
@@ -457,6 +458,9 @@
   color: var(--c-ink-2);
   font-size: 14px;
   font-weight: 800;
+  // Chrome рисует Nunito чуть уже Figma: без этого «Пополнить Steam» 147 px вместо 150 по макету,
+  // и полоска активного пункта не доходит до края
+  letter-spacing: 0.2px;
   white-space: nowrap;
   transition: color var(--t-base) ease;
   // иконка по ТЗ: серая, на hover и у активного пункта - оранжевая
