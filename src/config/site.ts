@@ -12,11 +12,6 @@ export const site = {
       { id: "RUB", symbol: "₽" },
     ],
   },
-  headerCurrencies: [
-    { id: "RUB", symbol: "₽", label: "Рубли" },
-    { id: "USD", symbol: "$", label: "Доллары" },
-    { id: "KZT", symbol: "₸", label: "Тенге" },
-  ],
   recommended: {
     pageSize: 10,
     maxItems: 30,
