@@ -3,11 +3,10 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { auth, authProviders, type AuthProviderId } from "@/config/auth";
 import { Modal } from "@/lib/modal";
-import { requestCode, oauthLogin, MOCK_CODE, type AuthError } from "@/services/auth.mock";
+import { requestCode, oauthLogin, type AuthError } from "@/services/auth.mock";
 import { Mascot } from "@/components/ui/Mascot";
 import { MaskIcon } from "@/components/ui/MaskIcon";
 import { ProviderIcon } from "./ProviderIcon";
-import { CodeStep } from "./CodeStep";
 import s from "./AuthModal.module.scss";
 
 type Mode = "login" | "register";
@@ -15,7 +14,6 @@ type Mode = "login" | "register";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const KEY_EMAIL = "ez_auth_email";
 const KEY_REF = "ez_ref_code";
-const KEY_SENT = "ez_code_sent_at";
 
 const copy = {
   login: { title: "Вход в EzMarket", sub: "Пришлём код на почту — пароль не нужен", btn: "Получить код", bonus: "ждут вас после входа", tip: "Войти через" },
@@ -50,7 +48,6 @@ const normalizePromo = (v: string) => v.toUpperCase().replace(/[^A-Z0-9-]/g, "")
 // Email общий для обеих вкладок, промокод не теряется при переключении.
 export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose: () => void }) {
   const [mode, setMode] = useState<Mode>(initialMode);
-  const [step, setStep] = useState<"form" | "code">("form");
   const [email, setEmail] = useState("");
   const [promo, setPromo] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -60,20 +57,13 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
   const [loading, setLoading] = useState(false);
   const [provider, setProvider] = useState<AuthProviderId | null>(null);
   const [shake, setShake] = useState(false);
-  const [sentAt, setSentAt] = useState(0);
   const emailRef = useRef<HTMLInputElement>(null);
 
-  // Email из этой сессии, код друга из ?ref=; если код отправлен меньше минуты назад - сразу шаг кода
+  // Email из этой сессии, код друга из ?ref=
   useEffect(() => {
-    const saved = readSession(KEY_EMAIL);
     const ref = new URLSearchParams(window.location.search).get("ref");
-    setEmail(saved);
+    setEmail(readSession(KEY_EMAIL));
     setPromo(normalizePromo(ref ?? readSession(KEY_REF)));
-    const sent = Number(readSession(KEY_SENT));
-    if (saved && sent && Date.now() - sent < auth.resendSeconds * 1000) {
-      setSentAt(sent);
-      setStep("code");
-    }
   }, []);
 
   const t = copy[mode];
@@ -86,7 +76,7 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
     emailRef.current?.focus();
   };
 
-  const submit = async (e: FormEvent) => {
+  const submit = async (e: FormEvent, close: () => void) => {
     e.preventDefault();
     if (busy) return;
     const err = validateEmail(email);
@@ -99,11 +89,9 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
     setLoading(true);
     try {
       await requestCode(value, mode === "register" ? promo || undefined : undefined);
-      const now = Date.now();
-      writeSession(KEY_SENT, String(now));
-      setSentAt(now);
-      setStep("code");
-      console.log(`[auth] код отправлен на ${value} (мок: ${MOCK_CODE})`);
+      // Шаг «Ввод кода» (12.9) - после макета, пока только закрываем окно
+      console.log(`[auth] код отправлен на ${value}, шаг ввода кода - после макета`);
+      close();
     } catch (x) {
       const error = x as AuthError;
       if (error.field === "promo") setPromoError(error.error);
@@ -158,26 +146,6 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
               </svg>
             </button>
 
-            {step === "code" ? (
-              <CodeStep
-                email={email}
-                sentAt={sentAt}
-                onChangeEmail={() => {
-                  writeSession(KEY_SENT, "");
-                  setStep("form");
-                }}
-                onResent={(at) => {
-                  writeSession(KEY_SENT, String(at));
-                  setSentAt(at);
-                }}
-                onSuccess={() => {
-                  writeSession(KEY_SENT, "");
-                  writeSession(KEY_REF, "");
-                  console.log(`[auth] вход выполнен: ${email}`);
-                  close();
-                }}
-              />
-            ) : (
               <>
                 <div className={s.tabs} role="tablist" aria-label="Вход или регистрация" data-mode={mode}>
                   {(["login", "register"] as const).map((m) => (
@@ -202,7 +170,7 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
                   <p className={s.sub}>{t.sub}</p>
                 </div>
 
-                <form className={s.form} onSubmit={submit} noValidate>
+                <form className={s.form} onSubmit={(e) => submit(e, close)} noValidate>
                   <label className={s.field} data-error={emailError ? true : undefined}>
                     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
                       <rect x="2.25" y="3.75" width="13.5" height="10.5" rx="2.25" stroke="currentColor" strokeWidth="1.5" />
@@ -333,7 +301,6 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
                   </a>
                 </p>
               </>
-            )}
           </div>
         </>
       )}

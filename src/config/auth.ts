@@ -1,10 +1,7 @@
 import { routes } from "./routes";
 
-// Вход по коду из письма (ТЗ 12.7-12.9)
+// Вход по коду из письма (ТЗ 12.7-12.8)
 export const auth = {
-  codeLength: 6,
-  resendSeconds: 60,
-  maxAttempts: 5,
   termsUrl: routes.terms,
 } as const;
 
