@@ -5,6 +5,7 @@ export const site = {
   heroSlideMs: 6000,
   steam: {
     minAmount: 100,
+    maxAmount: 50000,
     currencies: [
       { id: "USD", symbol: "$" },
       { id: "KZT", symbol: "₸" },

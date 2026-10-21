@@ -11,6 +11,7 @@
 }
 
 .row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -99,6 +100,10 @@
     background var(--t-fast) ease,
     box-shadow var(--t-fast) ease;
 
+  @include hover {
+    background: var(--c-fill-2);
+  }
+
   &:focus-within {
     background: #fff;
     box-shadow: var(--ring-focus);
@@ -142,13 +147,9 @@
 }
 
 
-.currency {
-  position: relative;
-  flex: none;
-}
-
 .currencyBtn {
   display: flex;
+  flex: none;
   align-items: center;
   gap: 6px;
   height: 48px;
@@ -161,8 +162,15 @@
     box-shadow: inset 0 0 0 1.5px var(--c-ink);
   }
 
-  &[aria-expanded="true"] .chevron {
-    transform: rotate(180deg);
+  // открыт: персиковое кольцо вокруг чипа
+  &[aria-expanded="true"] {
+    box-shadow:
+      inset 0 0 0 1.5px var(--c-peach-2),
+      0 0 0 4px var(--c-peach);
+
+    .chevron {
+      transform: rotate(180deg);
+    }
   }
 }
 
@@ -183,50 +191,175 @@
   transition: transform var(--t-fast) ease;
 }
 
-.dropdown {
+// --- попап валюты (ТЗ 12.6): правый край по контейнеру, носик над чипом ---
+.popover {
   position: absolute;
-  right: 0;
-  top: calc(100% + 8px);
-  z-index: var(--z-dropdown);
-  min-width: 160px;
-  padding: 6px;
-  border-radius: 16px;
+  right: var(--gutter);
+  top: calc(100% + 6px);
+  z-index: var(--z-popover);
+  width: 288px;
+  padding: 18px 16px 16px;
+  border-radius: 24px;
   background: #fff;
-  box-shadow: var(--sh-hover);
+  box-shadow:
+    0 1px 2px rgba(20, 24, 32, 0.06),
+    0 20px 50px rgba(20, 24, 32, 0.14);
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-4px);
+  transform: translateY(-4px) scale(0.98);
+  transform-origin: calc(100% - var(--nose-right, 120px)) 0;
   transition:
-    opacity var(--t-fast) ease,
-    transform var(--t-fast) ease,
-    visibility var(--t-fast);
+    opacity var(--t-pop-out),
+    transform var(--t-pop-out),
+    visibility 0s 150ms;
 
   &[data-open] {
     opacity: 1;
     visibility: visible;
     transform: none;
+    transition:
+      opacity var(--t-pop-in),
+      transform var(--t-pop-in);
   }
 
-  button {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-    padding: 10px 12px;
-    border-radius: 10px;
+  // носик
+  &::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: calc(var(--nose-right, 120px) - 8px);
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    background: #fff;
+    transform: rotate(45deg);
+  }
+}
+
+.popTitle {
+  padding: 0 4px;
+  color: var(--c-muted);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.curList {
+  margin-top: 12px;
+}
+
+.curRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px 10px 10px;
+  border-radius: 20px;
+  text-align: left;
+  transition:
+    background var(--t-fast) ease,
+    transform 0.1s ease;
+
+  @include hover {
+    background: var(--c-fill-2);
+  }
+
+  &[aria-selected="true"] {
+    background: var(--c-peach);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .currencyDrop {
+    width: 36px;
+    height: 36px;
+    font-size: 18px;
+  }
+}
+
+.curName {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  font-size: 15px;
+  font-weight: 900;
+  line-height: 1.25;
+
+  small {
+    color: var(--c-peach-ink);
     font-size: 14px;
-    font-weight: 800;
-    text-align: left;
+    font-weight: 900;
+  }
+}
 
-    b {
-      width: 16px;
-      color: var(--c-orange);
-    }
+.curCheck {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--g-orange);
+  box-shadow: 0 3px 6px rgba(255, 110, 0, 0.3);
+}
 
-    &[aria-selected="true"],
-    &:hover {
-      background: var(--c-peach);
+.curSoon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 0 6px;
+}
+
+.curOff {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--c-fill);
+  color: var(--c-muted-2);
+  font-size: 14px;
+  font-weight: 900;
+  cursor: not-allowed;
+
+  @media (hover: hover) {
+    &:hover .curTip {
+      opacity: 1;
+      transform: translate(-50%, 0);
+      transition-delay: 300ms;
     }
   }
+}
+
+.curTip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  z-index: var(--z-tooltip);
+  padding: 5px 10px;
+  border-radius: 8px;
+  background: var(--c-ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.curSoonText {
+  margin-left: 4px;
+  color: var(--c-muted-2);
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .login {
@@ -361,12 +494,13 @@
   }
 }
 
+// «Акции»: #C45500 вместо оранжевого ради контраста 4.5:1 (правки 21.10)
 .catAccent {
-  color: var(--c-orange);
+  color: #c45500;
   --icon-color: var(--c-orange);
 
   @include hover {
-    color: var(--c-orange);
+    color: #c45500;
   }
 }
 
@@ -410,7 +544,7 @@
   border-radius: 12px 12px 12px 4px;
   background: var(--c-ink);
   color: #fff;
-  font-size: 12.5px;
+  font-size: 14px;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;

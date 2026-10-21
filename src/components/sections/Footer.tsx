@@ -5,6 +5,7 @@ import Image from "next/image";
 import { footerColumns } from "@/data/mocks";
 import { routes, socials } from "@/config/routes";
 import { useModal } from "@/lib/modal";
+import { socialPaths } from "@/components/ui/socialPaths";
 import { Mascot } from "@/components/ui/Mascot";
 import { Icon } from "@/components/ui/Icon";
 import s from "./Footer.module.scss";
@@ -34,7 +35,9 @@ export function Footer() {
             {socials.map((soc) => (
               <li key={soc.id}>
                 <a href={soc.href} target="_blank" rel="noopener noreferrer" aria-label={soc.label} className={s.social}>
-                  <Image src={soc.icon} alt="" width={18} height={18} />
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+                    <path d={socialPaths[soc.id]} />
+                  </svg>
                 </a>
               </li>
             ))}

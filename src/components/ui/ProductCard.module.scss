@@ -96,7 +96,7 @@
   display: flex;
   align-items: center;
   height: 26px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 900;
   pointer-events: none;
 }
@@ -115,7 +115,7 @@
   border-radius: 13px;
   background: #fff;
   color: var(--c-ink);
-  font-size: 11.5px;
+  font-size: 14px;
 }
 
 .fav {
@@ -130,13 +130,22 @@
   background: #fff;
   box-shadow: var(--sh);
   opacity: 0;
-  transition: opacity var(--t-fast) ease;
 
   path {
     fill: none;
     stroke: var(--c-ink);
     stroke-width: 2;
     transition: fill var(--t-fast) ease;
+  }
+
+  transition:
+    opacity var(--t-fast) ease,
+    transform var(--t-fast) ease;
+
+  @media (hover: hover) {
+    &:hover {
+      transform: scale(1.1);
+    }
   }
 
   &:focus-visible {
@@ -173,9 +182,9 @@
 }
 
 .meta {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--c-muted);
+  color: #686e78;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -219,7 +228,7 @@
 }
 
 .old {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
-  color: var(--c-muted-2);
+  color: #8e939b;
 }

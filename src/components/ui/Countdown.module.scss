@@ -24,7 +24,7 @@
 }
 
 .unit {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
 }
 
@@ -33,4 +33,16 @@
     opacity: 0;
     transform: translateY(4px);
   }
+}
+
+.notice {
+  align-items: center;
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 12px 12px 12px 4px;
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  animation: tick 200ms ease;
 }

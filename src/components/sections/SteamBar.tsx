@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import { site } from "@/config/site";
 import { useModal } from "@/lib/modal";
-import { formatAmount } from "@/lib/format";
+import { formatAmount, formatPrice } from "@/lib/format";
 import { Icon } from "@/components/ui/Icon";
 import s from "./SteamBar.module.scss";
 
@@ -18,8 +18,13 @@ export function SteamBar() {
   const [loading, setLoading] = useState(false);
 
   const value = Number(amount || 0);
-  const amountError = touched && value < site.steam.minAmount ? `Минимум ${site.steam.minAmount}` : "";
-  const canPay = login.trim().length > 0 && value >= site.steam.minAmount;
+  const amountError =
+    touched && value < site.steam.minAmount
+      ? `Минимум ${site.steam.minAmount}`
+      : value > site.steam.maxAmount
+        ? `Максимум ${site.steam.maxAmount.toLocaleString("ru-RU")}`
+        : "";
+  const canPay = login.trim().length > 0 && value >= site.steam.minAmount && value <= site.steam.maxAmount;
 
   const pay = () => {
     if (!canPay || loading) return;
@@ -111,7 +116,7 @@ export function SteamBar() {
         </div>
 
         <button type="submit" className={s.pay} disabled={!canPay} aria-busy={loading || undefined}>
-          {loading ? <span className={s.spinner} aria-label="Обработка" /> : `Оплатить ${amount || 0}${currency.symbol}`}
+          {loading ? <span className={s.spinner} aria-label="Обработка" /> : `Оплатить ${formatPrice(value, currency.symbol)}`}
         </button>
       </form>
     </section>

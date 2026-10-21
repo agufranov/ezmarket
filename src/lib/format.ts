@@ -4,5 +4,5 @@ export function formatPrice(value: number, symbol = "₽") {
 }
 
 export function formatAmount(value: string) {
-  return value.replace(/\D/g, "").replace(/^0+/, "").slice(0, 7);
+  return value.replace(/\D/g, "").replace(/^0+/, "").slice(0, 6);
 }

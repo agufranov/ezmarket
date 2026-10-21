@@ -138,6 +138,14 @@ export function Recommend() {
           </div>
         </div>
       )}
+      {!hasMore && (
+        // после двух порций лоадер скрываем, под сеткой - «Смотреть все»
+        <div className={s.allBelow}>
+          <MoreLink href={routes.recommended} variant="pill">
+            Смотреть все
+          </MoreLink>
+        </div>
+      )}
     </section>
   );
 }

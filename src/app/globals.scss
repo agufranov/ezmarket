@@ -7,7 +7,7 @@
   --g-orange-2: linear-gradient(135deg, #ffad42 0%, #ff7a00 60%, #ff6400 100%);
   --c-peach: #fff1e4;
   --c-peach-2: #ffe2c6;
-  --c-peach-ink: #b5571a;
+  --c-peach-ink: #a6501a;
   --c-ink: #15181e;
   --c-ink-2: #3a3f48;
   --c-ink-3: #1e2229;
@@ -15,7 +15,7 @@
   --c-muted-2: #b4b9c1;
   --c-line: #eceef2;
   --c-fill: #f2f3f5;
-  --c-fill-2: #e9ebef;
+  --c-fill-2: #eceef2;
   --c-bg: #f4f5f7;
   --c-card: #fff;
   --c-green: #22a55a;
@@ -48,11 +48,17 @@
   --gap: 20px;
   --section-gap: 36px;
 
-  --z-header: 10;
-  --z-dropdown: 20;
-  --z-support: 50;
-  --z-modal: 100;
-  --z-toast: 110;
+  // слои и анимации окон (ТЗ 12.1)
+  --z-header: 100;
+  --z-dropdown: 150;
+  --z-popover: 200;
+  --z-support: 300;
+  --z-overlay: 1000;
+  --z-modal: 1010;
+  --z-tooltip: 1100;
+  --overlay: rgba(21, 24, 30, 0.45);
+  --t-pop-in: 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  --t-pop-out: 150ms ease-in;
 
   @include down($bp-lg) {
     --gutter: 32px;
@@ -160,10 +166,6 @@ textarea:focus-visible {
   overflow: hidden;
   clip: rect(0 0 0 0);
   white-space: nowrap;
-}
-
-body.scroll-locked {
-  overflow: hidden;
 }
 
 @keyframes float {

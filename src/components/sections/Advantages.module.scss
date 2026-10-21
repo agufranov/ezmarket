@@ -18,11 +18,6 @@
     transform var(--t-base) ease,
     box-shadow var(--t-base) ease;
 
-  // у средней карточки в макете срезан нижний левый угол
-  &:nth-child(2) {
-    border-radius: 36px 36px 36px 10px;
-  }
-
   @include hover {
     transform: translateY(-4px);
     box-shadow: var(--sh);

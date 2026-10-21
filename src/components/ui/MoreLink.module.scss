@@ -22,7 +22,9 @@
 
   img {
     grid-area: 1 / 1;
-    transition: opacity var(--t-fast) ease;
+    transition:
+      opacity var(--t-fast) ease,
+      transform var(--t-fast) ease;
   }
 }
 
@@ -44,6 +46,10 @@
 
     .light {
       opacity: 1;
+    }
+
+    .circle img {
+      transform: translateX(2px);
     }
   }
 
@@ -74,7 +80,7 @@
   border-radius: var(--r-pill);
   background: #fff;
   box-shadow: 0 1px 1px rgba(16, 24, 40, 0.05);
-  font-size: 13.5px;
+  font-size: 14px;
   color: #2b3038;
 
   .circle {

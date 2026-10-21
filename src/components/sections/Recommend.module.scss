@@ -30,7 +30,7 @@
 .title {
   font-size: 28px;
   font-weight: 900;
-  line-height: 1.1;
+  line-height: 1.2;
   letter-spacing: -0.6px;
 }
 
@@ -91,7 +91,7 @@
 }
 
 .count {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--c-muted-2);
 }
 
@@ -197,7 +197,7 @@
 
 .bubbleText {
   color: var(--c-loader-text);
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 700;
 }
 
@@ -232,4 +232,10 @@
     opacity: 1;
     transform: translateY(-3px);
   }
+}
+
+.allBelow {
+  display: flex;
+  justify-content: center;
+  padding-top: 8px;
 }

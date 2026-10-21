@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import s from "./Countdown.module.scss";
 
-type Props = { durationMs: number; className?: string };
+type Props = { durationMs: number; nextPeriodMs?: number; className?: string };
+
+// Сколько показываем «Обновляем подборку», прежде чем начать отсчет до следующей даты
+const REFRESH_NOTICE_MS = 3000;
 
 function split(ms: number) {
   const total = Math.max(0, Math.floor(ms / 60000));
@@ -11,7 +14,8 @@ function split(ms: number) {
 }
 
 // Обратный отсчет д/ч/м. Дата окончания пока считается от загрузки (позже - из API).
-export function Countdown({ durationMs, className }: Props) {
+// На нуле - «Обновляем подборку», затем отсчет до следующей даты, без перезагрузки страницы.
+export function Countdown({ durationMs, nextPeriodMs = 7 * 24 * 3600 * 1000, className }: Props) {
   const [end, setEnd] = useState<number | null>(null);
   const [now, setNow] = useState(0);
 
@@ -22,6 +26,21 @@ export function Countdown({ durationMs, className }: Props) {
     const id = window.setInterval(() => setNow(Date.now()), 1000);
     return () => window.clearInterval(id);
   }, [durationMs]);
+
+  const refreshing = end !== null && now >= end;
+  useEffect(() => {
+    if (!refreshing || end === null) return;
+    const t = window.setTimeout(() => setEnd(end + nextPeriodMs), REFRESH_NOTICE_MS);
+    return () => window.clearTimeout(t);
+  }, [refreshing, end, nextPeriodMs]);
+
+  if (refreshing) {
+    return (
+      <span className={[s.root, s.notice, className].filter(Boolean).join(" ")} role="status">
+        Обновляем подборку
+      </span>
+    );
+  }
 
   // До гидрации показываем стартовое значение, чтобы не было скачка верстки
   const { d, h, m } = split(end === null ? durationMs : end - now);

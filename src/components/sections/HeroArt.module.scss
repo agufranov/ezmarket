@@ -37,7 +37,8 @@
 .rub {
   position: absolute;
   left: 20px;
-  top: 56px;
+  // поднят на 44 px, чтобы не задевать H1 (правки 21.10)
+  top: 12px;
   display: grid;
   place-items: center;
   width: 56px;
