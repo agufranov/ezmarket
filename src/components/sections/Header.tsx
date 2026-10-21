@@ -9,6 +9,7 @@ import { useModal } from "@/lib/modal";
 import { Icon } from "@/components/ui/Icon";
 import { MaskIcon } from "@/components/ui/MaskIcon";
 import { CatalogMenu } from "./CatalogMenu";
+import { SearchBox } from "./SearchBox";
 import s from "./Header.module.scss";
 
 type Props = { onHelp: () => void };
@@ -26,26 +27,12 @@ export function Header({ onHelp }: Props) {
     setPopover((p) => (p === "catalog" ? null : p));
     if (returnFocus) catalogBtnRef.current?.focus();
   }, []);
-  const searchRef = useRef<HTMLInputElement>(null);
   const rowRef = useRef<HTMLDivElement>(null);
   const currencyBtnRef = useRef<HTMLButtonElement>(null);
   const currencyPanelRef = useRef<HTMLDivElement>(null);
   const [noseRight, setNoseRight] = useState(0);
 
   useEffect(() => setCurrency(loadCurrency()), []);
-
-  // "/" ставит фокус в поиск
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      const t = e.target as HTMLElement;
-      if (e.key === "/" && !["INPUT", "TEXTAREA"].includes(t.tagName)) {
-        e.preventDefault();
-        searchRef.current?.focus();
-      }
-    };
-    document.addEventListener("keydown", onKey);
-    return () => document.removeEventListener("keydown", onKey);
-  }, []);
 
   // Попап валюты (ТЗ 12.6): закрытие по клику вне (pointerdown вне панели и чипа), Esc, Tab наружу,
   // ресайзу через 1024 и при открытии модалки
@@ -127,27 +114,7 @@ export function Header({ onHelp }: Props) {
             <span className={s.catalogText}>Каталог</span>
           </button>
 
-          <form
-            className={s.search}
-            role="search"
-            onSubmit={(e) => {
-              e.preventDefault();
-              console.log("[search]", searchRef.current?.value);
-            }}
-          >
-            <Icon src="/img/icons/search.svg" size={20} />
-            <label htmlFor="site-search" className="visually-hidden">
-              Поиск
-            </label>
-            <input
-              id="site-search"
-              ref={searchRef}
-              type="search"
-              placeholder="Найти товар, игру или сервис"
-              autoComplete="off"
-            />
-            <kbd className={s.kbd}>/</kbd>
-          </form>
+          <SearchBox className={s.search} kbdClassName={s.kbd} />
 
           <CatalogMenu open={catalogOpen} onClose={closeCatalog} triggerRef={catalogBtnRef} />
 
