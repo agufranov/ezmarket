@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { ModalProvider } from "@/lib/modal";
 import { Header } from "./sections/Header";
 import { Hero } from "./sections/Hero";
@@ -15,12 +14,13 @@ import { Footer } from "./sections/Footer";
 import { SupportWidget } from "./sections/SupportWidget";
 import s from "./HomePage.module.scss";
 
-export function HomePage() {
-  const [supportOpen, setSupportOpen] = useState(false);
+// Поддержка по новому сценарию 12.16-12.20 - следующим шагом; пока кнопки ничего не открывают
+const openSupport = () => console.log("[support] open");
 
+export function HomePage() {
   return (
     <ModalProvider>
-      <Header onHelp={() => setSupportOpen(true)} />
+      <Header onHelp={openSupport} />
       <main className={`container ${s.main}`}>
         <Hero />
         <SteamBar />
@@ -32,7 +32,7 @@ export function HomePage() {
         <Advantages />
         <Footer />
       </main>
-      <SupportWidget open={supportOpen} onToggle={setSupportOpen} />
+      <SupportWidget onOpen={openSupport} />
     </ModalProvider>
   );
 }
