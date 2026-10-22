@@ -152,3 +152,10 @@
 }
 
 @include float-keyframes;
+
+// открыт каталог/поиск/попап шапки: виджет под панелью и притушен, чтобы не наезжать на нее (замечание с демо)
+:global(html[data-header-popover]) .toggle {
+  z-index: calc(var(--z-popover) - 1);
+  opacity: 0.35;
+  pointer-events: none;
+}

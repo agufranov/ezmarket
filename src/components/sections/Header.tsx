@@ -76,6 +76,11 @@ export function Header() {
     };
   }, [currencyOpen, setCurrencyOpen]);
 
+  // пока открыт поповер шапки, виджет поддержки уходит под него (на узком экране наезжал на каталог)
+  useEffect(() => {
+    document.documentElement.toggleAttribute("data-header-popover", popover !== null);
+  }, [popover]);
+
   useEffect(() => {
     if (!modalOpen) return;
     setPopover(null);
