@@ -8,28 +8,10 @@
   isolation: isolate;
   transition: transform var(--t-base) ease;
 
-  // Подложка при наведении шире карточки на 8 px: кнопка и картинка не упираются в край,
-  // а сетка остается как в макете
-  &::before {
-    content: "";
-    position: absolute;
-    inset: -8px;
-    z-index: -1;
-    border-radius: calc(var(--r-2) + 8px);
-    background: var(--c-card);
-    box-shadow: var(--sh-hover);
-    opacity: 0;
-    transition: opacity var(--t-base) ease;
-  }
-
   @media (hover: hover) {
+    // по макету (третья карточка «Хитов»): карточка не поднимается и без подложки -
+    // масштаб обложки и оранжевая «Купить»
     &:hover {
-      transform: translateY(-4px);
-
-      &::before {
-        opacity: 1;
-      }
-
       .art,
       .brandTile {
         transform: scale(1.05);
@@ -191,4 +173,6 @@
   font-size: 14px;
   font-weight: 700;
   color: #8e939b;
+  // в макете старая цена без зачеркивания
+  text-decoration: none;
 }

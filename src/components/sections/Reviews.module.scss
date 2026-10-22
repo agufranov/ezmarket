@@ -190,7 +190,7 @@
   align-items: flex-start;
   gap: 10px;
   flex: 1;
-  padding: 18px 18px 16px;
+  padding: 18px 18px 16px 14px;
   border-radius: 0 0 26px 0;
   background: #fff4ea;
 
@@ -223,10 +223,10 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 34px;
+  height: 36px;
   margin-top: auto;
   padding: 0 14px 0 5px;
-  border-radius: 17px;
+  border-radius: 18px;
   background: #fff;
   color: var(--c-ink);
   font-size: 14px;
@@ -245,16 +245,17 @@
 .author {
   display: flex;
   align-items: center;
+  // по макету: аватар 44 px, 12 px от края карточки
   gap: 10px;
   height: 76px;
-  padding: 0 18px;
+  padding: 0 18px 0 12px;
 }
 
 .avatar {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   color: #fff;
   font-size: 16px;

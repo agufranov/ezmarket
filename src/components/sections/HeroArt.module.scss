@@ -44,9 +44,9 @@
 
 .rub {
   position: absolute;
-  left: 20px;
-  // поднят на 44 px, чтобы не задевать H1 (правки 21.10)
-  top: 12px;
+  // координаты сверены с макетом по пикселям (правки 21.10 + сверка 22.10)
+  left: 27px;
+  top: 11px;
   display: grid;
   place-items: center;
   width: 56px;
@@ -68,7 +68,7 @@
 .chip {
   position: absolute;
   right: 30px;
-  bottom: 96px;
+  bottom: 103px;
   display: flex;
   align-items: center;
   gap: 8px;
