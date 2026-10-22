@@ -23,33 +23,29 @@
   text-align: center;
 }
 
+// Правки 22.10: маскот парит постоянно (−10 px, наклон ±4°, 2,4 s), под ним мягкая тень,
+// которая сжимается, когда маскот поднимается
 .mascotWrap {
   position: relative;
   margin-bottom: 26px;
+}
 
-  // тень под маскотом
-  &::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    bottom: -14px;
-    width: 150px;
-    height: 20px;
-    border-radius: 10px;
-    background: rgba(150, 50, 0, 0.18);
-    transform: translateX(-50%);
-  }
+.mascotFly {
+  display: block;
+  animation: mascotFly 2.4s ease-in-out infinite;
+}
 
-  > div {
-    transition: transform 400ms ease;
-  }
-
-  // при наведении парение сменяется покачиванием ±6° (ТЗ 12.21)
-  @include hover {
-    > div {
-      animation: sway 400ms ease-in-out;
-    }
-  }
+.mascotShadow {
+  position: absolute;
+  left: 50%;
+  bottom: -16px;
+  width: 120px;
+  height: 18px;
+  margin-left: -60px;
+  border-radius: 50%;
+  background: rgba(150, 50, 0, 0.32);
+  filter: blur(6px);
+  animation: shadowSqueeze 2.4s ease-in-out infinite;
 }
 
 .star {
@@ -59,7 +55,7 @@
   border-radius: 50%;
   background: #ffb02e;
   box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.7);
-  animation: float 3s ease-in-out infinite;
+  animation: bob 2s ease-in-out infinite;
 
   // звезда внутри монетки
   &::before {
@@ -71,6 +67,7 @@
   }
 }
 
+// монетки и искорки парят со сдвигом фаз: −8 px, наклон ±10°, 1,8-2,2 s, задержки 0 / 0,3 / 0,6 s
 .star1 {
   left: 45px;
   top: 64px;
@@ -81,7 +78,8 @@
   top: 104px;
   width: 15px;
   height: 15px;
-  animation-delay: -1s;
+  animation-duration: 1.8s;
+  animation-delay: 0.3s;
 }
 
 .star3 {
@@ -89,7 +87,8 @@
   top: 186px;
   width: 14px;
   height: 14px;
-  animation-delay: -2s;
+  animation-duration: 2.2s;
+  animation-delay: 0.6s;
 }
 
 .spark {
@@ -99,6 +98,7 @@
   opacity: 0.8;
   background: #fff;
   clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+  animation: bob 2.2s 0.3s ease-in-out infinite;
 }
 
 .spark1 {
@@ -111,6 +111,8 @@
   top: 52px;
   width: 10px;
   height: 10px;
+  animation-duration: 1.8s;
+  animation-delay: 0.6s;
 }
 
 .bonus {
@@ -364,6 +366,7 @@
   border-radius: var(--r-pill);
   background: var(--g-orange);
   box-shadow: 0 14px 24px rgba(255, 110, 0, 0.3);
+  overflow: hidden;
   color: #fff;
   font-size: 16px;
   font-weight: 800;
@@ -371,12 +374,12 @@
     filter var(--t-fast) ease,
     transform 0.1s ease;
 
+  .submitArrow svg {
+    animation: nudge 1.4s ease-in-out infinite;
+  }
+
   @include hover {
     filter: brightness(1.05);
-
-    .submitArrow svg {
-      transform: translateX(3px);
-    }
 
     .submitSparks i {
       animation: twinkle 0.8s ease-in-out infinite alternate;
@@ -390,6 +393,19 @@
   &:disabled {
     cursor: progress;
   }
+}
+
+// блик проходит по кнопке раз в 3 s
+.shine {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 40%;
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.35), transparent);
+  transform: translateX(-120%);
+  pointer-events: none;
+  animation: shine 3s ease-in-out infinite;
 }
 
 .submitArrow {
@@ -464,10 +480,15 @@
   }
 }
 
+// волна по кнопкам соцсетей: подъем 3 px, цикл 3 s, шаг 0,12 s (задержка - --wave-delay у li)
 .providers {
   display: flex;
   justify-content: space-between;
   margin-top: 14px;
+
+  li {
+    animation: wave 3s var(--wave-delay, 0s) ease-in-out infinite;
+  }
 }
 
 .provider {
@@ -477,7 +498,10 @@
   width: 58px;
   height: 58px;
   border-radius: 50%;
-  background: var(--c-fill);
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(20, 24, 32, 0.06),
+    0 6px 14px rgba(20, 24, 32, 0.08);
   transition:
     background var(--t-fast) ease,
     box-shadow var(--t-fast) ease,
@@ -577,11 +601,66 @@
   }
 }
 
-@keyframes sway {
-  25% {
-    transform: rotate(-6deg);
+@keyframes mascotFly {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-4deg);
   }
-  75% {
-    transform: rotate(6deg);
+  50% {
+    transform: translateY(-10px) rotate(4deg);
   }
 }
+
+@keyframes shadowSqueeze {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scaleX(0.75);
+  }
+}
+
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-10deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(10deg);
+  }
+}
+
+@keyframes wave {
+  0%,
+  20%,
+  100% {
+    transform: translateY(0);
+  }
+  10% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes nudge {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-120%);
+  }
+  40%,
+  100% {
+    transform: translateX(320%);
+  }
+}
+

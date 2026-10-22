@@ -18,8 +18,8 @@ const KEY_EMAIL = "ez_auth_email";
 const KEY_REF = "ez_ref_code";
 
 const copy = {
-  login: { title: "Вход в EzMarket", sub: "Пришлём код на почту — пароль не нужен", btn: "Получить код", bonus: "ждут вас после входа", tip: "Войти через" },
-  register: { title: "Регистрация", sub: "Пароль не нужен — только код из письма", btn: "Создать аккаунт", bonus: "сразу после регистрации", tip: "Продолжить через" },
+  login: { title: "С возвращением!", sub: "Введите email, и мы пришлем код для входа", btn: "Получить код", bonus: "ждут вас после входа", tip: "Войти через" },
+  register: { title: "Создайте аккаунт", sub: "Нужен только email, пароль не понадобится", btn: "Создать аккаунт", bonus: "сразу после регистрации", tip: "Продолжить через" },
 };
 
 function readSession(key: string) {
@@ -116,7 +116,10 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
             <span className={`${s.spark} ${s.spark1}`} aria-hidden />
             <span className={`${s.spark} ${s.spark2}`} aria-hidden />
             <div className={s.mascotWrap}>
-              <Mascot size={150} sideHand float floatDuration={3.4} />
+              <span className={s.mascotFly}>
+                <Mascot size={150} sideHand />
+              </span>
+              <span className={s.mascotShadow} aria-hidden />
             </div>
             <b className={s.bonus}>+{site.signupBonus} бонусов</b>
             <span key={mode} className={s.bonusSub}>
@@ -247,6 +250,7 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
                   </div>
 
                   <button type="submit" className={s.submit} disabled={busy} aria-busy={loading || undefined}>
+                    <span className={s.shine} aria-hidden />
                     <span className={s.submitSparks} aria-hidden>
                       <i />
                       <i />
@@ -273,8 +277,8 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
                   <span>или через</span>
                 </p>
                 <ul className={s.providers}>
-                  {authProviders.map((p) => (
-                    <li key={p.id}>
+                  {authProviders.map((p, i) => (
+                    <li key={p.id} style={{ ["--wave-delay" as string]: `${i * 0.12}s` }}>
                       <button
                         type="button"
                         className={s.provider}
