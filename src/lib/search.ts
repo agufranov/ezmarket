@@ -63,8 +63,17 @@ export function suggest(raw: string) {
     .sort((a, b) => a.dist - b.dist || b.count - a.count)
     .forEach((s) => corrections.length < 2 && !corrections.includes(s.text) && corrections.push(s.text));
 
+  // ничего похожего - предлагаем популярное, чтобы экран не был пустым (правки 22.10)
+  if (!corrections.length)
+    [...searchQueries]
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 2)
+      .forEach((s) => corrections.push(s.text));
+
   const base = normalize(corrections[0] ?? "").split(" ")[0];
   const didYouMean = base ? searchGames.filter((g) => normalize(g.title).includes(base)).slice(0, 2) : [];
+  // всегда 2 карточки: добираем популярными (с бейджем «хит»)
+  for (const g of searchGames.filter((x) => x.hit)) if (didYouMean.length < 2 && !didYouMean.includes(g)) didYouMean.push(g);
   return { ...found, corrections, didYouMean };
 }
 

@@ -141,7 +141,8 @@ export function SearchBox({ className, kbdClassName }: Props) {
   // переход на страницу результатов (URL позже)
   const go = (text: string, href = routes.search) => {
     if (!normalize(text)) return;
-    remember(text);
+    // запросы, по которым ничего не нашлось, в недавние не сохраняем (ТЗ 12.14)
+    if (normalize(text).length < searchConfig.minChars || suggest(text).total > 0) remember(text);
     setOpen(false);
     console.log("[search]", text, href);
   };
@@ -180,7 +181,7 @@ export function SearchBox({ className, kbdClassName }: Props) {
     } else if (o.kind === "query") go(o.text);
     else if (o.kind === "all") go(value);
     else {
-      remember(value);
+      if (suggest(value).total > 0) remember(value);
       setOpen(false);
       console.log("[search] open", o.id);
     }
@@ -258,7 +259,7 @@ export function SearchBox({ className, kbdClassName }: Props) {
           <>
             <div className={s.nfLeft}>
               <div className={s.nfMascot}>
-                <Mascot size={92} mood="surprised" />
+                <Mascot size={92} />
               </div>
               <div>
                 <p className={s.nfTitle}>

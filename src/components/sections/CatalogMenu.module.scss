@@ -97,7 +97,7 @@
   padding: 0 14px 0 10px;
   border-radius: var(--r-pill);
   color: var(--c-ink);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   transition:
     background var(--t-fast) ease,
@@ -107,25 +107,27 @@
     background: var(--c-fill-2);
   }
 
+  // у активного пункта иконка оранжевая на белой плашке
   &[data-active] {
     background: var(--g-orange);
     box-shadow: var(--sh-orange);
     color: #fff;
 
     .catIcon {
-      background: rgba(255, 255, 255, 0.22);
-      color: #fff;
+      color: var(--c-orange);
     }
   }
 }
 
+// иконки на белых скругленных плашках (правки 22.10)
 .catIcon {
   display: grid;
   place-items: center;
   width: 34px;
   height: 34px;
-  border-radius: 50%;
-  background: var(--c-peach);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(20, 24, 32, 0.08);
   color: var(--c-orange);
   transition:
     background var(--t-fast) ease,
@@ -172,22 +174,22 @@
 
 .sparks {
   position: relative;
-  width: 16px;
-  height: 16px;
+  width: 22px;
+  height: 22px;
 
   i {
     position: absolute;
-    width: 8px;
-    height: 8px;
+    width: 13px;
+    height: 13px;
     background: var(--c-orange);
     clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
     animation: twinkle 1.6s ease-in-out infinite;
 
     &:last-child {
-      left: 8px;
-      top: 7px;
-      width: 6px;
-      height: 6px;
+      left: 12px;
+      top: 10px;
+      width: 9px;
+      height: 9px;
       animation-delay: -0.8s;
     }
   }
@@ -247,6 +249,10 @@
       background: var(--g-orange);
       box-shadow: var(--sh-orange);
       color: #fff;
+
+      small {
+        color: rgba(255, 255, 255, 0.8);
+      }
     }
   }
 
@@ -300,12 +306,11 @@
 }
 
 .hit {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   color: var(--c-orange);
   font-weight: 800;
-
-  &::before {
-    content: "• ";
-  }
 }
 
 .discount {
@@ -325,6 +330,15 @@
   box-shadow: 0 0 0 1px var(--c-line);
   font-size: 14px;
   font-weight: 900;
+
+  // «от» мельче и серое, цена жирная
+  small {
+    margin-right: 3px;
+    color: var(--c-muted);
+    font-size: 12px;
+    font-weight: 700;
+    transition: color var(--t-fast) ease;
+  }
   white-space: nowrap;
   transition:
     background var(--t-fast) ease,
@@ -418,18 +432,27 @@
 
 .promoLogos {
   display: flex;
+  align-items: center;
   margin: 16px 0 18px;
 
+  // логотипы 48 px внахлест, средний (ChatGPT) крупнее и поверх
   img {
-    width: 52px;
-    height: 52px;
+    position: relative;
+    width: 48px;
+    height: 48px;
     border: 3px solid var(--c-ink-3);
     border-radius: 50%;
     object-fit: cover;
     transition: transform var(--t-fast) ease;
 
     & + img {
-      margin-left: -10px;
+      margin-left: -12px;
+    }
+
+    &:nth-child(2) {
+      z-index: 1;
+      width: 58px;
+      height: 58px;
     }
 
     &:nth-child(2) {

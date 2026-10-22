@@ -190,11 +190,19 @@ function Card({ item, tabbable }: { item: CatalogItem; tabbable: boolean }) {
         <b>{item.title}</b>
         <span className={s.cardSub}>
           <span className={s.subText}>{item.subtitle}</span>
-          {item.badge?.kind === "hit" && <span className={s.hit}>хит</span>}
+          {item.badge?.kind === "hit" && (
+            <span className={s.hit}>
+              <MaskIcon src="/img/icons/fire.svg" size={12} />
+              хит
+            </span>
+          )}
           {item.badge?.kind === "discount" && <span className={s.discount}>−{item.badge.value}%</span>}
         </span>
       </span>
-      <span className={s.price}>от {formatPrice(item.priceFrom)}</span>
+      <span className={s.price}>
+        <small>от</small>
+        {formatPrice(item.priceFrom)}
+      </span>
     </a>
   );
 }
