@@ -124,8 +124,9 @@
 .bonus {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 14px 16px 12px;
+  // кнопка 166 px, справа 12 px до края карточки - как в макете
+  gap: 10px;
+  padding: 16px 12px 16px 12px;
   border-radius: 28px 28px 28px 8px;
   background: var(--c-peach);
 
