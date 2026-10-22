@@ -10,8 +10,49 @@
   display: grid;
   grid-template-columns: 262px minmax(0, 1fr) 222px;
 
+  // 1024-1279: колонки уже, карточки компактнее - чтобы названия не обрезались до 5 букв
   @include down($bp-lg) {
-    grid-template-columns: 220px minmax(0, 1fr) 200px;
+    grid-template-columns: 196px minmax(0, 1fr) 180px;
+
+    .cat {
+      gap: 10px;
+      font-size: 14px;
+    }
+
+    .content {
+      padding: 20px 16px;
+    }
+
+    .card {
+      gap: 8px;
+      padding: 0 8px;
+    }
+
+    .logo {
+      width: 36px;
+      height: 36px;
+    }
+
+    .price {
+      padding: 6px 8px;
+    }
+
+    .promoTitle {
+      font-size: 20px;
+    }
+
+    .promo {
+      padding: 16px 10px 10px;
+    }
+
+    .promoRow {
+      gap: 6px;
+      padding: 6px;
+
+      img {
+        display: none;
+      }
+    }
   }
   max-height: calc(100vh - 100px);
   border-radius: var(--r-3);
