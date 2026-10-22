@@ -161,7 +161,8 @@
   place-items: center;
   width: 44px;
   height: 44px;
-  border-radius: 50%;
+  // тоже «капля», как в макете
+  border-radius: 22px 10px 22px 22px;
   background: var(--c-peach);
   color: var(--c-orange);
 }
