@@ -8,12 +8,13 @@
   top: calc(100% + 12px);
   z-index: var(--z-popover);
   display: grid;
-  grid-template-columns: 262px minmax(0, 1fr) 222px;
+  // размеры сняты с макета наложением 1:1 (правки 22.10): сайдбар 262, промо 222 + отступы 14
+  grid-template-columns: 262px minmax(0, 1fr) 250px;
 
   // уже 1200: колонки уже, карточки компактнее - чтобы названия не обрезались до 5 букв.
   // На 1200-1279 макет показывает полную раскладку
   @media (max-width: 1199px) {
-    grid-template-columns: 196px minmax(0, 1fr) 180px;
+    grid-template-columns: 196px minmax(0, 1fr) 194px;
 
     .cat {
       gap: 10px;
@@ -87,18 +88,19 @@
   flex-direction: column;
   gap: 4px;
   padding: 14px;
-  background: #fbf8f5;
+  background: #fbf6f1;
 }
 
 .cat {
   display: flex;
   align-items: center;
   gap: 14px;
-  height: 54px;
-  padding: 0 14px 0 10px;
+  height: 58px;
+  padding: 0 6px 0 9px;
+  white-space: nowrap;
   border-radius: var(--r-pill);
   color: var(--c-ink);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
   transition:
     background var(--t-fast) ease,
@@ -124,11 +126,10 @@
 .catIcon {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
+  width: 42px;
+  height: 42px;
+  border-radius: 16px;
   background: #fff;
-  box-shadow: 0 1px 3px rgba(20, 24, 32, 0.08);
   color: var(--c-orange);
   transition:
     background var(--t-fast) ease,
@@ -139,7 +140,7 @@
 
 .content {
   min-width: 0;
-  padding: 22px 24px 24px;
+  padding: 22px 24px 20px;
   overflow-y: auto;
   overscroll-behavior: contain;
   animation: fade 150ms ease;
@@ -155,15 +156,15 @@
 .headIcon {
   display: grid;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--c-peach);
   color: var(--c-orange);
 }
 
 .title {
-  font-size: 26px;
+  font-size: 28px;
   font-weight: 900;
 }
 
@@ -200,13 +201,13 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
+  height: 44px;
   margin-left: auto;
-  padding: 0 18px;
+  padding: 0 20px 0 22px;
   border-radius: var(--r-pill);
   background: var(--c-ink-3);
   color: #fff;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 800;
   transition: filter var(--t-fast) ease;
 
@@ -226,15 +227,15 @@
 .grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 10px 12px;
+  gap: 8px;
 }
 
 .card {
   display: flex;
   align-items: center;
-  gap: 12px;
-  height: 70px;
-  padding: 0 12px 0 10px;
+  gap: 10px;
+  height: 68px;
+  padding: 0 10px 0 8px;
   border-radius: 22px;
   box-shadow: inset 0 0 0 1.5px var(--c-line);
   transition:
@@ -264,8 +265,8 @@
 
 .logo {
   flex: none;
-  width: 44px;
-  height: 44px;
+  width: 52px;
+  height: 52px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -278,8 +279,9 @@
 
   b {
     overflow: hidden;
-    font-size: 15px;
+    font-size: 18px;
     font-weight: 900;
+    line-height: 1.2;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
@@ -290,7 +292,7 @@
   align-items: center;
   gap: 6px;
   color: var(--c-muted);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   white-space: nowrap;
   overflow: hidden;
@@ -329,18 +331,18 @@
 
 .price {
   flex: none;
-  padding: 8px 12px;
+  padding: 10px 12px;
   border-radius: var(--r-pill);
   background: #fff;
   box-shadow: 0 0 0 1px var(--c-line);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 900;
 
   // «от» мельче и серое, цена жирная
   small {
-    margin-right: 3px;
+    margin-right: 4px;
     color: var(--c-muted);
-    font-size: 12px;
+    font-size: 13px;
     font-weight: 700;
     transition: color var(--t-fast) ease;
   }
@@ -362,18 +364,18 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 14px;
+  margin-top: 16px;
 }
 
 .quickLink {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
+  height: 44px;
   padding: 0 6px 0 8px;
   border-radius: var(--r-pill);
   box-shadow: inset 0 0 0 1.5px var(--c-line);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   transition:
     box-shadow var(--t-fast) ease,
@@ -403,8 +405,8 @@
 .promo {
   display: flex;
   flex-direction: column;
-  margin: 14px 14px 14px 0;
-  padding: 18px 14px 14px;
+  margin: 14px;
+  padding: 22px 14px 14px;
   border-radius: 24px;
   background: var(--c-ink-3);
   color: #fff;
@@ -424,15 +426,15 @@
 
 .promoLabel {
   color: var(--c-orange);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
 }
 
 // «Скидки» / «до -40%» - в две строки по макету
 .promoTitle {
   white-space: pre-line;
-  margin-top: 6px;
-  font-size: 24px;
+  margin-top: 8px;
+  font-size: 28px;
   font-weight: 900;
   line-height: 1.1;
 }
@@ -445,8 +447,8 @@
   // логотипы 48 px внахлест, средний (ChatGPT) крупнее и поверх
   img {
     position: relative;
-    width: 48px;
-    height: 48px;
+    width: 60px;
+    height: 60px;
     border: 3px solid var(--c-ink-3);
     border-radius: 50%;
     object-fit: cover;
@@ -458,8 +460,8 @@
 
     &:nth-child(2) {
       z-index: 1;
-      width: 58px;
-      height: 58px;
+      width: 72px;
+      height: 72px;
     }
 
     &:nth-child(2) {
@@ -482,11 +484,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 46px;
-  padding: 6px 8px;
+  min-height: 44px;
+  padding: 6px 6px 6px 8px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.06);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   line-height: 1.15;
   transition: background var(--t-fast) ease;
@@ -503,10 +505,10 @@
 
   b {
     flex: none;
-    padding: 4px 8px;
+    padding: 6px 10px;
     border-radius: var(--r-pill);
     background: var(--g-orange);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 900;
     transition: transform var(--t-fast) ease;
   }
