@@ -37,11 +37,13 @@ export function damerau(a: string, b: string) {
 export type Suggest = ReturnType<typeof suggest>;
 
 function find(q: string) {
-  const queries = searchQueries.filter((s) => normalize(s.text).includes(q)).slice(0, searchConfig.suggestShow);
+  const all = searchQueries.filter((s) => normalize(s.text).includes(q));
+  const queries = all.slice(0, searchConfig.suggestShow);
   const products = searchProducts
     .filter((p) => normalize(`${p.title} ${p.subtitle}`).includes(q))
     .slice(0, searchConfig.productsShow);
-  const total = Math.max(queries[0]?.count ?? 0, products.length);
+  // всего результатов - по самому широкому совпавшему запросу (в макете «Все 2 410 результатов» для «brawl»)
+  const total = Math.max(0, ...all.map((s) => s.count), products.length);
   return { queries, products, total };
 }
 

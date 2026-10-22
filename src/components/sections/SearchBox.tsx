@@ -64,6 +64,7 @@ export function SearchBox({ className, kbdClassName }: Props) {
   const [recent, setRecent] = useState<string[]>([]);
   const [active, setActive] = useState(-1);
   const [shift, setShift] = useState(0);
+  const [wide, setWide] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -97,10 +98,21 @@ export function SearchBox({ className, kbdClassName }: Props) {
       const form = formRef.current;
       const row = form?.parentElement;
       if (!form || !row) return;
-      const pad = parseFloat(getComputedStyle(row).paddingRight) || 0;
-      const rowRight = row.getBoundingClientRect().right - pad;
-      const width = panelRef.current?.offsetWidth ?? 0;
-      setShift(Math.max(0, form.getBoundingClientRect().left + width - rowRight));
+      const cs = getComputedStyle(row);
+      const rect = row.getBoundingClientRect();
+      const rowLeft = rect.left + (parseFloat(cs.paddingLeft) || 0);
+      const rowRight = rect.right - (parseFloat(cs.paddingRight) || 0);
+      const formLeft = form.getBoundingClientRect().left;
+      // «ничего не нашли» по макету - на всю ширину контейнера
+      if (view === "empty") {
+        setWide(rowRight - rowLeft);
+        setShift(formLeft - rowLeft);
+        return;
+      }
+      setWide(0);
+      // ширина по CSS (а не offsetWidth - он может еще хранить ширину прошлого вида)
+      const width = view === "recent" ? 372 : 860;
+      setShift(Math.max(0, formLeft + width - rowRight));
     };
     place();
     window.addEventListener("resize", place);
@@ -251,7 +263,7 @@ export function SearchBox({ className, kbdClassName }: Props) {
         data-open={visible || undefined}
         data-view={view}
         ref={panelRef}
-        style={{ marginLeft: -shift }}
+        style={{ marginLeft: -shift, width: wide || undefined }}
         // клики внутри не забирают фокус из поля
         onMouseDown={(e) => e.preventDefault()}
       >
@@ -259,7 +271,7 @@ export function SearchBox({ className, kbdClassName }: Props) {
           <>
             <div className={s.nfLeft}>
               <div className={s.nfMascot}>
-                <Mascot size={92} />
+                <Mascot size={120} />
               </div>
               <div>
                 <p className={s.nfTitle}>
@@ -308,7 +320,7 @@ export function SearchBox({ className, kbdClassName }: Props) {
                       onMouseEnter={() => setActive(i)}
                       onClick={() => choose(options[i])}
                     >
-                      <img src={asset(g.logo)} alt="" width={40} height={40} />
+                      <img src={asset(g.logo)} alt="" width={48} height={48} />
                       <span className={s.gameText}>
                         <b>{g.title}</b>
                         <span>
