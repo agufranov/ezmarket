@@ -260,8 +260,8 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
                       {loading ? (
                         <span className={s.spinner} />
                       ) : (
-                        <svg width="8" height="12" viewBox="0 0 8 12" fill="none">
-                          <path d="M2 1.5 6.5 6 2 10.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        <svg width="12" height="20" viewBox="0 0 12 20" fill="none">
+                          <path d="M3 3l6 7-6 7" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
                         </svg>
                       )}
                     </span>

@@ -422,7 +422,8 @@
   width: 42px;
   height: 42px;
   margin-top: -21px;
-  border-radius: 50%;
+  // «капля», как в макете: острый угол слева снизу
+  border-radius: 21px 21px 21px 8px;
   background: #fff;
   color: var(--c-orange);
 
