@@ -1,11 +1,13 @@
+// Правки 22.10: при наведении ничего не сдвигается, текст из серого становится #C45500
 .link {
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  color: #686e78;
   font-weight: 800;
   font-size: 14px;
   white-space: nowrap;
-  transition: color var(--t-fast) ease;
+  transition: color 0.2s ease;
 }
 
 .circle {
@@ -45,7 +47,7 @@
 
 @media (hover: hover) {
   .link:hover {
-    color: var(--c-orange);
+    color: #c45500;
 
     .circle::before {
       opacity: 1;
@@ -57,10 +59,6 @@
 
     .light {
       opacity: 1;
-    }
-
-    .circle img {
-      transform: translateX(2px);
     }
   }
 
@@ -92,7 +90,6 @@
   background: #fff;
   box-shadow: 0 1px 1px rgba(16, 24, 40, 0.05);
   font-size: 14px;
-  color: #2b3038;
 
   .circle {
     width: 26px;

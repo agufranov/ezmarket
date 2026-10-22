@@ -35,10 +35,6 @@
         transform: scale(1.05);
       }
 
-      .fav {
-        opacity: 1;
-      }
-
       .buy {
         color: #fff;
         box-shadow: var(--sh-orange);
@@ -135,61 +131,6 @@
   background: #fff;
   color: var(--c-ink);
   font-size: 14px;
-}
-
-.fav {
-  position: absolute;
-  right: 8px;
-  top: 98px;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #fff;
-  box-shadow: var(--sh);
-  opacity: 0;
-
-  path {
-    fill: none;
-    stroke: var(--c-ink);
-    stroke-width: 2;
-    transition: fill var(--t-fast) ease;
-  }
-
-  transition:
-    opacity var(--t-fast) ease,
-    transform var(--t-fast) ease;
-
-  @media (hover: hover) {
-    &:hover {
-      transform: scale(1.1);
-    }
-  }
-
-  &:focus-visible {
-    opacity: 1;
-  }
-
-  @media (hover: none) {
-    opacity: 1;
-  }
-}
-
-.favOn {
-  opacity: 1;
-  animation: pop 250ms ease-out;
-
-  path {
-    fill: var(--c-orange);
-    stroke: var(--c-orange);
-  }
-}
-
-@keyframes pop {
-  50% {
-    transform: scale(1.2);
-  }
 }
 
 .body {
