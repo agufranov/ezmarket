@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { AuthProvider } from "@/lib/auth";
 import { ModalProvider } from "@/lib/modal";
 import { Header } from "./sections/Header";
@@ -16,6 +17,13 @@ import { SupportProvider } from "./support/Support";
 import s from "./HomePage.module.scss";
 
 export function HomePage() {
+  // в скрытой вкладке бесконечные анимации на паузе (слайдер останавливается сам)
+  useEffect(() => {
+    const sync = () => document.documentElement.toggleAttribute("data-tab-hidden", document.hidden);
+    document.addEventListener("visibilitychange", sync);
+    return () => document.removeEventListener("visibilitychange", sync);
+  }, []);
+
   return (
     <AuthProvider>
       <ModalProvider>

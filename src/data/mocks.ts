@@ -96,29 +96,16 @@ export function getRecommended(tab: TabId, offset: number, limit: number): Produ
   });
 }
 
-export const heroSlides = [
-  {
-    id: "steam",
-    badge: "Без комиссии",
-    title: ["Пополняй Steam", "за минуту"],
-    text: "Любая сумма от 100 ₽ · скидка 5% на первое пополнение",
-    cta: "Пополнить",
-  },
-  {
-    id: "keys",
-    badge: "Скидки до −50%",
-    title: ["Ключи игр", "по лучшей цене"],
-    text: "Мгновенная выдача после оплаты · гарантия активации",
-    cta: "Смотреть",
-  },
-  {
-    id: "donate",
-    badge: "Без комиссии",
-    title: ["Донат в игры", "по ID"],
-    text: "PUBG, Genshin, Mobile Legends и еще 40+ игр",
-    cta: "Выбрать игру",
-  },
-];
+const mainSlide = {
+  id: "steam",
+  badge: "Без комиссии",
+  title: ["Пополняй Steam", "за минуту"],
+  text: "Любая сумма от 100 ₽ · скидка 5% на первое пополнение",
+  cta: "Пополнить",
+};
+
+// ТЗ 0.2 п.6: пока других баннеров нет, слайды повторяют главный; число полосок = числу слайдов
+export const heroSlides = [mainSlide, { ...mainSlide, id: "steam-2" }, { ...mainSlide, id: "steam-3" }];
 
 export const sideBanners = [
   { id: "ps", label: "PlayStation", title: ["PS Plus до", "−40%"], icon: "/img/brands/playstation.png", theme: "dark" as const },

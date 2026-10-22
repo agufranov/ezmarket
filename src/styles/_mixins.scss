@@ -35,3 +35,17 @@ $bp-xs: 479px;  // 360–479
 @mixin drop($r, $corner) {
   border-radius: $r $r $r $corner;
 }
+
+// Мягкое парение маскотов. Кадры объявляем внутри каждого модуля, который их использует:
+// глобальные @keyframes из модуля не видны - имя анимации хешируется
+@mixin float-keyframes {
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+}

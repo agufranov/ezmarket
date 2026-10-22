@@ -48,7 +48,7 @@
   width: 52px;
   height: 52px;
   border-radius: 50%;
-  border: 2px dashed #ffb46b;
+  border: 2px dashed #ffa95c;
 }
 
 .dot {
@@ -72,6 +72,12 @@
   border-radius: 35px 35px 35px 16px;
   background: var(--g-orange-2);
   box-shadow: 0 12px 14px rgba(255, 110, 0, 0.32);
+  // в макете плашка с иконкой наклонена
+  transform: rotate(-8deg);
+
+  > * {
+    transform: rotate(8deg);
+  }
 
   .card:nth-child(2) & {
     border-radius: 35px 35px 16px 35px;

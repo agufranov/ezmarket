@@ -1,3 +1,5 @@
+@use "../../styles/mixins" as *;
+
 // Координаты слоев из Figma, контейнер 360×360 прижат к правому краю баннера
 .art {
   position: absolute;
@@ -6,6 +8,12 @@
   width: 360px;
   height: 360px;
   pointer-events: none;
+}
+
+// круг со Steam мягко парит вместе с подложкой (правки 22.10: в 2 раза быстрее обычного парения - 1,7 s)
+.halo,
+.steam {
+  animation: float 1.7s ease-in-out infinite;
 }
 
 .halo {
@@ -75,3 +83,5 @@
   font-size: 18px;
   font-weight: 900;
 }
+
+@include float-keyframes;

@@ -1,3 +1,5 @@
+@use "../../styles/mixins" as *;
+
 // Все размеры в em: 1em = size / 112 px (база - маскот бонусной плашки 112×112)
 $blob: radial-gradient(
   circle at 32% 24%,
@@ -194,7 +196,6 @@ $blob: radial-gradient(
   height: 38.08em;
   border-radius: 19.04em 19.04em 19.04em 8.38em;
   background: var(--c-ink);
-  box-shadow: 0 0 0 2.8em #fff;
   z-index: 1;
 }
 
@@ -204,3 +205,5 @@ $blob: radial-gradient(
   font-weight: 900;
   line-height: 1;
 }
+
+@include float-keyframes;

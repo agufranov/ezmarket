@@ -178,6 +178,13 @@ textarea:focus-visible {
   }
 }
 
+// вкладка скрыта - анимации стоят
+html[data-tab-hidden] *,
+html[data-tab-hidden] *::before,
+html[data-tab-hidden] *::after {
+  animation-play-state: paused !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

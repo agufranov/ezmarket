@@ -53,9 +53,11 @@
   }
 }
 
+// правки 22.10: колонка ~244 px - подпись в 2 строки, заголовок в одну строку (выходит за колонку).
+// Chrome рисует Nunito чуть уже Figma, при 244 перенос дает 3 строки - берем 252
 .text {
   position: relative;
-  width: 240px;
+  width: 252px;
   flex: none;
 
   @include down($bp-lg) {
@@ -63,6 +65,7 @@
 
     .title {
       font-size: 24px;
+      white-space: normal;
     }
   }
 
@@ -74,6 +77,7 @@
 }
 
 .title {
+  white-space: nowrap;
   font-size: 28px;
   font-weight: 900;
   line-height: 1.2;
