@@ -206,7 +206,9 @@
   }
 }
 
+// переносы как в макете: ширина строки 246 px (подобрана по трем отзывам из макета)
 .text {
+  padding-right: 15px;
   font-size: 14.5px;
   font-weight: 700;
   line-height: 1.5;

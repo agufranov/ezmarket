@@ -19,7 +19,10 @@ export function BonusBar() {
         <h2 id="bonus-title" className={s.title}>
           1 бонус = 1 ₽ скидки
         </h2>
-        <p className={s.sub}>Копите бонусы за покупки и отзывы - оплачивайте ими до 30% заказа</p>
+        <p className={s.sub}>
+          Копите бонусы за покупки и отзывы
+          <br />- оплачивайте ими до 30% заказа
+        </p>
       </div>
       <ol className={s.steps}>
         {bonusSteps.map((step) => (
