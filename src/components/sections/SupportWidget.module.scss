@@ -28,6 +28,11 @@
     }
   }
 
+  // пока поддержка открыта - тултип не показываем
+  &[aria-expanded="true"] .tooltip {
+    display: none;
+  }
+
   @include down($bp-md) {
     width: 80px;
     height: 88px;

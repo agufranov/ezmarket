@@ -7,6 +7,7 @@ import { routes } from "@/config/routes";
 import { currencies, loadCurrency, saveCurrency, type Currency } from "@/config/currencies";
 import { useAuth } from "@/lib/auth";
 import { useModal } from "@/lib/modal";
+import { useSupport } from "@/components/support/Support";
 import { Icon } from "@/components/ui/Icon";
 import { MaskIcon } from "@/components/ui/MaskIcon";
 import { CatalogMenu } from "./CatalogMenu";
@@ -14,11 +15,10 @@ import { SearchBox } from "./SearchBox";
 import { HeaderUser, type UserPopover } from "./HeaderUser";
 import s from "./Header.module.scss";
 
-type Props = { onHelp: () => void };
-
-export function Header({ onHelp }: Props) {
+export function Header() {
   const { openModal, current: modalOpen } = useModal();
   const { user, logout } = useAuth();
+  const { openSupport: onHelp } = useSupport();
   const [currency, setCurrency] = useState<Currency>(currencies[0]);
   // один поповер шапки за раз (ТЗ 12.1)
   const [popover, setPopover] = useState<"catalog" | "currency" | UserPopover | null>(null);

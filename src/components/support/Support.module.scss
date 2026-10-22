@@ -1,0 +1,902 @@
+@use "../../styles/mixins" as *;
+
+// Панели поддержки (ТЗ 12.16-12.20): слева от виджета (fixed справа, ширина 100) с зазором 18 px,
+// по центру высоты, не ближе 16 px к краям окна
+
+.root {
+  position: fixed;
+  right: 118px;
+  top: 50%;
+  z-index: var(--z-support);
+  display: flex;
+  max-height: calc(100vh - 32px);
+  transform: translateY(-50%);
+  pointer-events: none;
+
+  > * {
+    pointer-events: auto;
+  }
+}
+
+.round {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--c-fill);
+  color: var(--c-ink-2);
+  transition:
+    background var(--t-fast) ease,
+    color var(--t-fast) ease;
+
+  svg {
+    transition: transform var(--t-fast) ease;
+  }
+
+  @include hover {
+    background: var(--c-fill-2);
+    color: var(--c-ink);
+
+    // стрелка «назад» сдвигается влево
+    &[aria-label="Назад"] svg {
+      transform: translateX(-2px);
+    }
+  }
+}
+
+// --- меню-пузыри (12.16) ---
+
+.menu {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+  outline: none;
+
+  > * {
+    animation: bubbleIn 200ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+}
+
+.hello {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  align-self: flex-start;
+  height: 60px;
+  padding: 0 26px 0 12px;
+  border-radius: 30px 30px 30px 10px;
+  background: var(--c-ink);
+  box-shadow: var(--sh-hover);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.helloMascot {
+  display: grid;
+  place-items: center;
+}
+
+.bubble {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  height: 64px;
+  padding: 0 26px 0 10px;
+  border-radius: var(--r-pill);
+  background: #fff;
+  box-shadow: var(--sh);
+  color: var(--c-ink);
+  font-size: 16px;
+  font-weight: 900;
+  white-space: nowrap;
+  transition:
+    transform var(--t-fast) ease,
+    box-shadow var(--t-fast) ease;
+
+  @include hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sh-hover);
+
+    .bubbleIcon {
+      transform: scale(1.05);
+    }
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.bubbleIcon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  transition: transform var(--t-fast) ease;
+}
+
+.iconTg {
+  background: #2aa3e0;
+  color: #fff;
+}
+
+.iconMail {
+  background: var(--g-orange);
+  color: #fff;
+}
+
+.iconFaq {
+  background: var(--c-peach);
+  color: var(--c-orange);
+}
+
+// --- общая панель (FAQ, форма, успех) ---
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  width: 400px;
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 18px;
+  border-radius: var(--r-3);
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(20, 24, 32, 0.06),
+    0 24px 60px rgba(20, 24, 32, 0.18);
+  transform-origin: right center;
+  animation: panelIn 250ms ease both;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.headTitle {
+  flex: 1;
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+  outline: none;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+  outline: none;
+}
+
+.chip {
+  height: 38px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  background: var(--c-fill);
+  color: var(--c-ink-2);
+  font-size: 14px;
+  font-weight: 800;
+  transition:
+    background var(--t-fast) ease,
+    color var(--t-fast) ease,
+    transform 0.1s ease;
+
+  @include hover {
+    &:not([aria-selected="true"]):not([aria-checked="true"]) {
+      background: var(--c-fill-2);
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &[aria-selected="true"],
+  &[aria-checked="true"] {
+    background: var(--c-ink);
+    color: #fff;
+  }
+}
+
+// --- FAQ (12.17) ---
+
+.faqList {
+  display: flex;
+  flex-direction: column;
+  margin-top: 10px;
+  animation: fade 150ms ease;
+}
+
+.faqItem {
+  border-radius: 20px;
+  transition: background 250ms ease;
+
+  & + & {
+    border-top: 1px solid var(--c-line);
+  }
+
+  &[data-open] {
+    background: var(--c-peach);
+    border-color: transparent;
+
+    + .faqItem {
+      border-color: transparent;
+    }
+  }
+}
+
+.faqQ {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 54px;
+  padding: 10px 12px 10px 14px;
+  color: var(--c-ink);
+  font-size: 15px;
+  font-weight: 800;
+  text-align: left;
+  transition:
+    color var(--t-fast) ease,
+    transform 0.1s ease;
+
+  @include hover {
+    color: var(--c-orange);
+
+    .faqSign {
+      background: var(--c-fill-2);
+    }
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  .faqItem[data-open] & {
+    color: var(--c-ink);
+
+    .faqSign {
+      background: var(--c-ink);
+
+      &::after {
+        transform: rotate(90deg) scaleX(0);
+      }
+
+      &::before,
+      &::after {
+        background: #fff;
+      }
+    }
+
+    @include hover {
+      .faqSign {
+        transform: scale(1.05);
+      }
+    }
+  }
+}
+
+// «+» / «−» из двух полосок: вертикальная схлопывается
+.faqSign {
+  position: relative;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--c-fill);
+  transition:
+    background var(--t-fast) ease,
+    transform var(--t-fast) ease;
+
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 13px;
+    width: 12px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--c-ink);
+    transition:
+      transform 250ms ease,
+      background var(--t-fast) ease;
+  }
+
+  &::after {
+    transform: rotate(90deg);
+  }
+}
+
+// ответ раскрывается через grid-template-rows 0fr → 1fr
+.faqA {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 200ms ease;
+
+  > div {
+    min-height: 0;
+    overflow: hidden;
+  }
+
+  p {
+    padding: 0 14px 14px;
+    color: var(--c-ink-2);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.45;
+  }
+
+  .faqItem[data-open] & {
+    grid-template-rows: 1fr;
+    transition-duration: 250ms;
+  }
+}
+
+.faqEmpty {
+  padding: 20px 4px;
+  color: var(--c-muted);
+  font-size: 14px;
+}
+
+.link {
+  color: var(--c-orange);
+  font-weight: 800;
+
+  @include hover {
+    text-decoration: underline;
+  }
+}
+
+.helpful {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 52px;
+  margin-top: 10px;
+  padding: 8px 4px 0 6px;
+  border-top: 1px solid var(--c-line);
+  color: var(--c-muted);
+  font-size: 14px;
+  font-weight: 700;
+  animation: fade 150ms ease;
+}
+
+.helpfulBtns {
+  display: flex;
+  gap: 8px;
+}
+
+.vote {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  background: var(--c-fill);
+  color: var(--c-ink);
+  font-size: 14px;
+  font-weight: 800;
+  transition: background var(--t-fast) ease;
+
+  i {
+    font-style: normal;
+    transition: transform var(--t-fast) ease;
+  }
+
+  @include hover {
+    background: var(--c-fill-2);
+
+    i {
+      transform: scale(1.1);
+    }
+  }
+}
+
+.thanks {
+  color: var(--c-green-ink);
+  font-weight: 800;
+}
+
+// --- «Написать нам» (12.18) ---
+
+.mail {
+  display: flex;
+  flex-direction: column;
+}
+
+.mailHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.mailIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--g-orange);
+  box-shadow: var(--sh-orange);
+  color: #fff;
+}
+
+.mailTitles {
+  flex: 1;
+  min-width: 0;
+}
+
+.mailTitle {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.mailSub {
+  color: var(--c-muted);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 0 20px;
+  border-radius: 27px;
+  background: var(--c-fill);
+  color: var(--c-muted);
+  transition:
+    background var(--t-fast) ease,
+    box-shadow var(--t-fast) ease;
+
+  input,
+  textarea {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: none;
+    color: var(--c-ink);
+    font-size: 15px;
+    font-weight: 700;
+    outline: none;
+
+    &::placeholder {
+      color: var(--c-muted);
+    }
+  }
+
+  input {
+    height: 54px;
+  }
+
+  @include hover {
+    background: var(--c-fill-2);
+  }
+
+  &:focus-within {
+    background: #fff;
+    box-shadow:
+      inset 0 0 0 2px var(--c-orange),
+      0 0 0 4px var(--c-peach);
+  }
+
+  &[data-error] {
+    background: #fff;
+    box-shadow: inset 0 0 0 2px var(--c-red);
+  }
+}
+
+.area {
+  align-items: flex-start;
+  margin-top: 14px;
+  padding: 16px 20px;
+  border-radius: 24px;
+
+  textarea {
+    min-height: 66px;
+    font-family: inherit;
+    line-height: 1.45;
+    resize: none;
+  }
+}
+
+.counter {
+  position: absolute;
+  right: 16px;
+  bottom: 8px;
+  color: var(--c-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.error {
+  margin: 6px 0 0 20px;
+  color: var(--c-red);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.mailFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.attach {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--c-peach-ink);
+  font-size: 14px;
+  font-weight: 800;
+  transition: color var(--t-fast) ease;
+
+  svg {
+    transition: transform var(--t-fast) ease;
+  }
+
+  @include hover {
+    color: #7d3a10;
+
+    svg {
+      transform: rotate(-10deg);
+    }
+  }
+}
+
+.fileName {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  color: var(--c-ink-2);
+  font-size: 14px;
+  font-weight: 700;
+
+  span {
+    max-width: 120px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.fileRemove {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--c-fill);
+  color: var(--c-muted);
+
+  @include hover {
+    color: var(--c-ink);
+  }
+}
+
+.send {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: 54px;
+  padding: 0 7px 0 32px;
+  border-radius: var(--r-pill);
+  background: var(--g-orange);
+  box-shadow: 0 14px 24px rgba(255, 110, 0, 0.28);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  transition:
+    filter var(--t-fast) ease,
+    transform 0.1s ease;
+
+  svg {
+    transition: transform var(--t-fast) ease;
+  }
+
+  @include hover {
+    filter: brightness(1.05);
+
+    svg {
+      transform: translateX(3px);
+    }
+  }
+
+  &:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    cursor: progress;
+  }
+}
+
+.sendArrow {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.spinner {
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255, 255, 255, 0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+// --- «Письмо отправлено!» (12.19) ---
+
+.sent {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 18px 8px 4px;
+  text-align: center;
+  animation: fade 200ms ease;
+}
+
+.sentClose {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.sentMascot {
+  margin-bottom: 22px;
+  animation: pop 250ms 100ms ease both;
+
+  > div {
+    animation:
+      wave 300ms 350ms ease-in-out 2,
+      float 3.4s 950ms ease-in-out infinite;
+  }
+}
+
+.sentTitle {
+  font-size: 24px;
+  font-weight: 900;
+  outline: none;
+}
+
+.sentText {
+  margin-top: 8px;
+  color: var(--c-muted);
+  font-size: 15px;
+  font-weight: 700;
+
+  b {
+    color: var(--c-ink);
+    font-weight: 900;
+  }
+}
+
+.ticket {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  margin-top: 16px;
+  padding: 0 18px;
+  border-radius: var(--r-pill);
+  background: var(--c-green-soft);
+  color: var(--c-green-ink);
+  font-size: 15px;
+  font-weight: 900;
+
+  @include hover {
+    .ticketTip {
+      opacity: 1;
+      transform: translate(-50%, 0);
+      transition-delay: 300ms;
+    }
+  }
+}
+
+.ticketTip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  z-index: var(--z-tooltip);
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: var(--c-ink);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 4px);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease;
+}
+
+.done {
+  align-self: stretch;
+  height: 54px;
+  margin-top: 18px;
+  border-radius: var(--r-pill);
+  background: var(--c-ink);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 800;
+  transition:
+    filter var(--t-fast) ease,
+    transform 0.1s ease;
+
+  @include hover {
+    filter: brightness(1.1);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+// --- «Готово, мы на связи!» (12.20) ---
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  width: 400px;
+  padding: 20px 22px 20px 18px;
+  border-radius: var(--r-3);
+  background: var(--c-peach);
+  box-shadow: var(--sh-hover);
+  animation: toastIn 250ms ease both;
+
+  &[data-leaving] {
+    opacity: 0;
+    transition: opacity 200ms ease;
+  }
+}
+
+.toastMascot {
+  flex: none;
+  animation: jump 400ms ease both;
+}
+
+.toastTitle {
+  color: var(--c-bonus-title);
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.toastText {
+  margin-top: 4px;
+  color: var(--c-bonus-text);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.toastBtns {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.tgBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 42px;
+  padding: 0 20px;
+  border-radius: var(--r-pill);
+  background: #2aa3e0;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 800;
+  transition: filter var(--t-fast) ease;
+
+  svg {
+    transition: transform var(--t-fast) ease;
+  }
+
+  @include hover {
+    filter: brightness(1.05);
+
+    svg {
+      transform: translate(2px, -2px);
+    }
+  }
+}
+
+.closeBtn {
+  height: 42px;
+  padding: 0 20px;
+  border-radius: var(--r-pill);
+  background: #fff;
+  color: var(--c-ink);
+  font-size: 15px;
+  font-weight: 800;
+  transition: background var(--t-fast) ease;
+
+  @include hover {
+    background: var(--c-fill-2);
+  }
+}
+
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px) scale(0.95);
+  }
+}
+
+@keyframes panelIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+
+@keyframes toastIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
+  }
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes wave {
+  25% {
+    transform: rotate(-8deg);
+  }
+  75% {
+    transform: rotate(8deg);
+  }
+}
+
+@keyframes jump {
+  from {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

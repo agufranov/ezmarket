@@ -12,29 +12,27 @@ import { Articles } from "./sections/Articles";
 import { Reviews } from "./sections/Reviews";
 import { Advantages } from "./sections/Advantages";
 import { Footer } from "./sections/Footer";
-import { SupportWidget } from "./sections/SupportWidget";
+import { SupportProvider } from "./support/Support";
 import s from "./HomePage.module.scss";
-
-// Поддержка по новому сценарию 12.16-12.20 - следующим шагом; пока кнопки ничего не открывают
-const openSupport = () => console.log("[support] open");
 
 export function HomePage() {
   return (
     <AuthProvider>
       <ModalProvider>
-        <Header onHelp={openSupport} />
-        <main className={`container ${s.main}`}>
-          <Hero />
-          <SteamBar />
-          <Hits />
-          <BonusBar />
-          <Recommend />
-          <Articles />
-          <Reviews />
-          <Advantages />
-          <Footer />
-        </main>
-        <SupportWidget onOpen={openSupport} />
+        <SupportProvider>
+          <Header />
+          <main className={`container ${s.main}`}>
+            <Hero />
+            <SteamBar />
+            <Hits />
+            <BonusBar />
+            <Recommend />
+            <Articles />
+            <Reviews />
+            <Advantages />
+            <Footer />
+          </main>
+        </SupportProvider>
       </ModalProvider>
     </AuthProvider>
   );
