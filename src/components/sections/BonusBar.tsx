@@ -13,7 +13,7 @@ export function BonusBar() {
     <section className={s.bar} aria-labelledby="bonus-title">
       <span className={s.blob} aria-hidden />
       <div className={s.mascot}>
-        <Mascot size={112} coin hands float floatDuration={3.6} className={s.mascotFig} />
+        <Mascot size={112} coin hands float floatDuration={3.6} />
       </div>
       <div className={s.text}>
         <h2 id="bonus-title" className={s.title}>

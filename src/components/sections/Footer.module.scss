@@ -125,7 +125,7 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  padding: 16px 18px 16px 12px;
+  padding: 16px 14px 16px 12px;
   border-radius: 28px 28px 28px 8px;
   background: var(--c-peach);
 
@@ -136,7 +136,7 @@
 }
 
 .bonusMascot {
-  margin-right: 8px;
+  margin-right: 4px;
 }
 
 .bonusBody {
@@ -173,9 +173,10 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
+  // при ширине карточки ≥1280 кнопке остается 152 px - отступы ужаты, чтобы стрелка не вылезала за край
+  gap: 8px;
   height: 40px;
-  padding: 0 6px 0 16px;
+  padding: 0 5px 0 12px;
   border-radius: var(--r-pill);
   background: var(--g-orange);
   box-shadow: 0 10px 12px rgba(255, 110, 0, 0.28);

@@ -565,7 +565,7 @@
 
     .tooltip {
       opacity: 1;
-      transform: translate(-50%, 0);
+      transform: none;
       transition-delay: 150ms;
     }
   }
@@ -575,9 +575,11 @@
   }
 }
 
+// «Помощь» стоит у правого края контейнера - тултип выравниваем по правому краю, иначе на 1280-1366
+// он выходит за окно и дает горизонтальный скролл
 .tooltip {
   position: absolute;
-  left: 50%;
+  right: 0;
   top: calc(100% + 6px);
   z-index: var(--z-dropdown);
   padding: 8px 12px;
@@ -588,16 +590,10 @@
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
-  transform: translate(-50%, 4px);
+  transform: translateY(4px);
   transition:
     opacity var(--t-fast) ease,
     transform var(--t-fast) ease;
-
-  @include down($bp-lg) {
-    left: auto;
-    right: 0;
-    transform: translateY(4px);
-  }
 }
 
 @keyframes fadeIn {
