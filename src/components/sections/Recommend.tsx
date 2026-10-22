@@ -5,6 +5,7 @@ import { getRecommended, recommendTabs, type Product, type TabId } from "@/data/
 import { routes } from "@/config/routes";
 import { site } from "@/config/site";
 import { Icon } from "@/components/ui/Icon";
+import { MaskIcon } from "@/components/ui/MaskIcon";
 import { Mascot } from "@/components/ui/Mascot";
 import { MoreLink } from "@/components/ui/MoreLink";
 import { ProductCard } from "@/components/ui/ProductCard";
@@ -97,7 +98,7 @@ export function Recommend() {
               className={s.tab}
               onClick={() => selectTab(t.id)}
             >
-              <Icon src={t.icon} size={18} />
+              <MaskIcon src={t.icon} size={18} />
               {t.label}
               <span className={s.count}>{t.count}</span>
             </button>

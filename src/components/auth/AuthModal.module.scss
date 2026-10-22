@@ -6,6 +6,7 @@
   width: 740px;
   max-width: 100%;
   overflow: hidden;
+  border-radius: 30px;
 }
 
 // --- левая промо-панель ---
@@ -18,7 +19,10 @@
   flex: none;
   width: 290px;
   padding: 58px 22px 30px;
-  background: linear-gradient(160deg, #ffa940 0%, #ff8a14 45%, #ff6a00 100%);
+  // светлое пятно сверху справа, как в макете (сверка по пикселям)
+  background:
+    radial-gradient(circle at 72% 6%, rgba(255, 214, 150, 0.58) 0%, rgba(255, 214, 150, 0) 55%),
+    linear-gradient(160deg, #ffa940 0%, #ff8a14 45%, #ff6a00 100%);
   color: #fff;
   text-align: center;
 }
@@ -143,7 +147,8 @@
     gap: 10px;
     height: 44px;
     padding: 0 18px;
-    border-radius: var(--r-pill);
+    // в макете - скругленный прямоугольник, не «таблетка»
+    border-radius: 18px;
     background: rgba(255, 255, 255, 0.2);
     font-size: 15px;
     font-weight: 800;
