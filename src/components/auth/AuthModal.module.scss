@@ -17,7 +17,7 @@
   align-items: center;
   flex: none;
   width: 290px;
-  padding: 44px 22px 30px;
+  padding: 58px 22px 30px;
   background: linear-gradient(160deg, #ffa940 0%, #ff8a14 45%, #ff6a00 100%);
   color: #fff;
   text-align: center;
@@ -135,7 +135,7 @@
   flex-direction: column;
   gap: 10px;
   align-self: stretch;
-  margin-top: 26px;
+  margin-top: 18px;
 
   li {
     display: flex;
@@ -145,7 +145,7 @@
     padding: 0 18px;
     border-radius: var(--r-pill);
     background: rgba(255, 255, 255, 0.2);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 800;
   }
 }
@@ -156,7 +156,7 @@
   position: relative;
   flex: 1;
   min-width: 0;
-  padding: 32px 31px 26px 30px;
+  padding: 28px 31px 24px 30px;
 
   &[data-shake] {
     animation: shake 300ms ease;
@@ -235,7 +235,7 @@
 }
 
 .head {
-  margin-top: 26px;
+  margin-top: 22px;
   animation: fade 150ms ease;
 }
 
@@ -248,14 +248,14 @@
 .sub {
   margin-top: 6px;
   color: var(--c-muted);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
 }
 
 .form {
   display: flex;
   flex-direction: column;
-  margin-top: 20px;
+  margin-top: 16px;
 }
 
 .field {
@@ -344,6 +344,11 @@
   }
 }
 
+// закрытое поле промокода не должно добавлять высоту (паддинги под кольцо фокуса - только у открытого)
+.collapse:not([data-open]) .collapseInner {
+  padding-block: 0;
+}
+
 .collapseInner {
   min-height: 0;
   overflow: hidden;
@@ -362,7 +367,7 @@
   align-items: center;
   justify-content: center;
   height: 54px;
-  margin-top: 14px;
+  margin-top: 12px;
   border-radius: var(--r-pill);
   background: var(--g-orange);
   box-shadow: 0 14px 24px rgba(255, 110, 0, 0.3);
@@ -552,9 +557,9 @@
 }
 
 .terms {
-  margin-top: 16px;
+  margin-top: 12px;
   color: var(--c-muted);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   text-align: center;
 

@@ -217,7 +217,7 @@
 .panel {
   position: absolute;
   right: var(--gutter);
-  top: calc(100% + 6px);
+  top: calc(100% + 16px);
   z-index: var(--z-popover);
   border-radius: var(--r-3);
   background: #fff;
@@ -527,7 +527,7 @@
 
 .notif {
   width: 390px;
-  padding: 20px 16px 16px;
+  padding: 14px 16px 16px;
 }
 
 .notifHead {
@@ -564,7 +564,7 @@
 .tabs {
   display: flex;
   gap: 8px;
-  margin-top: 14px;
+  margin-top: 9px;
 }
 
 .tab {
@@ -665,9 +665,9 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
   min-width: 0;
-  padding: 12px 30px 12px 14px;
+  padding: 9px 24px 9px 14px;
   border-radius: 18px;
   background: var(--c-fill);
   transition:
@@ -684,7 +684,7 @@
   color: var(--c-ink-2);
   font-size: 14px;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.4;
 
   b {
     color: var(--c-ink);
@@ -694,7 +694,7 @@
 
 .itemTime {
   color: var(--c-muted);
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   transition: color 300ms ease;
 
