@@ -105,10 +105,10 @@ const mainSlide = {
 };
 
 // ТЗ 0.2 п.6: пока других баннеров нет, слайды повторяют главный; число полосок = числу слайдов
-export const heroSlides = [mainSlide, { ...mainSlide, id: "steam-2" }, { ...mainSlide, id: "steam-3" }];
+export const heroSlides = [mainSlide, ...[2, 3, 4].map((n) => ({ ...mainSlide, id: `steam-${n}` }))];
 
 export const sideBanners = [
-  { id: "ps", label: "PlayStation", title: ["PS Plus до", "−40%"], icon: "/img/brands/playstation.png", theme: "dark" as const },
+  { id: "ps", label: "PlayStation", title: ["PS Plus до", "-40%"], icon: "/img/brands/playstation.png", theme: "dark" as const },
   { id: "tg", label: "Telegram", title: ["Stars и", "Premium"], icon: "/img/brands/telegram.png", theme: "peach" as const },
 ];
 
@@ -147,15 +147,15 @@ export const articles = {
 export const rating = { value: "4,8", count: "1 284 отзыва" };
 
 export const reviews = [
-  { id: "r1", stars: 5, text: "Сразу не пришло, но поддержка за 3 минуты всё решила. Активировал на аккаунте.", product: "Brawl Pass Plus", productIcon: "/img/brands/brawl-chip.png", productSlug: "brawl-pass-plus", author: "Дмитрий", date: "14 октября", color: "#5b8def" },
+  { id: "r1", stars: 5, text: "Сразу не пришло, но поддержка за 3 минуты все решила. Активировал на аккаунте.", product: "Brawl Pass Plus", productIcon: "/img/brands/brawl-chip.png", productSlug: "brawl-pass-plus", author: "Дмитрий", date: "14 октября", color: "#5b8def" },
   { id: "r2", stars: 4, text: "Пополнила Steam - деньги пришли через минуту. Удобно, что без комиссии.", product: "Пополнение Steam", productIcon: "/img/brands/steam-chip.png", productSlug: "steam", author: "Ирина", date: "14 октября", color: "#e5484d" },
-  { id: "r3", stars: 5, text: "Брал Telegram Premium в подарок другу - всё пришло моментально.", product: "Telegram Premium", productIcon: "/img/brands/telegram-chip.png", productSlug: "tg-premium-3", author: "Артём", date: "14 октября", color: "#22a55a" },
+  { id: "r3", stars: 5, text: "Брал Telegram Premium в подарок другу - все пришло моментально.", product: "Telegram Premium", productIcon: "/img/brands/telegram-chip.png", productSlug: "tg-premium-3", author: "Артем", date: "14 октября", color: "#22a55a" },
 ];
 
 export const advantages = [
-  { id: "safe", title: "Безопасные платежи", text: "Шифрование и проверенные платёжные партнёры", icon: "/img/icons/shield.svg" },
+  { id: "safe", title: "Безопасные платежи", text: "Шифрование и проверенные платежные партнеры", icon: "/img/icons/shield.svg" },
   { id: "support", title: "Поддержка 24/7", text: "Отвечаем за пару минут - в чате и Telegram", icon: "/img/icons/headphones.svg" },
-  { id: "refund", title: "Гарантия возврата", text: "Если что-то пошло не так - вернём деньги", icon: "/img/icons/refund.svg" },
+  { id: "refund", title: "Гарантия возврата", text: "Если что-то пошло не так - вернем деньги", icon: "/img/icons/refund.svg" },
 ];
 
 export const footerColumns = [

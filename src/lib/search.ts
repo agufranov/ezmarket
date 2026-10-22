@@ -2,7 +2,7 @@ import { searchGames, searchProducts, searchQueries } from "@/data/search";
 
 export const searchConfig = { minChars: 2, debounceMs: 300, recentMax: 10, recentShow: 3, suggestShow: 3, productsShow: 3 };
 
-// trim, схлопывание пробелов, нижний регистр, ё = е
+// trim, схлопывание пробелов, нижний регистр, буква «е» с точками = «е»
 export const normalize = (q: string) => q.trim().replace(/\s+/g, " ").toLowerCase().replace(/ё/g, "е");
 
 const EN = "qwertyuiop[]asdfghjkl;'zxcvbnm,.";
@@ -60,7 +60,7 @@ export function suggest(raw: string) {
   searchQueries
     .map((s) => ({ text: s.text, count: s.count, dist: damerau(q, normalize(s.text).slice(0, q.length)) }))
     .filter((s) => s.dist <= limit && s.text !== q)
-    .sort((a, b) => a.dist - b.dist || b.count - a.count)
+    .sort((a, b) => a.dist - b.dist || a.text.split(" ").length - b.text.split(" ").length || b.count - a.count)
     .forEach((s) => corrections.length < 2 && !corrections.includes(s.text) && corrections.push(s.text));
 
   // ничего похожего - предлагаем популярное, чтобы экран не был пустым (правки 22.10)

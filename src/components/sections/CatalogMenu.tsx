@@ -159,7 +159,7 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
       <div className={s.promo}>
         <a href={routes.promo} className={s.promoHead} tabIndex={open ? 0 : -1}>
           <span className={s.promoLabel}>{promo.title}</span>
-          <b className={s.promoTitle}>{promo.subtitle}</b>
+          <b className={s.promoTitle}>{promo.subtitle.replace(" ", "\n")}</b>
           <span className={s.promoLogos} aria-hidden>
             {promo.logos.map((l) => (
               <img key={l} src={asset(l)} alt="" width={48} height={48} />
@@ -172,7 +172,7 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
               <a href={routes.product(p.id)} className={s.promoRow} tabIndex={open ? 0 : -1}>
                 <img src={asset(p.logo)} alt="" width={24} height={24} />
                 <span>{p.title}</span>
-                <b>−{p.discount}%</b>
+                <b>-{p.discount}%</b>
               </a>
             </li>
           ))}
@@ -196,7 +196,7 @@ function Card({ item, tabbable }: { item: CatalogItem; tabbable: boolean }) {
               хит
             </span>
           )}
-          {item.badge?.kind === "discount" && <span className={s.discount}>−{item.badge.value}%</span>}
+          {item.badge?.kind === "discount" && <span className={s.discount}>-{item.badge.value}%</span>}
         </span>
       </span>
       <span className={s.price}>

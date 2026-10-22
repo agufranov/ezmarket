@@ -10,8 +10,9 @@
   display: grid;
   grid-template-columns: 262px minmax(0, 1fr) 222px;
 
-  // 1024-1279: колонки уже, карточки компактнее - чтобы названия не обрезались до 5 букв
-  @include down($bp-lg) {
+  // уже 1200: колонки уже, карточки компактнее - чтобы названия не обрезались до 5 букв.
+  // На 1200-1279 макет показывает полную раскладку
+  @media (max-width: 1199px) {
     grid-template-columns: 196px minmax(0, 1fr) 180px;
 
     .cat {
@@ -123,9 +124,9 @@
 .catIcon {
   display: grid;
   place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
   background: #fff;
   box-shadow: 0 1px 3px rgba(20, 24, 32, 0.08);
   color: var(--c-orange);
@@ -305,10 +306,14 @@
   flex: none;
 }
 
+// «хит» - персиковая плашка с огоньком, как в макете
 .hit {
   display: inline-flex;
   align-items: center;
   gap: 2px;
+  padding: 0 6px;
+  border-radius: var(--r-pill);
+  background: var(--c-peach);
   color: var(--c-orange);
   font-weight: 800;
 }
@@ -423,7 +428,9 @@
   font-weight: 800;
 }
 
+// «Скидки» / «до -40%» - в две строки по макету
 .promoTitle {
+  white-space: pre-line;
   margin-top: 6px;
   font-size: 24px;
   font-weight: 900;

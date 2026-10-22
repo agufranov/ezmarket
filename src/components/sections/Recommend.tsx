@@ -128,7 +128,7 @@ export function Recommend() {
                   <i />
                 </span>
               </p>
-              <p className={s.bubbleText}>ещё {pageSize} товаров · {tabLabel}</p>
+              <p className={s.bubbleText}>еще {pageSize} товаров · {tabLabel}</p>
             </div>
           </div>
           <div className={s.grid}>

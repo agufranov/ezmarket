@@ -78,7 +78,7 @@ export function SupportToast({ onClose }: { onClose: () => void }) {
         <h2 id="support-toast-title" className={s.toastTitle}>
           Готово, мы на связи!
         </h2>
-        <p className={s.toastText}>Ответ придёт на почту. Быстрее - в Telegram-чате</p>
+        <p className={s.toastText}>Ответ придет на почту. Быстрее - в Telegram-чате</p>
         <div className={s.toastBtns}>
           <a href={telegramUrl} target="_blank" rel="noopener noreferrer" className={s.tgBtn} onClick={hide}>
             <PlaneIcon size={16} />
