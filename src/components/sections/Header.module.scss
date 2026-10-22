@@ -398,6 +398,15 @@
     transform: scale(0.97);
   }
 
+  // пока виден пузырь гостя или открыто окно входа - персиковое кольцо (12.4, 12.5)
+  &[data-ring] {
+    box-shadow:
+      0 0 0 3px #ffe2c6,
+      0 4px 12px rgba(20, 24, 32, 0.14);
+  }
+
+  animation: fadeIn 200ms ease;
+
   @include down($bp-md) {
     padding: 0 6px;
 
@@ -588,5 +597,11 @@
     left: auto;
     right: 0;
     transform: translateY(4px);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
   }
 }

@@ -12,6 +12,7 @@ import { Icon } from "@/components/ui/Icon";
 import { MaskIcon } from "@/components/ui/MaskIcon";
 import { CatalogMenu } from "./CatalogMenu";
 import { SearchBox } from "./SearchBox";
+import { GuestTip } from "./GuestTip";
 import { HeaderUser, type UserPopover } from "./HeaderUser";
 import s from "./Header.module.scss";
 
@@ -31,6 +32,8 @@ export function Header() {
     if (returnFocus) catalogBtnRef.current?.focus();
   }, []);
   const rowRef = useRef<HTMLDivElement>(null);
+  const loginRef = useRef<HTMLButtonElement>(null);
+  const [tipVisible, setTipVisible] = useState(false);
   const currencyBtnRef = useRef<HTMLButtonElement>(null);
   const currencyPanelRef = useRef<HTMLDivElement>(null);
   const [noseRight, setNoseRight] = useState(0);
@@ -74,7 +77,12 @@ export function Header() {
   }, [currencyOpen, setCurrencyOpen]);
 
   useEffect(() => {
-    if (modalOpen) setPopover(null);
+    if (!modalOpen) return;
+    setPopover(null);
+    // открывал окно входа - пузырь гостя в этой сессии больше не нужен (12.5)
+    try {
+      sessionStorage.setItem("ez_guest_tip_shown", "1");
+    } catch {}
   }, [modalOpen]);
 
   const pickCurrency = (c: Currency) => {
@@ -208,12 +216,27 @@ export function Header() {
               onHelp={onHelp}
             />
           ) : (
-            <button type="button" className={s.login} onClick={() => openModal("login")}>
+            <button
+              ref={loginRef}
+              type="button"
+              className={s.login}
+              data-ring={tipVisible || modalOpen !== null || undefined}
+              onClick={() => openModal("login")}
+            >
               <span className={s.loginText}>Войти</span>
               <span className={s.loginArrow} aria-hidden>
                 <Icon src="/img/icons/arrow-login.svg" width={8} height={12} />
               </span>
             </button>
+          )}
+          {user === null && (
+            <GuestTip
+              allowed={popover === null && !modalOpen}
+              loginRef={loginRef}
+              rowRef={rowRef}
+              onLogin={() => openModal("login")}
+              onVisibleChange={setTipVisible}
+            />
           )}
         </div>
       </div>

@@ -1,0 +1,107 @@
+@use "../../styles/mixins" as *;
+
+// Пузырь гостя (ТЗ 12.5): под «Войти», правый край по контейнеру, носик над «Войти»
+.tip {
+  position: absolute;
+  right: var(--gutter);
+  top: calc(100% + 6px);
+  z-index: var(--z-popover);
+  padding: 14px;
+  border-radius: var(--r-3);
+  background: #fff;
+  box-shadow:
+    0 1px 2px rgba(20, 24, 32, 0.06),
+    0 24px 60px rgba(20, 24, 32, 0.16);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition:
+    opacity 150ms ease,
+    transform 150ms ease,
+    visibility 0s 150ms;
+
+  &[data-open] {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 250ms ease,
+      transform 250ms ease;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: calc(var(--nose-right, 60px) - 8px);
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    background: #fff;
+    transform: rotate(45deg);
+  }
+}
+
+.bubble {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  transition:
+    transform var(--t-fast) ease,
+    box-shadow var(--t-fast) ease;
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  @include hover {
+    .text {
+      transform: translateY(-2px);
+      box-shadow: var(--sh-hover);
+    }
+
+    .mascot > div {
+      animation: sway 400ms ease-in-out;
+    }
+  }
+}
+
+.text {
+  padding: 12px 18px;
+  border-radius: 22px 22px 22px 8px;
+  background: var(--c-peach);
+  color: var(--c-bonus-title);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.35;
+  white-space: nowrap;
+  transition:
+    transform var(--t-fast) ease,
+    box-shadow var(--t-fast) ease;
+
+  b {
+    color: var(--c-peach-ink);
+    font-weight: 900;
+  }
+}
+
+.mascot {
+  animation: pop 250ms 100ms ease both;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes sway {
+  25% {
+    transform: rotate(-6deg);
+  }
+  75% {
+    transform: rotate(6deg);
+  }
+}

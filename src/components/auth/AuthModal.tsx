@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { auth, authProviders, type AuthProviderId } from "@/config/auth";
+import { site } from "@/config/site";
 import { useAuth } from "@/lib/auth";
 import { Modal } from "@/lib/modal";
 import { requestCode, oauthLogin, type AuthError } from "@/services/auth.mock";
@@ -117,7 +118,7 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
             <div className={s.mascotWrap}>
               <Mascot size={150} sideHand float floatDuration={3.4} />
             </div>
-            <b className={s.bonus}>+100 бонусов</b>
+            <b className={s.bonus}>+{site.signupBonus} бонусов</b>
             <span key={mode} className={s.bonusSub}>
               {t.bonus}
             </span>

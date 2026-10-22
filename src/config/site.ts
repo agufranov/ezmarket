@@ -3,6 +3,8 @@ export const site = {
   // Через сколько обновятся "Хиты недели" (с момента загрузки страницы, пока нет API)
   hitsRefreshInMs: (2 * 24 * 60 + 14 * 60 + 6) * 60 * 1000,
   heroSlideMs: 6000,
+  // бонусы за регистрацию: пузырь гостя и окно входа
+  signupBonus: 100,
   steam: {
     minAmount: 100,
     maxAmount: 50000,
