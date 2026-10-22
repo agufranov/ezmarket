@@ -3,12 +3,13 @@
 // Выпадашка поиска (ТЗ 12.13-12.14): под полем, отступ 8 px, ширина ≈860 по скриншоту
 .panel {
   position: absolute;
-  left: 0;
+  // по макету панель на 10 px правее поля и до края контейнера (сверка по пикселям)
+  left: 10px;
   // по макету панель начинается на 16 px ниже строки шапки, как каталог
   top: calc(100% + 31px);
   z-index: var(--z-popover);
   display: flex;
-  width: 860px;
+  width: 852px;
   border-radius: var(--r-3);
   background: #fff;
   box-shadow:
@@ -71,7 +72,7 @@
   section {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
   }
 
   .label {
@@ -223,12 +224,12 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   min-width: 0;
-  padding: 22px 22px 22px 20px;
+  padding: 22px 16px 18px 24px;
 
   .label {
-    margin-bottom: 2px;
+    margin-bottom: -2px;
   }
 }
 
@@ -236,15 +237,16 @@
   display: flex;
   align-items: center;
   gap: 14px;
-  height: 72px;
-  padding: 0 12px 0 10px;
+  height: 74px;
+  padding: 0 10px 0 10px;
   border-radius: 20px;
   box-shadow: inset 0 0 0 1.5px var(--c-line);
   transition:
     box-shadow var(--t-fast) ease,
     background var(--t-fast) ease;
 
-  &[aria-selected="true"] {
+  &[aria-selected="true"],
+  &:hover {
     box-shadow: inset 0 0 0 1.5px var(--c-orange);
 
     .price {
@@ -266,6 +268,13 @@
     height: 52px;
     border-radius: 16px;
     object-fit: cover;
+  }
+
+  .thumbTint {
+    display: block;
+    width: 52px;
+    height: 52px;
+    border-radius: 26px 26px 26px 12px;
   }
 
   .thumbGame {
@@ -306,10 +315,13 @@
 
 .price {
   flex: none;
-  padding: 8px 12px;
+  // как чип цены в каталоге: теплая обводка и легкая тень (сверка с макетом)
+  padding: 9px 13px;
   border-radius: var(--r-pill);
   background: #fff;
-  box-shadow: 0 0 0 1px var(--c-line);
+  box-shadow:
+    0 0 0 1px #ffe2c6,
+    0 4px 10px rgba(255, 122, 0, 0.1);
   font-size: 16px;
   font-weight: 900;
   white-space: nowrap;
@@ -324,7 +336,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 52px;
+  height: 54px;
   margin-top: auto;
   border-radius: var(--r-pill);
   background: var(--g-orange);
@@ -332,7 +344,22 @@
   color: #fff;
   font-size: 16px;
   font-weight: 800;
+  overflow: hidden;
+  isolation: isolate;
   transition: filter var(--t-fast) ease;
+
+  // светлый круг слева, как в макете
+  &::before {
+    content: "";
+    position: absolute;
+    left: -14px;
+    top: -18px;
+    z-index: -1;
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+  }
 
   svg {
     transition: transform var(--t-fast) ease;
@@ -354,7 +381,8 @@
   place-items: center;
   width: 40px;
   height: 40px;
-  border-radius: 50%;
+  // «капля», как в макете
+  border-radius: 20px 20px 20px 8px;
   background: #fff;
   color: var(--c-orange);
 }

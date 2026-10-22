@@ -8,6 +8,8 @@ export type SearchProduct = {
   price: number;
   image: string;
   game?: string;
+  // в макете у части товаров вместо картинки - цветная «капля» с иконкой игры
+  tint?: string;
 };
 
 export type SearchGame = { id: string; title: string; subtitle: string; logo: string; priceFrom: number; hit?: boolean };
@@ -39,9 +41,9 @@ export const searchQueries: { text: string; count: number }[] = [
 const brawl = "/img/brands/brawl.png";
 
 export const searchProducts: SearchProduct[] = [
-  { id: "brawl-pass-plus", title: "Brawl Pass Plus", subtitle: "Новый сезон · Донат", price: 1044, image: "/img/brands/brawl-chip.png", game: brawl },
-  { id: "brawl-360", title: "360 гемов Brawl Stars", subtitle: "Brawl Stars · Игровая валюта", price: 2190, image: brawl, game: brawl },
-  { id: "brawl-skin", title: "Скин «Ворон-Феникс»", subtitle: "Brawl Stars · Предметы", price: 1290, image: brawl, game: brawl },
+  { id: "brawl-pass-plus", title: "Brawl Pass Plus", subtitle: "Новый сезон · Донат", price: 1044, image: "/img/brands/brawl-chip.png", game: brawl, tint: "#efe4ff" },
+  { id: "brawl-360", title: "360 гемов Brawl Stars", subtitle: "Brawl Stars · Игровая валюта", price: 2190, image: brawl, game: brawl, tint: "#e1f5eb" },
+  { id: "brawl-skin", title: "Скин «Ворон-Феникс»", subtitle: "Brawl Stars · Предметы", price: 1290, image: brawl, game: brawl, tint: "#fbe5e6" },
   { id: "steam-1000", title: "Пополнение Steam 1000 ₽", subtitle: "Steam · Пополнение", price: 1000, image: "/img/brands/steam.png" },
   { id: "steam-500", title: "Пополнение Steam 500 ₽", subtitle: "Steam · Пополнение", price: 500, image: "/img/brands/steam.png" },
   { id: "tg-premium", title: "Telegram Premium 3 мес.", subtitle: "Telegram · Подписки", price: 1290, image: "/img/brands/telegram.png" },

@@ -439,7 +439,11 @@ export function SearchBox({ className, kbdClassName }: Props) {
                       onClick={() => choose(options[i])}
                     >
                       <span className={s.thumb}>
-                        <img src={asset(p.image)} alt="" width={52} height={52} />
+                        {p.tint ? (
+                          <span className={s.thumbTint} style={{ background: p.tint }} />
+                        ) : (
+                          <img src={asset(p.image)} alt="" width={52} height={52} />
+                        )}
                         {p.game && <img className={s.thumbGame} src={asset(p.game)} alt="" width={22} height={22} />}
                       </span>
                       <span className={s.productText}>
