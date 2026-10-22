@@ -102,7 +102,7 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
               onFocus={() => activate(c.id)}
             >
               <span className={s.catIcon}>
-                <MaskIcon src={c.icon} size={16} />
+                <MaskIcon src={c.icon} size={20} />
               </span>
               {c.title}
             </a>
@@ -118,6 +118,7 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
           <h2 className={s.title}>{active.title}</h2>
           {active.count > 0 && <span className={s.count}>{active.count.toLocaleString("ru-RU")} товаров</span>}
           <span className={s.sparks} aria-hidden>
+            <i />
             <i />
             <i />
           </span>
@@ -146,7 +147,7 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
             {active.quick.slice(0, 2).map((q) => (
               <li key={q.id}>
                 <a href={routes.product(q.id)} className={s.quickLink} tabIndex={open ? 0 : -1}>
-                  <img src={asset(q.logo)} alt="" width={22} height={22} />
+                  <img src={asset(q.logo)} alt="" width={26} height={26} />
                   {q.title}
                   <b>от {formatPrice(q.priceFrom)}</b>
                 </a>
@@ -162,7 +163,7 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
           <b className={s.promoTitle}>{promo.subtitle.replace(" ", "\n")}</b>
           <span className={s.promoLogos} aria-hidden>
             {promo.logos.map((l) => (
-              <img key={l} src={asset(l)} alt="" width={48} height={48} />
+              <img key={l} src={asset(l)} alt="" width={60} height={60} />
             ))}
           </span>
         </a>
@@ -170,7 +171,7 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
           {promo.items.map((p) => (
             <li key={p.id}>
               <a href={routes.product(p.id)} className={s.promoRow} tabIndex={open ? 0 : -1}>
-                <img src={asset(p.logo)} alt="" width={24} height={24} />
+                <img src={asset(p.logo)} alt="" width={30} height={30} />
                 <span>{p.title}</span>
                 <b>-{p.discount}%</b>
               </a>
@@ -185,7 +186,9 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
 function Card({ item, tabbable }: { item: CatalogItem; tabbable: boolean }) {
   return (
     <a href={routes.product(item.id)} className={s.card} tabIndex={tabbable ? 0 : -1}>
-      <img src={asset(item.logo)} alt="" width={44} height={44} className={s.logo} />
+      <span className={s.logoWrap} style={{ background: item.tint }}>
+        <img src={asset(item.logo)} alt="" width={48} height={48} className={s.logo} />
+      </span>
       <span className={s.cardText}>
         <b>{item.title}</b>
         <span className={s.cardSub}>

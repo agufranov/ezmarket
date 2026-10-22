@@ -87,7 +87,7 @@
   display: flex;
   flex-direction: column;
   gap: 4px;
-  padding: 14px;
+  padding: 17px 14px 14px;
   background: #fbf6f1;
 }
 
@@ -122,8 +122,10 @@
   }
 }
 
-// иконки на белых скругленных плашках (правки 22.10)
+// иконки на белых скругленных плашках (правки 22.10); плашка не сжимается, длинная подпись
+// («Подарочные карты») в макете выходит за правый край пункта
 .catIcon {
+  flex: none;
   display: grid;
   place-items: center;
   width: 42px;
@@ -140,7 +142,7 @@
 
 .content {
   min-width: 0;
-  padding: 22px 24px 20px;
+  padding: 26px 24px 20px;
   overflow-y: auto;
   overscroll-behavior: contain;
   animation: fade 150ms ease;
@@ -164,35 +166,46 @@
 }
 
 .title {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 900;
 }
 
 .count {
   color: var(--c-muted);
-  font-size: 14px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
 }
 
+// три искорки, как в макете: крупная слева, две маленькие справа
 .sparks {
   position: relative;
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
 
   i {
     position: absolute;
-    width: 13px;
-    height: 13px;
+    left: 0;
+    top: 4px;
+    width: 17px;
+    height: 17px;
     background: var(--c-orange);
     clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
     animation: twinkle 1.6s ease-in-out infinite;
 
-    &:last-child {
-      left: 12px;
-      top: 10px;
-      width: 9px;
-      height: 9px;
-      animation-delay: -0.8s;
+    &:nth-child(2) {
+      left: 15px;
+      top: -1px;
+      width: 8px;
+      height: 8px;
+      animation-delay: -0.5s;
+    }
+
+    &:nth-child(3) {
+      left: 16px;
+      top: 15px;
+      width: 7px;
+      height: 7px;
+      animation-delay: -1s;
     }
   }
 }
@@ -231,11 +244,14 @@
 }
 
 .card {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 10px;
   height: 68px;
-  padding: 0 10px 0 8px;
+  padding: 0 10px 0 6px;
   border-radius: 22px;
   box-shadow: inset 0 0 0 1.5px var(--c-line);
   transition:
@@ -246,6 +262,15 @@
   @include hover {
     background: var(--c-peach);
     box-shadow: inset 0 0 0 1.5px var(--c-orange);
+
+    // в макете у карточки под курсором подпись коричневая, «хит» на светлой плашке
+    .cardSub {
+      color: var(--c-peach-ink);
+    }
+
+    .hit {
+      background: rgba(255, 255, 255, 0.6);
+    }
 
     .price {
       background: var(--g-orange);
@@ -261,15 +286,38 @@
   &:active {
     transform: scale(0.98);
   }
+
+  // декоративный персиковый полукруг у нижнего края, как в макете
+  &::after {
+    content: "";
+    position: absolute;
+    left: 118px;
+    bottom: -22px;
+    z-index: -1;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fff1e4;
+  }
+}
+
+.logoWrap {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--c-fill);
 }
 
 .logo {
-  flex: none;
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   object-fit: cover;
 }
+
 
 .cardText {
   display: flex;
@@ -331,17 +379,20 @@
 
 .price {
   flex: none;
-  padding: 10px 12px;
+  padding: 9px 13px 9px 14px;
   border-radius: var(--r-pill);
   background: #fff;
-  box-shadow: 0 0 0 1px var(--c-line);
+  // в макете чип цены с теплой обводкой и легкой оранжевой тенью
+  box-shadow:
+    0 0 0 1px #ffe6cf,
+    0 4px 10px rgba(255, 122, 0, 0.1);
   font-size: 16px;
   font-weight: 900;
 
   // «от» мельче и серое, цена жирная
   small {
     margin-right: 4px;
-    color: var(--c-muted);
+    color: var(--c-ink-2);
     font-size: 13px;
     font-weight: 700;
     transition: color var(--t-fast) ease;
@@ -375,7 +426,7 @@
   padding: 0 6px 0 8px;
   border-radius: var(--r-pill);
   box-shadow: inset 0 0 0 1.5px var(--c-line);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   transition:
     box-shadow var(--t-fast) ease,
@@ -405,8 +456,8 @@
 .promo {
   display: flex;
   flex-direction: column;
-  margin: 14px;
-  padding: 22px 14px 14px;
+  margin: 18px 14px 14px;
+  padding: 22px 20px 16px 22px;
   border-radius: 24px;
   background: var(--c-ink-3);
   color: #fff;
@@ -415,7 +466,7 @@
 .promoHead {
   display: flex;
   flex-direction: column;
-  padding: 0 4px;
+  padding: 0;
 
   @include hover {
     .promoLogos img {
@@ -425,7 +476,7 @@
 }
 
 .promoLabel {
-  color: var(--c-orange);
+  color: #ffb45a;
   font-size: 15px;
   font-weight: 800;
 }
@@ -442,26 +493,25 @@
 .promoLogos {
   display: flex;
   align-items: center;
-  margin: 16px 0 18px;
+  margin: 14px 0 16px;
 
   // логотипы 48 px внахлест, средний (ChatGPT) крупнее и поверх
   img {
     position: relative;
-    width: 60px;
-    height: 60px;
-    border: 3px solid var(--c-ink-3);
+    width: 54px;
+    height: 54px;
     border-radius: 50%;
     object-fit: cover;
     transition: transform var(--t-fast) ease;
 
     & + img {
-      margin-left: -12px;
+      margin-left: -10px;
     }
 
     &:nth-child(2) {
       z-index: 1;
-      width: 72px;
-      height: 72px;
+      width: 70px;
+      height: 70px;
     }
 
     &:nth-child(2) {

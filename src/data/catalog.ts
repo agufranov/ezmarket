@@ -7,6 +7,8 @@ export type CatalogItem = {
   subtitle: string;
   logo: string;
   priceFrom: number;
+  // светлый круг под логотипом, как в макете
+  tint?: string;
   badge?: { kind: "hit" } | { kind: "discount"; value: number };
 };
 
@@ -25,6 +27,12 @@ const g = {
   genshin: "/img/games/genshin.png",
   mlbb: "/img/games/mlbb.png",
   honkai: "/img/games/honkai.png",
+  clash: "/img/games/clash.png",
+  // логотипы карточек каталога - кадры из макета (в карточках хитов другие арты)
+  catGenshin: "/img/games/cat-genshin.png",
+  catPubg: "/img/games/cat-pubg.png",
+  catMlbb: "/img/games/cat-mlbb.png",
+  roblox: "/img/games/roblox.png",
   steam: "/img/brands/steam.png",
   ps: "/img/brands/playstation.png",
   tg: "/img/brands/telegram.png",
@@ -34,14 +42,14 @@ const g = {
 };
 
 const donate: CatalogItem[] = [
-  { id: "brawl", title: "Brawl Stars", subtitle: "Гемы, Pass", logo: g.brawl, priceFrom: 79, badge: { kind: "hit" } },
-  { id: "pubg", title: "PUBG Mobile", subtitle: "UC", logo: g.pubg, priceFrom: 89 },
-  { id: "genshin", title: "Genshin Impact", subtitle: "Кристаллы", logo: g.genshin, priceFrom: 79, badge: { kind: "discount", value: 10 } },
-  { id: "mlbb", title: "Mobile Legends", subtitle: "Алмазы", logo: g.mlbb, priceFrom: 59 },
-  { id: "honkai", title: "Honkai: Star Rail", subtitle: "Сверхсилы", logo: g.honkai, priceFrom: 99 },
-  { id: "tg-stars", title: "Telegram", subtitle: "Stars", logo: g.tg, priceFrom: 99, badge: { kind: "discount", value: 15 } },
-  { id: "steam", title: "Steam", subtitle: "Пополнение", logo: g.steam, priceFrom: 100 },
-  { id: "ps", title: "PlayStation", subtitle: "PS Plus", logo: g.ps, priceFrom: 499 },
+  { id: "brawl", title: "Brawl Stars", subtitle: "Гемы, Pass", logo: g.brawl, priceFrom: 79, badge: { kind: "hit" }, tint: "#ece0ff" },
+  { id: "pubg", title: "PUBG Mobile", subtitle: "UC", logo: g.catPubg, priceFrom: 89, tint: "#fbf1df" },
+  { id: "genshin", title: "Genshin Impact", subtitle: "Кристаллы", logo: g.catGenshin, priceFrom: 79, badge: { kind: "discount", value: 10 }, tint: "#e2f0f9" },
+  { id: "mlbb", title: "Mobile Legends", subtitle: "Алмазы", logo: g.catMlbb, priceFrom: 59, tint: "#e0e8f9" },
+  { id: "clash", title: "Clash of Clans", subtitle: "Гемы", logo: g.clash, priceFrom: 99, tint: "#fbf3dd" },
+  { id: "roblox", title: "Roblox", subtitle: "Робуксы", logo: g.roblox, priceFrom: 99, badge: { kind: "discount", value: 15 }, tint: "#dfecff" },
+  { id: "steam", title: "Steam", subtitle: "Пополнение", logo: g.steam, priceFrom: 100, tint: "#dde2e5" },
+  { id: "ps", title: "PlayStation", subtitle: "PS Plus", logo: g.ps, priceFrom: 499, tint: "#d8e4f6" },
 ];
 
 const subs: CatalogItem[] = [
