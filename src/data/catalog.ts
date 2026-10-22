@@ -78,7 +78,7 @@ export const catalogMenu: { categories: CatalogCategory[]; promo: { title: strin
     { id: "donate", title: "Донат", icon: "/img/icons/cat-donate.svg", count: 1240, items: donate, quick: quickDonate },
     { id: "subs", title: "Подписки", icon: "/img/icons/cat-subs.svg", count: 312, items: subs, quick: [] },
     { id: "keys", title: "Ключи", icon: "/img/icons/cat-keys.svg", count: 2860, items: keys, quick: [] },
-    { id: "currency", title: "Игровая валюта", icon: "/img/icons/cat-coin.svg", count: 640, items: donate.slice(0, 6), quick: quickDonate },
+    { id: "currency", title: "Игровая валюта", icon: "/img/icons/coin.svg", count: 640, items: donate.slice(0, 6), quick: quickDonate },
     { id: "items", title: "Предметы", icon: "/img/icons/cat-skins.svg", count: 0, items: [], quick: [] },
     { id: "accounts", title: "Аккаунты", icon: "/img/icons/cat-accounts.svg", count: 0, items: [], quick: [] },
     { id: "gifts", title: "Подарочные карты", icon: "/img/icons/cat-gifts.svg", count: 128, items: subs.slice(3), quick: [] },

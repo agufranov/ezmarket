@@ -6,6 +6,7 @@ import { catalogMenu, type CatalogItem } from "@/data/catalog";
 import { routes } from "@/config/routes";
 import { asset } from "@/lib/asset";
 import { formatPrice } from "@/lib/format";
+import { Icon } from "@/components/ui/Icon";
 import { MaskIcon } from "@/components/ui/MaskIcon";
 import s from "./CatalogMenu.module.scss";
 
@@ -102,7 +103,8 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
               onFocus={() => activate(c.id)}
             >
               <span className={s.catIcon}>
-                <MaskIcon src={c.icon} size={20} />
+                {/* монетка в макете цветная - не перекрашиваем */}
+                {c.icon.endsWith("/coin.svg") ? <Icon src={c.icon} size={17} /> : <MaskIcon src={c.icon} size={20} />}
               </span>
               {c.title}
             </a>
@@ -113,7 +115,7 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
       <div key={active.id} className={s.content}>
         <div className={s.head}>
           <span className={s.headIcon}>
-            <MaskIcon src={active.icon} size={18} />
+            {active.icon.endsWith("/coin.svg") ? <Icon src={active.icon} size={18} /> : <MaskIcon src={active.icon} size={18} />}
           </span>
           <h2 className={s.title}>{active.title}</h2>
           {active.count > 0 && <span className={s.count}>{active.count.toLocaleString("ru-RU")} товаров</span>}

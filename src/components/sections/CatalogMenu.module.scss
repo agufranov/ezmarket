@@ -130,7 +130,8 @@
   place-items: center;
   width: 42px;
   height: 42px;
-  border-radius: 16px;
+  // «капля», как в макете: острый угол справа сверху
+  border-radius: 21px 10px 21px 21px;
   background: #fff;
   color: var(--c-orange);
   transition:
