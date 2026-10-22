@@ -149,7 +149,7 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
             {active.quick.slice(0, 2).map((q) => (
               <li key={q.id}>
                 <a href={routes.product(q.id)} className={s.quickLink} tabIndex={open ? 0 : -1}>
-                  <img src={asset(q.logo)} alt="" width={26} height={26} />
+                  <img src={asset(q.logo)} alt="" width={30} height={30} />
                   {q.title}
                   <b>от {formatPrice(q.priceFrom)}</b>
                 </a>
@@ -189,7 +189,7 @@ function Card({ item, tabbable }: { item: CatalogItem; tabbable: boolean }) {
   return (
     <a href={routes.product(item.id)} className={s.card} tabIndex={tabbable ? 0 : -1}>
       <span className={s.logoWrap} style={{ background: item.tint }}>
-        <img src={asset(item.logo)} alt="" width={48} height={48} className={s.logo} />
+        <img src={asset(item.logo)} alt="" width={50} height={50} className={s.logo} />
       </span>
       <span className={s.cardText}>
         <b>{item.title}</b>

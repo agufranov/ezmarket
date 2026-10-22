@@ -60,10 +60,6 @@
     transform: scale(0.97);
   }
 
-  &[aria-expanded="true"] .dots {
-    transform: rotate(45deg);
-  }
-
   @include down($bp-md) {
     margin-left: 6px;
     padding: 0 10px;

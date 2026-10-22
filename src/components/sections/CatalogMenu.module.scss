@@ -251,9 +251,9 @@
   overflow: hidden;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 7px;
   height: 68px;
-  padding: 0 10px 0 6px;
+  padding: 0 13px 0 3px;
   border-radius: 22px;
   box-shadow: inset 0 0 0 1.5px var(--c-line);
   transition:
@@ -261,8 +261,9 @@
     box-shadow var(--t-fast) ease,
     transform 0.1s ease;
 
+  // под курсором - персиковый градиент слева направо до белого, как в макете
   @include hover {
-    background: var(--c-peach);
+    background: linear-gradient(90deg, #ffefe0 0%, #fff 88%);
     box-shadow: inset 0 0 0 1.5px var(--c-orange);
 
     // в макете у карточки под курсором подпись коричневая, «хит» на светлой плашке
@@ -276,11 +277,11 @@
 
     .price {
       background: var(--g-orange);
-      box-shadow: var(--sh-orange);
+      box-shadow: 0 6px 12px rgba(255, 122, 0, 0.18);
       color: #fff;
 
       small {
-        color: rgba(255, 255, 255, 0.8);
+        color: rgba(110, 40, 0, 0.55);
       }
     }
   }
@@ -307,15 +308,16 @@
   display: grid;
   flex: none;
   place-items: center;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  // «капля» 62 px с острым углом слева снизу, как в макете (сверка по пикселям)
+  width: 62px;
+  height: 62px;
+  border-radius: 31px 31px 31px 12px;
   background: var(--c-fill);
 }
 
 .logo {
-  width: 48px;
-  height: 48px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -381,12 +383,12 @@
 
 .price {
   flex: none;
-  padding: 9px 13px 9px 14px;
+  padding: 8px 13px 8px 14px;
   border-radius: var(--r-pill);
   background: #fff;
   // в макете чип цены с теплой обводкой и легкой оранжевой тенью
   box-shadow:
-    0 0 0 1px #ffe6cf,
+    0 0 0 1px #ffe2c6,
     0 4px 10px rgba(255, 122, 0, 0.1);
   font-size: 16px;
   font-weight: 900;
@@ -424,10 +426,11 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 44px;
+  height: 46px;
   padding: 0 6px 0 8px;
   border-radius: var(--r-pill);
-  box-shadow: inset 0 0 0 1.5px var(--c-line);
+  // в макете - серая заливка без обводки, цена на белой плашке
+  background: #f3f4f6;
   font-size: 16px;
   font-weight: 800;
   transition:
@@ -442,7 +445,7 @@
   b {
     padding: 5px 10px;
     border-radius: var(--r-pill);
-    background: var(--c-peach);
+    background: #fff;
     color: var(--c-peach-ink);
     font-weight: 900;
   }
@@ -461,7 +464,7 @@
   margin: 18px 14px 14px;
   padding: 22px 20px 16px 22px;
   border-radius: 24px;
-  background: var(--c-ink-3);
+  background: #1b1e25;
   color: #fff;
 }
 
@@ -495,25 +498,27 @@
 .promoLogos {
   display: flex;
   align-items: center;
-  margin: 14px 0 16px;
+  margin: 10px 0 21px 4px;
 
   // логотипы 48 px внахлест, средний (ChatGPT) крупнее и поверх
   img {
     position: relative;
-    width: 54px;
-    height: 54px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     object-fit: cover;
     transition: transform var(--t-fast) ease;
 
     & + img {
-      margin-left: -10px;
+      margin-left: -11px;
     }
 
+    // средний логотип поверх соседей, с темным кольцом-зазором, как в макете
     &:nth-child(2) {
       z-index: 1;
-      width: 70px;
-      height: 70px;
+      width: 72px;
+      height: 72px;
+      border: 3px solid #1b1e25;
     }
 
     &:nth-child(2) {
@@ -536,7 +541,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  min-height: 44px;
+  // строки одной высоты, как в макете (шаг 52)
+  height: 44px;
   padding: 6px 6px 6px 8px;
   border-radius: 16px;
   background: rgba(255, 255, 255, 0.06);
@@ -557,10 +563,10 @@
 
   b {
     flex: none;
-    padding: 6px 10px;
+    padding: 6px 9px;
     border-radius: var(--r-pill);
     background: var(--g-orange);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 900;
     transition: transform var(--t-fast) ease;
   }

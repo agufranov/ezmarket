@@ -70,7 +70,7 @@ const keys: CatalogItem[] = [
 
 const quickDonate = [
   { id: "q-brawl", title: "Гемы Brawl Stars", logo: g.brawl, priceFrom: 79 },
-  { id: "q-pubg", title: "UC PUBG", logo: g.pubg, priceFrom: 89 },
+  { id: "q-pubg", title: "UC PUBG", logo: g.catPubg, priceFrom: 89 },
 ];
 
 export const catalogMenu: { categories: CatalogCategory[]; promo: { title: string; subtitle: string; logos: string[]; items: { id: string; title: string; logo: string; discount: number }[] } } = {
