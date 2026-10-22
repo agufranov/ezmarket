@@ -85,3 +85,49 @@
 }
 
 @include float-keyframes;
+
+// мобилка: слои под текстом баннера, позиции по макету 360/440 - от центра баннера
+@include down($bp-sm) {
+  .halo {
+    right: auto;
+    left: calc(50% + 16px);
+    top: 286px;
+    width: 121px;
+    height: 121px;
+  }
+
+  .steam {
+    right: auto;
+    left: calc(50% + 32px);
+    top: 302px;
+    width: 89px;
+    height: 89px;
+  }
+
+  .rub {
+    left: calc(50% - 88px);
+    top: 271px;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px 20px 20px 9px;
+    font-size: 19px;
+  }
+
+  // в макете маскот ~122 px - размер задан инлайном, поэтому масштабом
+  .mascot {
+    left: calc(50% - 118px);
+    top: 323px;
+    bottom: auto;
+    transform: scale(0.82);
+    transform-origin: left top;
+  }
+
+  .chip {
+    right: auto;
+    left: calc(50% + 54px);
+    top: 397px;
+    bottom: auto;
+    height: 40px;
+    font-size: 16px;
+  }
+}

@@ -554,3 +554,27 @@
     transform: scale(0.9);
   }
 }
+
+// мобилка: выпадашка на ширину экрана (сдвиг влево считает SearchBox), колонки друг под другом
+@include down($bp-sm) {
+  .panel,
+  .panel[data-view="recent"] {
+    width: calc(100vw - 2 * var(--gutter));
+    flex-direction: column;
+  }
+
+  .left,
+  .nfRight {
+    width: auto;
+  }
+
+  .nfLeft {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .nfRight {
+    border-left: 0;
+    border-top: 1px solid var(--c-line);
+  }
+}

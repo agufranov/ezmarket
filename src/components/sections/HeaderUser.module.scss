@@ -8,6 +8,31 @@
   align-items: center;
   gap: 10px;
   animation: fadeIn 200ms ease;
+
+  // мобильная шапка: место «Войти» в первой строке
+  @include down($bp-sm) {
+    grid-area: login;
+    gap: 6px;
+
+    .bell {
+      width: 40px;
+      height: 40px;
+    }
+
+    .chip {
+      height: 40px;
+      padding-right: 8px;
+    }
+
+    .chipText {
+      display: none;
+    }
+
+    .chipAvatar {
+      width: 34px;
+      height: 34px;
+    }
+  }
 }
 
 // персиковое кольцо у открытого триггера

@@ -98,8 +98,8 @@ body {
   line-height: 1.35;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
-  // мобильная версия - после мобильных макетов (этап 2), пока держим десктоп от 1024
-  min-width: 1024px;
+  // мобильные макеты: 360 и 440 px
+  min-width: 320px;
 }
 
 h1,

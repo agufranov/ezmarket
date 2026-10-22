@@ -597,3 +597,98 @@
     opacity: 0;
   }
 }
+
+// --- мобильная шапка (макеты 360 / 440) ---
+// 1-я строка: логотип, валюта, «Войти» (или колокольчик и профиль); 2-я: «Каталог» и поиск
+@include down($bp-sm) {
+  // скрытые панели поповеров шире экрана не должны давать горизонтальный скролл
+  .header {
+    overflow-x: clip;
+  }
+
+  .row {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+    grid-template-areas:
+      "logo . cur login"
+      "cat search search search";
+    gap: 10px 8px;
+    height: auto;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .logo {
+    grid-area: logo;
+
+    img {
+      width: 126px;
+      height: 34px;
+    }
+  }
+
+  .catalog {
+    grid-area: cat;
+    height: 40px;
+    margin-left: 0;
+    padding: 0 16px 0 10px;
+    gap: 8px;
+
+    .catalogText {
+      display: inline;
+    }
+  }
+
+  .search {
+    grid-area: search;
+    height: 40px;
+    padding-left: 14px;
+  }
+
+  .currencyBtn {
+    grid-area: cur;
+    height: 40px;
+    padding: 0 8px 0 4px;
+  }
+
+  .login,
+  .userSkeleton {
+    grid-area: login;
+  }
+
+  .login {
+    gap: 8px;
+    height: 40px;
+    padding: 0 4px 0 16px;
+
+    .loginText {
+      display: inline;
+    }
+
+    .loginArrow {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  .nav .cats {
+    gap: 14px;
+  }
+
+  .help {
+    display: none;
+  }
+}
+
+// на 360 у «Каталога» остается только иконка
+@media (max-width: 399px) {
+  .catalog {
+    padding: 0;
+    width: 40px;
+    justify-content: center;
+
+    .catalogText {
+      display: none;
+    }
+  }
+}

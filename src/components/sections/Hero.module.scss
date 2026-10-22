@@ -342,3 +342,77 @@
     inset: -4px;
   }
 }
+
+// --- мобильный баннер (макеты 360 / 440) ---
+// текст сверху на всю ширину, арт под ним по центру, боковые баннеры - лентой со скроллом
+@include down($bp-sm) {
+  .main {
+    height: 466px;
+    min-height: 0;
+  }
+
+  // круги и арт по макету: координаты от центра баннера (одинаковы на 360 и 440)
+  .ring {
+    right: auto;
+    left: calc(50% - 171px);
+    top: 267px;
+    width: 260px;
+    height: 260px;
+  }
+
+  .dashed {
+    right: auto;
+    left: calc(50% - 120px);
+    top: 270px;
+    width: 300px;
+    height: 300px;
+  }
+
+  .art {
+    inset: 0;
+    width: auto;
+    height: auto;
+    transform: none;
+  }
+
+  .content {
+    max-width: none;
+    height: auto;
+    padding: 44px 20px 0;
+    gap: 10px;
+  }
+
+  .dots {
+    left: 20px;
+    top: 14px;
+  }
+
+  .title {
+    font-size: 32px;
+    line-height: 1.05;
+    letter-spacing: -0.8px;
+  }
+
+  .text {
+    max-width: 320px;
+    padding-bottom: 6px;
+    font-size: 15px;
+  }
+
+  .side {
+    @include h-scroll;
+    display: flex;
+    flex-direction: row;
+    height: auto;
+    margin: 0 calc(var(--gutter) * -1);
+    padding: 0 var(--gutter);
+    scroll-padding-inline: var(--gutter);
+  }
+
+  .card {
+    flex: 0 0 78%;
+    min-width: 0;
+    height: 150px;
+    scroll-snap-align: start;
+  }
+}
