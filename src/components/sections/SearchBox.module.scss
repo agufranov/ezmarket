@@ -501,19 +501,38 @@
     object-fit: cover;
   }
 
+  // цена: «от» мельче; цвета по слоям макета 12:1197
   .price {
     background: var(--c-peach);
     box-shadow: none;
-    color: var(--c-peach-ink);
+    color: #b5571a;
+
+    small {
+      color: #a3673a;
+      font-size: 13.5px;
+      font-weight: 800;
+    }
+  }
+
+  .gameText span {
+    color: #5d616b;
   }
 
   &[aria-selected="true"] {
     background: var(--c-peach);
     box-shadow: inset 0 0 0 1.5px var(--c-orange);
 
+    .gameText span {
+      color: #b5571a;
+    }
+
     .price {
       background: var(--g-orange);
       color: #fff;
+
+      small {
+        color: #b5571a;
+      }
     }
   }
 }
@@ -536,11 +555,16 @@
   }
 }
 
+// «хит» с огоньком (макеты 12:1197, 38:4642)
 .hit {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
   margin-left: 8px;
   color: var(--c-orange);
+  font-size: 12.5px;
   font-style: normal;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 @keyframes fade {
@@ -555,26 +579,447 @@
   }
 }
 
-// мобилка: выпадашка на ширину экрана (сдвиг влево считает SearchBox), колонки друг под другом
+.box {
+  position: relative;
+}
+
+// лупа серая, в открытом мобильном поиске - оранжевая
+.searchIcon {
+  color: #8a909a;
+}
+
+// очистка поля и «Отмена» есть только на мобильном экране поиска
+.clearInput,
+.cancel {
+  display: none;
+}
+
+// --- мобилка: открытый поиск - экран на весь экран (фреймы 38:4501 / 38:4642 на 360, 38:7483 / 38:7629 на 440):
+// сверху поле с оранжевой рамкой и «Отмена», под линией - недавние, запросы и товары одной колонкой ---
 @include down($bp-sm) {
+  .box[data-open],
+  .box[data-open]:focus-within {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: block;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    background: #fff;
+    box-shadow: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    // поле: 16..(край - 90), высота 48, рамка 2 и персиковое кольцо 4
+    &::before {
+      content: "";
+      position: absolute;
+      left: 16px;
+      right: 90px;
+      top: 8px;
+      height: 48px;
+      border-radius: 24px;
+      box-shadow:
+        inset 0 0 0 2px var(--c-orange),
+        0 0 0 4px #fff1e4;
+      pointer-events: none;
+    }
+
+    // линия под строкой поиска
+    &::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 63px;
+      height: 1px;
+      background: #eceef2;
+    }
+
+    .searchIcon {
+      position: absolute;
+      left: 31px;
+      top: 22px;
+      color: var(--c-orange);
+    }
+
+    input {
+      position: absolute;
+      left: 60px;
+      right: 136px;
+      top: 8px;
+      height: 48px;
+      color: #1e2229;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    kbd {
+      display: none;
+    }
+
+    .clearInput {
+      position: absolute;
+      right: 96px;
+      top: 14px;
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--c-fill);
+      color: #454a52;
+    }
+
+    .cancel {
+      position: absolute;
+      right: 16px;
+      top: 8px;
+      display: block;
+      height: 48px;
+      color: var(--c-orange);
+      font-size: 16px;
+      font-weight: 800;
+    }
+  }
+
+  // панель под строкой поиска, на всю ширину, без тени (ширину и сдвиг для десктопа считает SearchBox)
   .panel,
   .panel[data-view="recent"] {
-    width: calc(100vw - 2 * var(--gutter));
+    position: static;
     flex-direction: column;
+    width: auto !important;
+    margin: 64px 0 0 !important;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+    transform: none;
   }
 
-  .left,
-  .nfRight {
+  .label {
+    color: #8a909a;
+    font-size: 14px;
+    line-height: 19px;
+  }
+
+  .left {
+    gap: 18px;
     width: auto;
+    padding: 19px 16px 0;
+    background: none;
+
+    section {
+      gap: 8px;
+    }
+
+    .label {
+      margin-bottom: 2px;
+    }
   }
 
+  .clear {
+    margin-bottom: 2px;
+    font-size: 15px;
+  }
+
+  // недавние - серые «таблетки» по ширине текста
+  .recent {
+    align-self: flex-start;
+    gap: 8px;
+    height: 40px;
+    padding: 0 6px 0 12px;
+    border-radius: 20px;
+    background: #f3f4f6;
+
+    &[aria-selected="true"] {
+      background: #f3f4f6;
+    }
+  }
+
+  .recentText {
+    color: #3a3f47;
+    font-size: 15px;
+  }
+
+  .remove {
+    width: 28px;
+    height: 28px;
+    color: #a3a8b0;
+  }
+
+  // недавние - в строку с переносом (на 360 по одной в строке, на 440 по две)
+  .left section:has(.recent) {
+    flex-flow: row wrap;
+
+    .labelRow {
+      flex-basis: 100%;
+    }
+  }
+
+  .left section:has(.query) {
+    gap: 0;
+
+    .label {
+      margin-bottom: 10px;
+    }
+  }
+
+  .query {
+    height: 48px;
+    padding: 0 8px 0 4px;
+
+    &[aria-selected="true"] {
+      background: #fff4ea;
+      box-shadow: none;
+
+      .queryCount {
+        color: #e06a00;
+      }
+
+      .queryGo {
+        background: var(--g-orange);
+        color: #fff;
+      }
+    }
+  }
+
+  .queryIcon {
+    width: 36px;
+    height: 36px;
+    background: var(--c-fill);
+  }
+
+  .queryText {
+    font-size: 16px;
+  }
+
+  .queryCount {
+    color: #8a909a;
+    font-size: 14px;
+  }
+
+  // у неактивных запросов - серая стрелка без круга
+  .queryGo {
+    width: 28px;
+    height: 28px;
+    background: none;
+    color: #b4b9c1;
+    opacity: 1;
+  }
+
+  .right {
+    gap: 10px;
+    padding: 18px 16px 24px;
+
+    .label {
+      margin-bottom: 1px;
+    }
+  }
+
+  .product {
+    gap: 12px;
+    height: auto;
+    min-height: 62px;
+    padding: 7px 8px;
+    border-radius: 20px;
+
+    &[aria-selected="true"],
+    &:hover {
+      background: #fff4ea;
+      box-shadow: inset 0 0 0 1.5px #ffb877;
+    }
+  }
+
+  .thumb,
+  .thumb img,
+  .thumb .thumbTint {
+    width: 48px;
+    height: 48px;
+  }
+
+  .productText {
+    b,
+    span {
+      white-space: normal;
+    }
+
+    b {
+      font-size: 16px;
+      line-height: 20px;
+    }
+
+    span {
+      color: #8a909a;
+      font-size: 14px;
+      line-height: 18.2px;
+    }
+  }
+
+  .price {
+    display: grid;
+    place-items: center;
+    height: 40px;
+    padding: 0 11px;
+    font-size: 15px;
+  }
+
+  // «Все N результатов» в 28 px под товарами, высота 56, без светлого круга слева
+  .all {
+    flex: none;
+    height: 56px;
+    margin-top: 18px;
+    font-weight: 900;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  // ничего не найдено: карточка 116 с маскотом 64, подсказки под ней, ниже «Возможно, вы искали»
+  // маскот слева поверх фона карточки, текст с отступом 92, подсказки под карточкой на всю ширину
   .nfLeft {
-    flex-direction: column;
-    text-align: center;
+    position: relative;
+    isolation: isolate;
+    display: block;
+    margin: 16px 16px 0;
+    padding: 13px 0 0 92px;
+    background: none;
+
+    &::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      z-index: -1;
+      height: 116px;
+      border-radius: 24px;
+      background: #fff1e4;
+    }
+
+    > div:last-child {
+      display: contents;
+    }
+  }
+
+  .nfMascot {
+    position: absolute;
+    left: 14px;
+    top: 26px;
+
+    > div {
+      font-size: 0.5714px !important;
+    }
+  }
+
+  .nfTitle {
+    padding-right: 16px;
+    font-size: 17px;
+    line-height: 22.1px;
+  }
+
+  .nfSub {
+    margin-top: 4px;
+    padding-right: 16px;
+    color: #6b6f78;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 20.3px;
+  }
+
+  .fixes {
+    margin: 26px 0 0 -92px;
+  }
+
+  .fix {
+    gap: 4px;
+    padding: 0 14px 0 16px;
+    background: #fff;
+
+    svg {
+      color: var(--c-orange);
+    }
   }
 
   .nfRight {
+    gap: 10px;
+    width: auto;
+    padding: 18px 16px 24px;
     border-left: 0;
-    border-top: 1px solid var(--c-line);
+
+    .label {
+      margin-bottom: 1px;
+    }
+  }
+
+  .game {
+    gap: 10px;
+    height: 58px;
+    padding: 0 8px;
+    border-radius: 20px;
+    box-shadow: inset 0 0 0 1.5px #eceef2;
+
+    img {
+      width: 44px;
+      height: 44px;
+    }
+
+    .price {
+      height: 36px;
+      background: #fff;
+      box-shadow:
+        0 0 0 1px #f0f2f4,
+        0 4px 10px rgba(30, 34, 41, 0.06);
+      color: #1e2229;
+
+      small {
+        color: #8a909a;
+        font-size: 14px;
+        font-weight: 700;
+      }
+    }
+
+    .gameText span {
+      color: #6b6f78;
+    }
+
+    &[aria-selected="true"] {
+      background: #fff4ea;
+      box-shadow: inset 0 0 0 1.5px #ffb877;
+
+      .gameText span {
+        color: #c85a00;
+      }
+
+      .price {
+        background: var(--g-orange);
+        color: #fff;
+
+        small {
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  .hit {
+    gap: 4px;
+    margin-left: 10px;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  .gameText {
+    b {
+      font-size: 16px;
+      line-height: 19.2px;
+    }
+
+    span {
+      font-size: 14px;
+      line-height: 18.2px;
+    }
   }
 }

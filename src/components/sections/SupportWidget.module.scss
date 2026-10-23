@@ -186,9 +186,10 @@
   }
 }
 
-// на мобилке каталог - лист на весь экран, виджет поверх него не нужен
+// на мобилке каталог и поиск - экраны на весь экран, виджет поверх них не нужен
 @include down($bp-sm) {
-  :global(html[data-header-popover]) .toggle {
+  :global(html[data-header-popover]) .toggle,
+  :global(html:has([role="search"][data-open])) .toggle {
     display: none;
   }
 }

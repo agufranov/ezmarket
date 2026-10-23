@@ -6,7 +6,7 @@ import { routes } from "@/config/routes";
 import { asset } from "@/lib/asset";
 import { formatPrice } from "@/lib/format";
 import { loadRecent, normalize, pushRecent, saveRecent, searchConfig, suggest, type Suggest } from "@/lib/search";
-import { Icon } from "@/components/ui/Icon";
+import { MaskIcon } from "@/components/ui/MaskIcon";
 import { Mascot } from "@/components/ui/Mascot";
 import s from "./SearchBox.module.scss";
 
@@ -219,16 +219,16 @@ export function SearchBox({ className, kbdClassName }: Props) {
   return (
     <form
       ref={formRef}
-      className={className}
+      className={[s.box, className].filter(Boolean).join(" ")}
       role="search"
-      style={{ position: "relative" }}
+      data-open={visible || undefined}
       onSubmit={(e) => {
         e.preventDefault();
         if (activeOpt) choose(activeOpt);
         else go(value);
       }}
     >
-      <Icon src="/img/icons/search.svg" size={20} />
+      <MaskIcon src="/img/icons/search.svg" size={20} className={s.searchIcon} />
       <label htmlFor="site-search" className="visually-hidden">
         Поиск
       </label>
@@ -254,6 +254,34 @@ export function SearchBox({ className, kbdClassName }: Props) {
         onKeyDown={onKeyDown}
       />
       <kbd className={kbdClassName}>/</kbd>
+      {/* мобильный экран поиска (38:4501): очистка в поле и «Отмена» справа; на десктопе скрыты */}
+      {value && (
+        <button
+          type="button"
+          className={s.clearInput}
+          aria-label="Очистить поиск"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => {
+            setValue("");
+            lookup("");
+            inputRef.current?.focus();
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+            <path d="m3 3 8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+        </button>
+      )}
+      <button
+        type="button"
+        className={s.cancel}
+        onClick={() => {
+          setOpen(false);
+          inputRef.current?.blur();
+        }}
+      >
+        Отмена
+      </button>
 
       <div
         id="search-panel"
@@ -325,10 +353,17 @@ export function SearchBox({ className, kbdClassName }: Props) {
                         <b>{g.title}</b>
                         <span>
                           {g.subtitle}
-                          {g.hit && <em className={s.hit}>хит</em>}
+                          {g.hit && (
+                            <em className={s.hit}>
+                              <MaskIcon src="/img/icons/fire.svg" size={12} />
+                              хит
+                            </em>
+                          )}
                         </span>
                       </span>
-                      <span className={s.price}>от {formatPrice(g.priceFrom)}</span>
+                      <span className={s.price}>
+                        <small>от</small> {formatPrice(g.priceFrom)}
+                      </span>
                     </a>
                   );
                 })}
