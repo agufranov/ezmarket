@@ -86,7 +86,7 @@ export const catalogMenu: { categories: CatalogCategory[]; promo: { title: strin
   ],
   promo: {
     title: "Подписки недели",
-    subtitle: "Скидки до -40%",
+    subtitle: "Скидки до −40%",
     logos: ["/img/brands/playstation-sq.png", g.gpt, "/img/brands/telegram-sq.png"],
     items: [
       { id: "ps-plus", title: "PS Plus", logo: g.ps, discount: 40 },

@@ -199,7 +199,7 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
               <a href={routes.product(p.id)} className={s.promoRow} tabIndex={open ? 0 : -1}>
                 <img src={asset(p.logo)} alt="" width={30} height={30} />
                 <span>{p.title}</span>
-                <b>-{p.discount}%</b>
+                <b>−{p.discount}%</b>
               </a>
             </li>
           ))}
@@ -225,7 +225,7 @@ function Card({ item, tabbable }: { item: CatalogItem; tabbable: boolean }) {
               хит
             </span>
           )}
-          {item.badge?.kind === "discount" && <span className={s.discount}>-{item.badge.value}%</span>}
+          {item.badge?.kind === "discount" && <span className={s.discount}>−{item.badge.value}%</span>}
         </span>
       </span>
       <span className={s.price}>

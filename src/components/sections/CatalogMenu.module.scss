@@ -13,7 +13,7 @@
 
   // уже 1200: колонки уже, карточки компактнее - чтобы названия не обрезались до 5 букв.
   // На 1200-1279 макет показывает полную раскладку
-  @media (max-width: 1199px) {
+  @media (min-width: 768px) and (max-width: 1199px) {
     grid-template-columns: 196px minmax(0, 1fr) 194px;
 
     .cat {
@@ -599,14 +599,15 @@
   display: none;
 }
 
-// --- мобилка (< 768) по макету «Каталог»: лист на весь экран, слева колонка категорий-«капель»
-// с подписями, справа карточки с ценой под текстом, «Смотреть все», быстрая ссылка, промо ---
+// --- мобилка (< 768) по фрейму Figma 38-4728 «Каталог» 360: лист на весь экран, шапка 60,
+// слева колонка категорий 92, справа карточки 244 с ценой под текстом, «Смотреть все», быстрая
+// ссылка, промо. Размеры сняты с фрейма 1:1 ---
 @include down($bp-sm) {
   .panel {
     position: fixed;
     inset: 0;
     z-index: var(--z-modal);
-    grid-template-columns: 70px minmax(0, 1fr);
+    grid-template-columns: 92px minmax(0, 1fr);
     grid-template-rows: auto auto 1fr;
     grid-template-areas:
       "head head"
@@ -615,6 +616,7 @@
     align-content: start;
     max-height: none;
     border-radius: 0;
+    overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
     transform: translateY(12px);
@@ -625,9 +627,12 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 14px 10px 16px;
+    height: 60px;
+    padding: 0 12px 0 16px;
+    border-bottom: 1px solid #eef0f3;
 
     b {
+      color: var(--c-ink-3);
       font-size: 22px;
       font-weight: 900;
     }
@@ -636,20 +641,18 @@
   .mClose {
     display: grid;
     place-items: center;
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     background: var(--c-fill);
-    color: var(--c-ink-2);
+    color: #454a52;
   }
 
+  // колонка категорий: персиковый фон до низа листа, активный пункт - белая плашка
   .side {
     grid-area: side;
-    align-self: start;
-    gap: 14px;
-    margin: 0 0 14px 8px;
-    padding: 12px 4px;
-    border-radius: 20px;
+    gap: 5px;
+    padding: 10px 6px;
   }
 
   .cat,
@@ -657,20 +660,22 @@
     flex-direction: column;
     gap: 6px;
     height: auto;
-    padding: 0;
-    border-radius: 0;
+    padding: 10px 0;
+    border-radius: 20px;
     background: none;
     box-shadow: none;
-    color: var(--c-ink-2);
-    font-size: 11px;
+    color: #454a52;
+    font-size: 13px;
     font-weight: 800;
-    line-height: 1.15;
+    line-height: 16px;
     text-align: center;
     white-space: normal;
   }
 
   .cat[data-active] {
-    color: var(--c-ink);
+    background: #fff;
+    box-shadow: 0 8px 20px rgba(30, 34, 41, 0.06);
+    color: var(--c-ink-3);
 
     .catIcon {
       background: var(--g-orange);
@@ -680,33 +685,39 @@
   }
 
   .catIcon {
-    width: 40px;
-    height: 40px;
-    border-radius: 20px 9px 20px 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
   }
 
   .content {
     grid-area: content;
-    padding: 0 10px 0 10px;
+    padding: 16px 12px 0;
     overflow: visible;
   }
 
   .head {
-    gap: 6px;
-    margin-bottom: 10px;
+    gap: 8px;
+    height: 28px;
+    margin-bottom: 14px;
+    padding-left: 4px;
   }
 
   .headIcon,
-  .sparks {
+  .sparks,
+  .head .all {
     display: none;
   }
 
   .title {
-    font-size: 18px;
+    color: var(--c-ink-3);
+    font-size: 22px;
+    line-height: 28px;
   }
 
   .count {
-    font-size: 12px;
+    color: #8a909a;
+    font-size: 13px;
   }
 
   .grid {
@@ -714,113 +725,275 @@
     gap: 8px;
   }
 
-  // карточка: логотип слева, справа название, подпись и чип цены под ними
+  // карточка: круглый логотип 40 слева, справа название, подпись и чип цены под ними
   .card {
     display: grid;
-    grid-template-columns: 44px minmax(0, 1fr);
-    grid-template-rows: auto auto;
-    column-gap: 10px;
-    row-gap: 4px;
-    align-items: center;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 0 10px;
+    align-items: start;
     height: auto;
-    padding: 10px;
+    padding: 7px 8px 9px;
     border-radius: 18px;
+    box-shadow: inset 0 0 0 1px #eef0f3;
 
     &::after {
       display: none;
     }
   }
 
+  // в макете первая карточка подсвечена (персиковый фон, оранжевая обводка и цена)
+  .grid li:first-child .card {
+    padding: 9px 8px 11px;
+    background: #fff4ea;
+    box-shadow: inset 0 0 0 1.5px #ffb877;
+
+    .cardSub {
+      color: #c85a00;
+    }
+
+    .logoWrap {
+      margin-top: 1px;
+    }
+
+    .price {
+      background: var(--g-orange);
+      box-shadow: 0 6px 12px rgba(255, 122, 0, 0.2);
+      color: #fff;
+
+      small {
+        color: rgba(255, 255, 255, 0.85);
+      }
+    }
+  }
+
   .logoWrap {
     grid-row: 1 / 3;
-    width: 44px;
-    height: 44px;
-    border-radius: 22px 22px 22px 9px;
+    width: 40px;
+    height: 40px;
+    margin-top: 3px;
+    border-radius: 50%;
+    // подложка-«капля» только на десктопе
+    background: none !important;
   }
 
   .logo {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
   }
 
   .cardText b {
-    font-size: 14px;
+    color: var(--c-ink-3);
+    font-size: 16px;
+    line-height: 20px;
   }
 
   .cardSub {
-    font-size: 12px;
+    gap: 8px;
+    min-height: 18px;
+    margin-top: 2px;
+    color: #8a909a;
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  // «хит» в мобильном макете без плашки: огонек и слово оранжевым
+  .hit {
+    padding: 0;
+    background: none;
+  }
+
+  .discount {
+    padding: 2px 8px;
+    font-size: 13px;
   }
 
   .price {
     grid-column: 2;
     justify-self: start;
-    padding: 5px 10px;
-    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    height: 30px;
+    margin-top: 7px;
+    padding: 0 10px;
+    box-shadow:
+      0 0 0 1px #f0f2f4,
+      0 4px 10px rgba(30, 34, 41, 0.06);
+    font-size: 15px;
+
+    small {
+      color: #8a909a;
+      font-size: 13px;
+    }
   }
 
   // «Смотреть все» - темная кнопка на всю ширину под списком
-  .head .all {
-    display: none;
-  }
-
   .allMobile {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-    height: 42px;
-    margin-top: 10px;
+    height: 44px;
+    margin-top: 12px;
     border-radius: var(--r-pill);
     background: var(--c-ink-3);
     color: #fff;
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 800;
   }
 
-  // в мобильном макете одна быстрая ссылка
+  // быстрые ссылки - лента по ширине содержимого до правого края листа, вторая уходит за край
   .quick {
-    flex-direction: column;
+    flex-wrap: nowrap;
     gap: 8px;
-    margin-top: 10px;
+    margin: 12px -12px 0 0;
+    padding-right: 12px;
+    overflow-x: auto;
+    scrollbar-width: none;
 
-    li + li {
+    &::-webkit-scrollbar {
       display: none;
+    }
+
+    li {
+      flex: none;
     }
   }
 
   .quickLink {
-    justify-content: space-between;
-    height: 42px;
-    font-size: 13px;
+    height: 44px;
+    padding: 0 6px;
+    background: #fff;
+    box-shadow: inset 0 0 0 1px #f0f2f4;
+    font-size: 15px;
+    white-space: nowrap;
+
+    img {
+      width: 32px;
+      height: 32px;
+    }
+
+    b {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      margin-left: 2px;
+      padding: 0 10px;
+      background: #fff1e3;
+      color: #c85a00;
+      font-size: 14px;
+    }
   }
 
+  // промо: подпись и заголовок слева, логотипы справа по центру, строки по ширине текста
   .promo {
     grid-area: promo;
     align-self: start;
-    margin: 12px 10px 16px;
-    padding: 16px 12px 12px;
+    margin: 14px 12px 20px;
+    padding: 20px 16px 42px;
+    background: var(--c-ink-3);
+  }
+
+  .promoHead {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    margin-bottom: 37px;
+  }
+
+  .promoLabel {
+    grid-column: 1;
+    font-size: 14px;
+    line-height: 19px;
   }
 
   .promoTitle {
+    grid-column: 1;
+    margin-top: 4px;
     font-size: 22px;
+    line-height: 25px;
   }
 
-  .promoLogos img {
-    width: 40px;
-    height: 40px;
+  .promoLogos {
+    grid-column: 2;
+    grid-row: 1 / 3;
+    align-self: center;
+    margin: 0;
 
-    &:nth-child(2) {
-      width: 48px;
-      height: 48px;
+    img,
+    img:nth-child(2) {
+      width: 44px;
+      height: 44px;
     }
+
+    img + img {
+      margin-left: -10px;
+    }
+
+    img:nth-child(2) {
+      border-width: 2px;
+      border-color: var(--c-ink-3);
+    }
+  }
+
+  .promoList {
+    gap: 6px;
   }
 
   .promoRow {
-    font-size: 13px;
+    width: fit-content;
+    max-width: 100%;
+    padding: 6px;
+    border-radius: 22px;
+    background: #30343a;
+    font-size: 15px;
+    line-height: 20px;
 
     img {
       display: block;
+      width: 32px;
+      height: 32px;
+    }
+
+    b {
+      display: inline-flex;
+      align-items: center;
+      height: 32px;
+      padding: 0 10px;
+    }
+  }
+
+  // фрейм Figma 38-7715 «Каталог» 440: колонка категорий 104, карточка в строку высотой 60 -
+  // логотип 44, текст, цена справа. С 420 px раскладка 360 уже свободна, текст не обрезается
+  @media (min-width: 420px) {
+    .panel {
+      grid-template-columns: 104px minmax(0, 1fr);
+    }
+
+    .card,
+    .grid li:first-child .card {
+      grid-template-columns: 44px minmax(0, 1fr) auto;
+      align-items: center;
+      height: 60px;
+      padding: 0 8px;
+    }
+
+    .logoWrap,
+    .grid li:first-child .logoWrap {
+      grid-row: auto;
+      width: 44px;
+      height: 44px;
+      margin-top: 0;
+    }
+
+    .logo {
+      width: 44px;
+      height: 44px;
+    }
+
+    .price {
+      grid-column: 3;
+      height: 36px;
+      margin-top: 0;
+      font-size: 16px;
     }
   }
 }
-
