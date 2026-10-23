@@ -593,66 +593,234 @@
   }
 }
 
-// --- мобилка (< 768): одна колонка - категории лентой сверху, товары, промо внизу ---
+// заголовок листа и нижняя «Смотреть все» есть только в мобильном макете
+.mHead,
+.allMobile {
+  display: none;
+}
+
+// --- мобилка (< 768) по макету «Каталог»: лист на весь экран, слева колонка категорий-«капель»
+// с подписями, справа карточки с ценой под текстом, «Смотреть все», быстрая ссылка, промо ---
 @include down($bp-sm) {
   .panel {
-    left: 0;
-    right: 0;
-    grid-template-columns: minmax(0, 1fr);
-    max-height: calc(100vh - 140px);
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    grid-template-columns: 70px minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    grid-template-areas:
+      "head head"
+      "side content"
+      "side promo";
+    align-content: start;
+    max-height: none;
+    border-radius: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
+    transform: translateY(12px);
+  }
+
+  .mHead {
+    grid-area: head;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 14px 10px 16px;
+
+    b {
+      font-size: 22px;
+      font-weight: 900;
+    }
+  }
+
+  .mClose {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--c-fill);
+    color: var(--c-ink-2);
   }
 
   .side {
-    @include h-scroll;
-    flex-direction: row;
-    gap: 6px;
-    padding: 12px;
+    grid-area: side;
+    align-self: start;
+    gap: 14px;
+    margin: 0 0 14px 8px;
+    padding: 12px 4px;
+    border-radius: 20px;
   }
 
-  .cat {
-    flex: none;
-    gap: 8px;
-    height: 46px;
-    padding: 0 14px 0 4px;
-    font-size: 15px;
+  .cat,
+  .cat[data-active] {
+    flex-direction: column;
+    gap: 6px;
+    height: auto;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    color: var(--c-ink-2);
+    font-size: 11px;
+    font-weight: 800;
+    line-height: 1.15;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .cat[data-active] {
+    color: var(--c-ink);
+
+    .catIcon {
+      background: var(--g-orange);
+      box-shadow: var(--sh-orange);
+      color: #fff;
+    }
   }
 
   .catIcon {
-    width: 38px;
-    height: 38px;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px 9px 20px 20px;
   }
 
   .content {
-    padding: 16px;
+    grid-area: content;
+    padding: 0 10px 0 10px;
     overflow: visible;
   }
 
   .head {
-    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .headIcon,
+  .sparks {
+    display: none;
   }
 
   .title {
-    font-size: 22px;
+    font-size: 18px;
   }
 
-  .all {
-    height: 40px;
-    padding: 0 16px;
-    font-size: 14px;
+  .count {
+    font-size: 12px;
   }
 
   .grid {
     grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+
+  // карточка: логотип слева, справа название, подпись и чип цены под ними
+  .card {
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr);
+    grid-template-rows: auto auto;
+    column-gap: 10px;
+    row-gap: 4px;
+    align-items: center;
+    height: auto;
+    padding: 10px;
+    border-radius: 18px;
+
+    &::after {
+      display: none;
+    }
+  }
+
+  .logoWrap {
+    grid-row: 1 / 3;
+    width: 44px;
+    height: 44px;
+    border-radius: 22px 22px 22px 9px;
+  }
+
+  .logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  .cardText b {
+    font-size: 14px;
+  }
+
+  .cardSub {
+    font-size: 12px;
+  }
+
+  .price {
+    grid-column: 2;
+    justify-self: start;
+    padding: 5px 10px;
+    font-size: 13px;
+  }
+
+  // «Смотреть все» - темная кнопка на всю ширину под списком
+  .head .all {
+    display: none;
+  }
+
+  .allMobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    height: 42px;
+    margin-top: 10px;
+    border-radius: var(--r-pill);
+    background: var(--c-ink-3);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 800;
+  }
+
+  // в мобильном макете одна быстрая ссылка
+  .quick {
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+
+    li + li {
+      display: none;
+    }
+  }
+
+  .quickLink {
+    justify-content: space-between;
+    height: 42px;
+    font-size: 13px;
   }
 
   .promo {
-    margin: 0 16px 16px;
+    grid-area: promo;
+    align-self: start;
+    margin: 12px 10px 16px;
+    padding: 16px 12px 12px;
   }
 
-  .promoRow img {
-    display: block;
+  .promoTitle {
+    font-size: 22px;
+  }
+
+  .promoLogos img {
+    width: 40px;
+    height: 40px;
+
+    &:nth-child(2) {
+      width: 48px;
+      height: 48px;
+    }
+  }
+
+  .promoRow {
+    font-size: 13px;
+
+    img {
+      display: block;
+    }
   }
 }
 

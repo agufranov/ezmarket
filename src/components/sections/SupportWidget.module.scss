@@ -184,3 +184,11 @@
     left: 6px;
   }
 }
+
+// на мобилке каталог - лист на весь экран, виджет поверх него не нужен
+@include down($bp-sm) {
+  :global(html[data-header-popover]) .toggle {
+    display: none;
+  }
+}
+

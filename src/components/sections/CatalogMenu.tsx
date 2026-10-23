@@ -86,6 +86,15 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
       }}
       onClick={(e) => (e.target as HTMLElement).closest("a") && onClose()}
     >
+      {/* мобильный макет: лист на весь экран с заголовком и крестиком */}
+      <div className={s.mHead}>
+        <b>Каталог</b>
+        <button type="button" className={s.mClose} aria-label="Закрыть каталог" tabIndex={open ? 0 : -1} onClick={() => onClose(true)}>
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+            <path d="m3 3 8 8M11 3l-8 8" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+          </svg>
+        </button>
+      </div>
       <ul className={s.side} role="menu" aria-label="Категории каталога" onKeyDown={onSideKey}>
         {categories.map((c) => (
           <li key={c.id} role="none">
@@ -101,6 +110,13 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
               }}
               onPointerLeave={() => window.clearTimeout(hoverTimer.current)}
               onFocus={() => activate(c.id)}
+              onClick={(e) => {
+                // на мобилке тап по категории переключает список (наведения нет), а не уходит со страницы
+                if (!window.matchMedia("(max-width: 767px)").matches) return;
+                e.preventDefault();
+                e.stopPropagation();
+                activate(c.id);
+              }}
             >
               <span className={s.catIcon}>
                 {/* монетка в макете цветная - не перекрашиваем */}
@@ -143,6 +159,14 @@ export function CatalogMenu({ open, onClose, triggerRef }: Props) {
         ) : (
           <p className={s.empty}>Скоро здесь появятся товары</p>
         )}
+
+        {/* в мобильном макете «Смотреть все» - кнопка под списком */}
+        <a href={routes.category(active.id)} className={s.allMobile} tabIndex={open ? 0 : -1}>
+          Смотреть все
+          <svg width="7" height="11" viewBox="0 0 7 11" fill="none" aria-hidden>
+            <path d="M1.5 1 6 5.5 1.5 10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          </svg>
+        </a>
 
         {active.quick.length > 0 && (
           <ul className={s.quick}>
