@@ -917,3 +917,59 @@
 }
 
 @include float-keyframes;
+
+// --- мобилка (фреймы 54:8650 / 54:8579): меню прямо над виджетом в правом нижнем углу, пузыри
+// одной колонкой по правому краю (14 px от края), высота 52, между ними 10; порядок как в макете:
+// Telegram, Написать нам, Частые вопросы ---
+@include down($bp-sm) {
+  .root:has(.menu) {
+    top: auto;
+    right: 14px;
+    // виджет 64 px в 14 px от низа + 13 px зазор
+    bottom: 91px;
+    max-height: calc(100vh - 107px);
+    transform: none;
+  }
+
+  .menu {
+    gap: 10px;
+
+    > :nth-child(3) {
+      order: 3;
+    }
+
+    > :nth-child(4) {
+      order: 2;
+    }
+  }
+
+  .hello {
+    align-self: flex-end;
+    gap: 10px;
+    height: 52px;
+    padding: 0 19px 0 9px;
+    border-radius: 26px 26px 26px 10px;
+    font-size: 16px;
+  }
+
+  .helloMascot {
+    width: 26px;
+    height: 26px;
+
+    > * {
+      transform: scale(0.87);
+    }
+  }
+
+  .bubble {
+    gap: 12px;
+    height: 52px;
+    padding: 0 19px 0 6px;
+    font-size: 15px;
+  }
+
+  .bubbleIcon {
+    width: 40px;
+    height: 40px;
+  }
+}
