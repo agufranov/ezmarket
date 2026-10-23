@@ -42,12 +42,14 @@ type ModalProps = {
   labelledBy: string;
   onClose: () => void;
   className?: string;
+  // на мобилке - лист на весь экран (вход и регистрация в мобильных макетах)
+  sheet?: boolean;
   children: (close: () => void) => ReactNode;
 };
 
 // Каркас модалки (ТЗ 12.1): затемнение, фокус-трап, Esc и клик по затемнению, блокировка скролла
 // с компенсацией скроллбара, анимация закрытия. Первый фокус - элемент с data-autofocus.
-export function Modal({ labelledBy, onClose, className, children }: ModalProps) {
+export function Modal({ labelledBy, onClose, className, sheet, children }: ModalProps) {
   const dialogRef = useRef<HTMLDivElement>(null);
   const [closing, setClosing] = useState(false);
   const onCloseRef = useRef(onClose);
@@ -96,6 +98,7 @@ export function Modal({ labelledBy, onClose, className, children }: ModalProps) 
     <div
       className={s.overlay}
       data-closing={closing || undefined}
+      data-sheet={sheet || undefined}
       onMouseDown={(e) => e.target === e.currentTarget && close()}
     >
       <div

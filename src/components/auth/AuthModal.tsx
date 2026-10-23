@@ -18,8 +18,9 @@ const KEY_EMAIL = "ez_auth_email";
 const KEY_REF = "ez_ref_code";
 
 const copy = {
-  login: { title: "С возвращением!", sub: "Введите email, и мы пришлем код для входа", btn: "Получить код", bonus: "ждут вас после входа", tip: "Войти через" },
-  register: { title: "Создайте аккаунт", sub: "Нужен только email, пароль не понадобится", btn: "Создать аккаунт", bonus: "сразу после регистрации", tip: "Продолжить через" },
+  // тексты по макету (12:376 и мобильные 38:3079 / 38:3203)
+  login: { title: "Вход в EzMarket", sub: "Пришлём код на почту - пароль не нужен", btn: "Получить код", bonus: "ждут вас после входа", tip: "Войти через" },
+  register: { title: "Регистрация", sub: "Пароль не нужен - только код из письма", btn: "Создать аккаунт", bonus: "сразу после регистрации", tip: "Продолжить через" },
 };
 
 function readSession(key: string) {
@@ -106,7 +107,7 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
   };
 
   return (
-    <Modal labelledBy="auth-title" onClose={onClose} className={s.modal}>
+    <Modal labelledBy="auth-title" onClose={onClose} className={s.modal} sheet>
       {(close) => (
         <>
           <div className={s.promo}>

@@ -313,7 +313,7 @@
 
 .optional {
   flex: none;
-  color: var(--c-muted-2);
+  color: #b4b9c1;
   font-size: 14px;
 }
 
@@ -577,6 +577,266 @@
     @include hover {
       color: #e06400;
       text-decoration: underline;
+    }
+  }
+}
+
+// --- мобилка (фреймы 38:3079 / 38:3203 на 360, 38:6055 / 38:6179 на 440): лист на весь экран,
+// сверху оранжевый блок 186 px (маскот слева, бонус справа, две плашки в ряд), ниже форма ---
+@include down($bp-sm) {
+  .modal {
+    position: relative;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .promo {
+    display: block;
+    width: auto;
+    height: 186px;
+    padding: 38px 16px 0 138px;
+    border-radius: 0 0 28px 28px;
+    text-align: left;
+  }
+
+  .mascotWrap {
+    position: absolute;
+    left: 30px;
+    top: 28px;
+    margin: 0;
+    transform: scale(0.55);
+    transform-origin: left top;
+  }
+
+  .star1 {
+    left: 19px;
+    top: 32px;
+    width: 12px;
+    height: 12px;
+  }
+
+  .star2 {
+    left: 110px;
+    right: auto;
+    top: 52px;
+    width: 12px;
+    height: 12px;
+  }
+
+  .star3 {
+    left: 25px;
+    top: 87px;
+    width: 11px;
+    height: 11px;
+  }
+
+  .spark1 {
+    left: 44px;
+    top: 20px;
+    width: 6px;
+    height: 6px;
+  }
+
+  .spark2 {
+    left: 106px;
+    right: auto;
+    top: 28px;
+    width: 6px;
+    height: 6px;
+  }
+
+  .bonus {
+    display: block;
+    font-size: 26px;
+    line-height: 28.6px;
+    letter-spacing: 0;
+  }
+
+  .bonusSub {
+    display: block;
+    margin-top: 4px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 20.5px;
+    opacity: 1;
+  }
+
+  .perks {
+    position: absolute;
+    left: 16px;
+    right: 16px;
+    top: 126px;
+    flex-direction: row;
+    gap: 8px;
+    margin: 0;
+
+    li {
+      flex: 1;
+      justify-content: center;
+      gap: 8px;
+      padding: 0;
+      border-radius: 22px;
+      font-size: 14px;
+    }
+  }
+
+  .main {
+    position: static;
+    padding: 22px 16px 24px;
+  }
+
+  // крестик - на оранжевом блоке, полупрозрачный белый круг 44
+  .close {
+    right: 14px;
+    top: 14px;
+    width: 44px;
+    height: 44px;
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+  }
+
+  .tabs {
+    width: 100%;
+    max-width: none;
+    height: 50px;
+    padding: 4px;
+
+    &::before {
+      left: 4px;
+      top: 4px;
+      bottom: 4px;
+      width: calc(50% - 4px);
+    }
+  }
+
+  .tab {
+    color: #8a909a;
+    font-size: 16px;
+    font-weight: 900;
+  }
+
+  .head {
+    margin-top: 20px;
+  }
+
+  .title {
+    color: #1e2229;
+    font-size: 24px;
+    line-height: 32.7px;
+  }
+
+  .sub {
+    margin-top: 6px;
+    color: #8a909a;
+    font-size: 16px;
+    line-height: 22.4px;
+  }
+
+  .form {
+    margin-top: 18px;
+  }
+
+  .field {
+    gap: 7px;
+    height: 56px;
+    padding: 0 18px;
+
+    input {
+      font-size: 16px;
+
+      &::placeholder {
+        color: #8a909a;
+        font-size: 15px;
+      }
+    }
+  }
+
+  // в регистрации поля и кнопка через 8 px (паддинги под кольцо фокуса - 4)
+  .collapseInner .field {
+    margin-top: 4px;
+  }
+
+  .collapse[data-open] + .submit {
+    margin-top: 4px;
+  }
+
+  // текст кнопки в макете на 2-3 px ниже середины
+  .submit {
+    height: 60px;
+    margin-top: 6px;
+    padding-top: 5px;
+    font-size: 17px;
+    font-weight: 900;
+  }
+
+  .submitSparks {
+    top: 16px;
+  }
+
+  .divider {
+    gap: 13px;
+    margin-top: 20px;
+    color: #8a909a;
+    font-size: 15px;
+  }
+
+  .providers {
+    margin-top: 14px;
+  }
+
+  // в макете соцсети - квадраты 56 с тонкой рамкой
+  // иконки 20 px и в макете на 5 px ниже центра квадрата
+  .provider {
+    width: 56px;
+    height: 56px;
+    border-radius: 0;
+    box-shadow:
+      inset 0 0 0 1px #eceef2,
+      inset 0 0 0 2px #f6f7f9;
+
+    > svg {
+      width: 20px;
+      height: 20px;
+      transform: translateY(5px);
+    }
+  }
+
+  .terms {
+    margin-top: 17px;
+    color: #b4b9c1;
+    font-size: 14px;
+    line-height: 20.3px;
+
+    a {
+      font-weight: 900;
+    }
+  }
+}
+
+// 360-419: подзаголовок переносится как в макете («...пароль не / нужен», «...код из / письма»)
+@media (max-width: 419px) {
+  .sub {
+    max-width: 300px;
+  }
+
+  // «по желанию» в макете на 360 прижата к правому краю поля
+  .optional {
+    margin-right: -16px;
+  }
+}
+
+// 440: поле с отступом иконки 20 и зазором 11, подсказки 16
+@media (min-width: 420px) and (max-width: 767px) {
+  .perks li {
+    font-size: 15px;
+  }
+
+  .field {
+    gap: 11px;
+    padding: 0 20px;
+
+    input::placeholder {
+      font-size: 16px;
     }
   }
 }
