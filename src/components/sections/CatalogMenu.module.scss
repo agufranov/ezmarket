@@ -261,10 +261,10 @@
     box-shadow var(--t-fast) ease,
     transform 0.1s ease;
 
-  // под курсором - персиковый градиент слева направо до белого, как в макете
+  // под курсором - вся карточка персиковая (градиент до белого) с оранжевой обводкой 2 px, как Brawl Stars в макете 12:945
   @include hover {
-    background: linear-gradient(90deg, #ffefe0 0%, #fff 88%);
-    box-shadow: inset 0 0 0 1.5px var(--c-orange);
+    background: linear-gradient(90deg, #ffeedd 0%, #fff 77%);
+    box-shadow: inset 0 0 0 2px var(--c-orange);
 
     // в макете у карточки под курсором подпись коричневая, «хит» на светлой плашке
     .cardSub {
@@ -288,19 +288,6 @@
 
   &:active {
     transform: scale(0.98);
-  }
-
-  // декоративный персиковый полукруг у нижнего края, как в макете
-  &::after {
-    content: "";
-    position: absolute;
-    left: 118px;
-    bottom: -22px;
-    z-index: -1;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: #fff1e4;
   }
 }
 
@@ -735,10 +722,6 @@
     padding: 7px 8px 9px;
     border-radius: 18px;
     box-shadow: inset 0 0 0 1px #eef0f3;
-
-    &::after {
-      display: none;
-    }
   }
 
   // в макете первая карточка подсвечена (персиковый фон, оранжевая обводка и цена)
