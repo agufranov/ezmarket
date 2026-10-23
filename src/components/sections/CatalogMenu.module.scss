@@ -592,3 +592,67 @@
     transform: scale(0.6);
   }
 }
+
+// --- мобилка (< 768): одна колонка - категории лентой сверху, товары, промо внизу ---
+@include down($bp-sm) {
+  .panel {
+    left: 0;
+    right: 0;
+    grid-template-columns: minmax(0, 1fr);
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .side {
+    @include h-scroll;
+    flex-direction: row;
+    gap: 6px;
+    padding: 12px;
+  }
+
+  .cat {
+    flex: none;
+    gap: 8px;
+    height: 46px;
+    padding: 0 14px 0 4px;
+    font-size: 15px;
+  }
+
+  .catIcon {
+    width: 38px;
+    height: 38px;
+  }
+
+  .content {
+    padding: 16px;
+    overflow: visible;
+  }
+
+  .head {
+    flex-wrap: wrap;
+  }
+
+  .title {
+    font-size: 22px;
+  }
+
+  .all {
+    height: 40px;
+    padding: 0 16px;
+    font-size: 14px;
+  }
+
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .promo {
+    margin: 0 16px 16px;
+  }
+
+  .promoRow img {
+    display: block;
+  }
+}
+
