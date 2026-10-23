@@ -49,3 +49,38 @@ $bp-xs: 479px;  // 360–479
     }
   }
 }
+
+// мобильные макеты (38:2892, 38:2001, 38:2249 ...): поповер шапки - лист снизу на всю ширину,
+// скругление сверху 28, ручка 44x4 в 13 px от верха, страница под ним затемнена
+@mixin mobile-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: auto;
+  bottom: 0;
+  width: auto;
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: 28px 28px 0 0;
+  box-shadow: 0 0 0 100vmax rgba(21, 24, 30, 0.73);
+  transform: translateY(24px);
+  transform-origin: 50% 100%;
+
+  &[data-open] {
+    transform: none;
+  }
+
+  // вместо носика - ручка листа
+  &::before {
+    top: 13px;
+    left: 50%;
+    right: auto;
+    width: 44px;
+    height: 4px;
+    margin-left: -22px;
+    border-radius: 2px;
+    background: #dcdfe4;
+    transform: none;
+  }
+}

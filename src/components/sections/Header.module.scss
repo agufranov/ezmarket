@@ -707,3 +707,66 @@
     }
   }
 }
+
+// мобилка: поповер валюты - лист снизу (см. mobile-sheet), размеры по фреймам 38:2892 / 38:5867
+@include down($bp-sm) {
+  .popover {
+    @include mobile-sheet;
+    padding: 34px 16px 54px;
+  }
+
+  .popTitle {
+    color: #8a909a;
+    line-height: 18px;
+  }
+
+  .curList {
+    margin-top: 11px;
+  }
+
+  .curRow {
+    gap: 12px;
+    height: 64px;
+    padding: 0 14px;
+    border-radius: 32px;
+
+    .currencyDrop {
+      width: 34px;
+      height: 34px;
+      font-size: 16px;
+    }
+  }
+
+  .curName {
+    font-size: 16px;
+    line-height: 1.2;
+
+    small {
+      color: #c85a00;
+      font-weight: 800;
+    }
+  }
+
+  .curCheck {
+    width: 28px;
+    height: 28px;
+  }
+
+  .curSoon {
+    gap: 6px;
+    margin-top: 16px;
+    padding: 0 14px;
+  }
+
+  .curOff {
+    width: 36px;
+    height: 36px;
+    color: #a3a8b0;
+    font-size: 15px;
+  }
+
+  .curSoonText {
+    margin-left: 4px;
+    color: #a3a8b0;
+  }
+}

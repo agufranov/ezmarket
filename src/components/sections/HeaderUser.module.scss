@@ -830,3 +830,182 @@
     transform: translateY(-8px);
   }
 }
+
+// мобилка: поповер - лист снизу (см. mobile-sheet); размеры по фреймам 38:2001 / 38:4972 (профиль)
+@include down($bp-sm) {
+  .panel {
+    @include mobile-sheet;
+  }
+
+  .profile {
+    width: auto;
+    padding: 27px 16px 39px;
+  }
+
+  // круги на карточке как в макете: большой справа сверху и выглядывающий снизу
+  .card {
+    padding: 17px 16px 79px;
+    border-radius: 24px;
+
+    &::after {
+      content: "";
+      position: absolute;
+      left: 202px;
+      top: 112px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+    }
+  }
+
+  .cardCircle {
+    right: -31px;
+    top: -72px;
+  }
+
+  .cardWho {
+    b {
+      font-size: 17px;
+    }
+
+    span {
+      font-size: 15px;
+      font-weight: 600;
+    }
+  }
+
+  .cardAvatar {
+    font-size: 21px;
+  }
+
+  .bonusRow {
+    margin: -64px 16px 0;
+    padding: 4px 14px 4px 2px;
+  }
+
+  // плитки в 34 px под плашкой бонусов (она лежит поверх низа карточки)
+  .tiles {
+    margin: 34px 0 5px;
+  }
+
+  .divider {
+    margin: 0 0 6px;
+  }
+
+  .tileIcon {
+    width: 52px;
+    height: 52px;
+  }
+
+  .tileBadge {
+    min-width: 27px;
+    height: 23px;
+    font-size: 14px;
+  }
+
+  .row {
+    gap: 12px;
+    padding: 0 4px;
+    font-size: 16px;
+  }
+
+  // уведомления (38:2249 / 38:5221)
+  .notif {
+    width: auto;
+    padding: 34px 16px 46px;
+  }
+
+  .notifHead {
+    padding: 0 2px;
+  }
+
+  .notifTitle {
+    font-size: 22px;
+    line-height: 30px;
+  }
+
+  .readAll {
+    color: #ff8a00;
+    font-size: 15px;
+  }
+
+  .tabs {
+    margin-top: 13px;
+  }
+
+  .tab {
+    height: 40px;
+    padding: 0 15px;
+    font-size: 15px;
+  }
+
+  .tabCount {
+    min-width: 22px;
+    height: 22px;
+    border-radius: 11px;
+    font-size: 14px;
+  }
+
+  .list {
+    gap: 11px;
+    max-height: none;
+    margin-top: 20px;
+    padding: 0;
+  }
+
+  // иконка 40 вровень с низом карточки, карточка в 10 px от иконки
+  .item {
+    gap: 10px;
+  }
+
+  .itemIcon {
+    margin-bottom: -2px;
+  }
+
+  // «Пока тихо» (38:2484 / 38:5457): маскот 84, текст 15 в две строки, лист высотой 329
+  .quiet {
+    width: auto;
+    padding: 63px 24px 91px;
+  }
+
+  .quietMascot {
+    margin-bottom: 11px;
+
+    // маскот размеряется через font-size во встроенном стиле (size / 112): 84 px = 0.75
+    > div:first-child {
+      font-size: 0.75px !important;
+    }
+  }
+
+  .quietTitle {
+    line-height: 30px;
+  }
+
+  .quietText {
+    max-width: 240px;
+    margin-top: 6px;
+    color: #8a909a;
+    font-size: 15px;
+    line-height: 21.8px;
+  }
+
+  .itemCard {
+    padding: 10px 30px 10px 14px;
+  }
+
+  .itemText {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 21px;
+  }
+
+  .itemTime {
+    color: #a3a8b0;
+    font-size: 14px;
+
+    .item[data-unread] & {
+      color: #e0823a;
+    }
+  }
+}
