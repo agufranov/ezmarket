@@ -438,6 +438,11 @@
   margin-bottom: 16px;
 }
 
+// на десктопе при «Назад» значок письма не показываем
+.mailBack + .mailIcon {
+  display: none;
+}
+
 .mailIcon {
   display: grid;
   flex: none;
@@ -922,13 +927,236 @@
 // одной колонкой по правому краю (14 px от края), высота 52, между ними 10; порядок как в макете:
 // Telegram, Написать нам, Частые вопросы ---
 @include down($bp-sm) {
-  .root:has(.menu) {
+  // меню и панели (вопросы, письмо, «отправлено», «на связи») - над виджетом, 14 px от краев
+  .root {
     top: auto;
+    left: 14px;
     right: 14px;
     // виджет 64 px в 14 px от низа + 13 px зазор
     bottom: 91px;
-    max-height: calc(100vh - 107px);
+    justify-content: flex-end;
+    max-height: calc(100dvh - 107px);
     transform: none;
+  }
+
+  // на 360 панель во всю ширину (332), на 440 - 360 у правого края
+  .panel {
+    width: 100%;
+    max-width: 360px;
+    padding: 16px;
+    border-radius: 28px;
+  }
+
+  .round {
+    width: 38px;
+    height: 38px;
+  }
+
+  // «Частые вопросы» (54:8475): темы в одну строку с обрезкой, вопросы 54+, ответ 15 / 21.8
+  .chips[role="tablist"] {
+    flex-wrap: nowrap;
+    overflow: hidden;
+  }
+
+  .chip {
+    flex: none;
+    height: 36px;
+    padding: 0 9px;
+    color: var(--c-ink-3);
+  }
+
+  .faqList {
+    margin-top: 2px;
+  }
+
+  .faqItem {
+    border-radius: 16px;
+  }
+
+  .faqQ {
+    padding: 12px;
+    line-height: 19.5px;
+  }
+
+  .faqItem[data-open] .faqQ {
+    padding-top: 15px;
+  }
+
+  .faqA p {
+    padding: 0 12px 13px;
+    color: #4a4f57;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 21.8px;
+  }
+
+  .helpful {
+    min-height: 0;
+    margin-top: 0;
+    padding: 12px 0 0;
+    color: #8a9099;
+  }
+
+  .vote {
+    gap: 4px;
+    height: 37px;
+    padding: 0 11px;
+    font-weight: 900;
+  }
+
+  // «Написать нам» (54:8291): значок письма 40 вместо «Назад», поля 54, кнопка 44 без стрелки
+  .mailBack {
+    display: none;
+  }
+
+  .mailBack + .mailIcon {
+    display: grid;
+  }
+
+  .mailHead {
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+
+  .mailIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .mailTitle {
+    font-size: 18px;
+    line-height: 24.6px;
+  }
+
+  .mailSub {
+    color: #8a9099;
+    line-height: 19.1px;
+  }
+
+  .mail .chips {
+    margin-top: 12px;
+  }
+
+  .field {
+    gap: 10px;
+    padding: 0 18px;
+
+    input {
+      font-weight: 800;
+    }
+  }
+
+  .area {
+    margin-top: 12px;
+    padding: 15px 18px;
+
+    // поле текста 97 в макете: 15 + 67 + 15
+    textarea {
+      height: 67px;
+      min-height: 67px;
+      color: #1e2229;
+      line-height: 21.8px;
+    }
+  }
+
+  .mailFoot {
+    margin-top: 12px;
+  }
+
+  .attach {
+    color: #b4510c;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .send {
+    height: 44px;
+    padding: 0 26px;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  .sendArrow {
+    display: none;
+  }
+
+  // «Письмо отправлено» (54:8150): маскот 84, заголовок 22, текст 15/600, плашка 38, кнопка 50
+  .sent {
+    padding: 3px 0 0;
+  }
+
+  .sentClose {
+    top: -2px;
+  }
+
+  .sentMascot {
+    margin-bottom: 9px;
+
+    > div {
+      font-size: 0.75px !important;
+    }
+  }
+
+  .sentTitle {
+    font-size: 22px;
+    line-height: 30px;
+  }
+
+  .sentText {
+    color: #8a9099;
+    font-weight: 600;
+    line-height: 20.5px;
+  }
+
+  .ticket {
+    height: 38px;
+    margin-top: 13px;
+    color: #1f8a4c;
+    font-size: 14px;
+  }
+
+  .done {
+    height: 50px;
+    margin-top: 16px;
+    font-size: 15px;
+    font-weight: 900;
+  }
+
+  // «Готово, мы на связи!» (54:8036): плашка до 360, маскот 64, кнопки 38
+  .toast {
+    gap: 12px;
+    width: 100%;
+    max-width: 380px;
+    padding: 20px 14px;
+    border-radius: 28px;
+  }
+
+  .toastTitle {
+    color: #3a1f0b;
+    line-height: 24.6px;
+  }
+
+  .toastText {
+    color: #6b3a16;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 21px;
+  }
+
+  .toastBtns {
+    margin-top: 13px;
+  }
+
+  .tgBtn,
+  .closeBtn {
+    height: 38px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .closeBtn {
+    color: #4a2a12;
   }
 
   .menu {
@@ -971,5 +1199,12 @@
   .bubbleIcon {
     width: 40px;
     height: 40px;
+  }
+}
+
+// 360: текст «Письмо отправлено» в две строки, как в макете
+@media (max-width: 419px) {
+  .sentText {
+    max-width: 256px;
   }
 }

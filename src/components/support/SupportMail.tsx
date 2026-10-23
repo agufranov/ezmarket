@@ -112,15 +112,15 @@ export function SupportMail({ topic: initialTopic, onBack, onClose, onSent }: Pr
   return (
     <form ref={formRef} className={s.mail} onSubmit={submit} noValidate>
       <div className={s.mailHead}>
-        {onBack ? (
-          <button type="button" className={s.round} onClick={onBack} aria-label="Назад">
+        {/* «Назад» есть, если форму открыли из меню или вопросов; в мобильном макете вместо него значок письма */}
+        {onBack && (
+          <button type="button" className={`${s.round} ${s.mailBack}`} onClick={onBack} aria-label="Назад">
             <BackIcon />
           </button>
-        ) : (
-          <span className={s.mailIcon} aria-hidden>
-            <MailIcon size={22} />
-          </span>
         )}
+        <span className={s.mailIcon} aria-hidden>
+          <MailIcon size={22} />
+        </span>
         <div className={s.mailTitles}>
           <h2 id="support-title" className={s.mailTitle}>
             Написать нам
