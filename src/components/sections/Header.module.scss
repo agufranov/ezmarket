@@ -606,13 +606,15 @@
     overflow-x: clip;
   }
 
+  // макеты 38:70 / 38:1032: шапка 120, во втором ряду каталог 44 и сразу за ним поиск до правого края.
+  // Логотип занимает две колонки, чтобы ширина логотипа не отодвигала поиск от кнопки каталога (правка 24.10, 320 px)
   .row {
     display: grid;
-    grid-template-columns: auto 1fr auto auto;
+    grid-template-columns: auto auto 1fr auto auto;
     grid-template-areas:
-      "logo . cur login"
-      "cat search search search";
-    gap: 10px 8px;
+      "logo logo . cur login"
+      "cat search search search search";
+    gap: 12px 8px;
     height: auto;
     padding-top: 12px;
     padding-bottom: 12px;
@@ -629,19 +631,22 @@
 
   .catalog {
     grid-area: cat;
-    height: 40px;
+    height: 44px;
     margin-left: 0;
     padding: 0 16px 0 10px;
     gap: 8px;
 
     .catalogText {
       display: inline;
+      font-size: 15px;
     }
   }
 
+  // в макете между кнопкой каталога и поиском 10 px (колонки - 8)
   .search {
     grid-area: search;
-    height: 40px;
+    height: 44px;
+    margin-left: 2px;
     padding-left: 14px;
   }
 
@@ -660,6 +665,7 @@
     gap: 8px;
     height: 40px;
     padding: 0 4px 0 16px;
+    font-size: 14px;
 
     .loginText {
       display: inline;
@@ -669,6 +675,15 @@
       width: 32px;
       height: 32px;
     }
+  }
+
+  // строка категорий в мобильных макетах 46 px, пункты 15 px
+  .navRow {
+    height: 46px;
+  }
+
+  .nav .cat {
+    font-size: 15px;
   }
 
   .nav .cats {
@@ -684,7 +699,7 @@
 @media (max-width: 399px) {
   .catalog {
     padding: 0;
-    width: 40px;
+    width: 44px;
     justify-content: center;
 
     .catalogText {

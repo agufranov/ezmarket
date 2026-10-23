@@ -1,7 +1,14 @@
+@use "../styles/mixins" as *;
+
 .main {
   display: flex;
   flex-direction: column;
   gap: var(--section-gap);
   padding-top: 20px;
   padding-bottom: 36px;
+
+  // мобильные макеты: баннер в 16 px под строкой категорий
+  @include down($bp-sm) {
+    padding-top: 16px;
+  }
 }
