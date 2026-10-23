@@ -209,9 +209,10 @@
 // переносы как в макете: ширина строки 246 px (подобрана по трем отзывам из макета)
 .text {
   padding-right: 15px;
-  font-size: 14.5px;
+  // макет 24:17: 15 / 21
+  font-size: 15px;
   font-weight: 700;
-  line-height: 1.5;
+  line-height: 1.4;
   color: var(--c-ink-2);
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -258,7 +259,7 @@
   height: 44px;
   border-radius: 50%;
   color: #fff;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 900;
   flex: none;
 }
@@ -285,7 +286,7 @@
   background: var(--c-green-soft);
   color: var(--c-green-ink);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 900;
 }
 
 // --- мобилка (макеты 440 / 360): рейтинг полосой, отзывы лентой ---
@@ -302,7 +303,18 @@
   }
 
   .ratingValue {
-    font-size: 44px;
+    font-size: 48px;
+    line-height: 1;
+  }
+
+  // кегли мобильных макетов: имя 16, текст 16 / 24
+  .name {
+    font-size: 16px;
+  }
+
+  .text {
+    font-size: 16px;
+    line-height: 1.5;
   }
 
   .ratingMascot {

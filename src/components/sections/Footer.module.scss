@@ -163,12 +163,23 @@
   font-size: 20px;
   font-weight: 900;
   letter-spacing: -0.3px;
-  color: var(--c-peach-ink);
+  // десктоп 24:17 - #B5571A, мобильные - #A6501A (--c-peach-ink)
+  color: #b5571a;
+
+  @include down($bp-sm) {
+    color: var(--c-peach-ink);
+  }
 }
 
 .bonusText {
   padding-bottom: 8px;
-  font-size: 14px;
+  // десктоп 24:17 - 12.5, мобильные - 14
+  font-size: 12.5px;
+
+  @include down($bp-sm) {
+    font-size: 14px;
+  }
+
   font-weight: 700;
   color: var(--c-loader-text);
 }
@@ -282,16 +293,22 @@
     }
   }
 
-  .colTitle {
+  // кегли мобильных макетов: описание 15, заголовки и ссылки 16, шаг ссылок 40
+  .about {
     font-size: 15px;
+  }
+
+  .colTitle {
+    font-size: 16px;
   }
 
   .links {
     padding-top: 10px;
 
     a {
-      padding: 9px 0;
-      font-size: 15px;
+      padding: 10.4px 0;
+      font-size: 16px;
+      line-height: 19.2px;
     }
   }
 
@@ -317,10 +334,14 @@
     font-size: 22px;
   }
 
+  .bonusText {
+    color: #a6501a;
+  }
+
   .bonusBtn {
     height: 46px;
     padding: 0 6px 0 18px;
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .bottom {

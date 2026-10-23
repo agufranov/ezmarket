@@ -39,9 +39,14 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 18px;
+  // десктоп 24:17 - 17, мобильные макеты - 18
+  font-size: 17px;
   font-weight: 800;
   color: #1e2229;
+
+  @include down($bp-sm) {
+    font-size: 18px;
+  }
   white-space: nowrap;
 }
 
@@ -63,7 +68,7 @@
   padding: 0 10px 0 12px;
   border-radius: var(--r-pill);
   background: #f3f4f6;
-  color: #686e78;
+  color: #454b55;
   font-size: 14px;
   font-weight: 700;
   transition: color var(--t-fast) ease;
@@ -146,6 +151,7 @@
 
     &::placeholder {
       color: #686e78;
+      font-weight: 700;
     }
   }
 }
@@ -195,7 +201,7 @@
     padding: 0;
     background: none;
     outline: none;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 900;
     color: #1e2229;
   }
@@ -224,8 +230,8 @@
   border-radius: 50%;
   background: #e9ebef;
   color: #686e78;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 12px;
+  font-weight: 900;
   transition:
     background var(--t-fast) ease,
     color var(--t-fast) ease;
@@ -326,9 +332,19 @@
     height: 50px;
   }
 
+  // кегли по мобильным макетам: логин 16, символы валют 14, «Оплатить» 17
+  .field > input {
+    font-size: 16px;
+  }
+
+  .cur {
+    font-size: 14px;
+  }
+
   .pay {
     height: 52px;
     margin-top: 4px;
+    font-size: 17px;
   }
 }
 
@@ -358,7 +374,7 @@
   pointer-events: none;
   transform: translateY(-50%);
 
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 900;
 
   b {

@@ -188,10 +188,12 @@
     padding: 12px 4px 0;
   }
 
+  // кегли по слоям мобильных макетов 38:70 / 38:1032
   .title {
     height: auto;
     min-height: 40px;
     font-size: 16px;
+    line-height: 20px;
   }
 
   .prices {
@@ -200,7 +202,8 @@
   }
 
   .price {
-    font-size: 20px;
+    font-size: 19px;
+    line-height: 25.6px;
   }
 
   .buy {

@@ -37,7 +37,7 @@ export function ProductCard({ product, priority, className }: Props) {
           </span>
         )}
       </a>
-      {product.discount && <span className={s.discount}>-{product.discount}%</span>}
+      {product.discount && <span className={s.discount}>−{product.discount}%</span>}
       {product.badge && <span className={s.badge}>{product.badge}</span>}
       <div className={s.body}>
         <p className={s.meta}>

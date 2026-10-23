@@ -3,7 +3,7 @@
 import { useId, useState } from "react";
 import { site } from "@/config/site";
 import { useModal } from "@/lib/modal";
-import { formatAmount, formatPrice } from "@/lib/format";
+import { formatAmount, formatNumber } from "@/lib/format";
 import { Icon } from "@/components/ui/Icon";
 import s from "./SteamBar.module.scss";
 
@@ -127,7 +127,7 @@ export function SteamBar() {
         </div>
 
         <button type="submit" className={s.pay} disabled={!canPay} aria-busy={loading || undefined}>
-          {loading ? <span className={s.spinner} aria-label="Обработка" /> : `Оплатить ${formatPrice(value, currency.symbol)}`}
+          {loading ? <span className={s.spinner} aria-label="Обработка" /> : `Оплатить ${formatNumber(value)}${currency.symbol}`}
         </button>
       </form>
     </section>

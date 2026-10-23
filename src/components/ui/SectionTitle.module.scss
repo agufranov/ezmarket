@@ -49,7 +49,7 @@
 
 // на 360 у ссылки «Все …» остается только стрелка
 @media (max-width: 399px) {
-  .action > span:first-child {
+  .action a > span:first-child {
     display: none;
   }
 

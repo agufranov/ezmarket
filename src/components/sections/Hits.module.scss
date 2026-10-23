@@ -180,10 +180,16 @@
   }
 }
 
-// на 360 у «Все хиты» остается только стрелка
+// на 360 у «Все хиты» остается только стрелка; названия в ленте хитов на 360 - 15 px (на 440 - 16, как везде)
 @media (max-width: 399px) {
   .more > span:first-child {
     display: none;
+  }
+
+  .card h3 {
+    min-height: 37.6px;
+    font-size: 15px;
+    line-height: 18.8px;
   }
 }
 

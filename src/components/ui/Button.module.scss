@@ -1,3 +1,5 @@
+@use "../../styles/mixins" as *;
+
 .btn {
   position: relative;
   display: inline-flex;
@@ -42,6 +44,17 @@
   height: 40px;
   font-size: 14px;
   padding: 0 18px;
+}
+
+// мобильные макеты: текст кнопок на 1 px крупнее («Пополнить», «Как это работает» - 16, «Купить» - 15)
+@include down($bp-sm) {
+  .btn {
+    font-size: 16px;
+  }
+
+  .sm {
+    font-size: 15px;
+  }
 }
 
 .withArrow {

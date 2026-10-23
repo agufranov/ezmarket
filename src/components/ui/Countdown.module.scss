@@ -1,3 +1,5 @@
+@use "../../styles/mixins" as *;
+
 .root {
   display: inline-flex;
   gap: 6px;
@@ -19,6 +21,12 @@
 .value {
   font-size: 18px;
   font-weight: 900;
+
+  // мобильные макеты: цифры 16 px
+  @include down($bp-sm) {
+    font-size: 16px;
+  }
+
   // смена цифры - короткий slide-up (ключ меняется вместе со значением)
   animation: tick 200ms ease;
 }

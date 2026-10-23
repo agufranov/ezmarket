@@ -108,7 +108,7 @@ const mainSlide = {
 export const heroSlides = [mainSlide, ...[2, 3, 4].map((n) => ({ ...mainSlide, id: `steam-${n}` }))];
 
 export const sideBanners = [
-  { id: "ps", label: "PlayStation", title: ["PS Plus до", "-40%"], icon: "/img/brands/playstation.png", theme: "dark" as const },
+  { id: "ps", label: "PlayStation", title: ["PS Plus до", "−40%"], icon: "/img/brands/playstation.png", theme: "dark" as const },
   { id: "tg", label: "Telegram", title: ["Stars и", "Premium"], icon: "/img/brands/telegram.png", theme: "peach" as const },
 ];
 
