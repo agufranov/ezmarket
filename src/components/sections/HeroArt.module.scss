@@ -93,12 +93,35 @@
 
 // мобилка: слои под текстом баннера, позиции по макету 360/440 - от центра баннера
 @include down($bp-sm) {
+  // сияние 220 за маскотом (радиальный градиент из макета) и полупрозрачный круг 220 внизу
+  .art::before,
+  .art::after {
+    content: "";
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .art::before {
+    left: calc(50% - 140px);
+    top: 287px;
+    background: radial-gradient(circle 155px, rgba(255, 255, 255, 0.5) 0, rgba(255, 255, 255, 0.18) 45%, rgba(255, 255, 255, 0) 100%);
+  }
+
+  .art::after {
+    left: calc(50% - 68px);
+    top: 419px;
+    background: rgba(255, 255, 255, 0.06);
+  }
+
   .halo {
     right: auto;
-    left: calc(50% + 16px);
-    top: 286px;
-    width: 121px;
-    height: 121px;
+    left: calc(50% + 14px);
+    top: 285px;
+    width: 124px;
+    height: 124px;
   }
 
   .steam {
@@ -118,16 +141,17 @@
     font-size: 20px;
   }
 
+  // кольцо 154: линия белым 55% и ободок 12 px белым 12%
   .mascotRing {
     position: absolute;
-    left: calc(50% - 118px);
-    top: 315px;
+    left: calc(50% - 122px);
+    top: 318px;
     display: block;
-    width: 148px;
-    height: 148px;
-    border: 1.5px solid rgba(255, 255, 255, 0.55);
+    width: 154px;
+    height: 154px;
+    border: 1px solid rgba(255, 255, 255, 0.55);
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 0 0 12px rgba(255, 255, 255, 0.12);
   }
 
   // в макете маскот ~122 px - размер задан инлайном, поэтому масштабом
@@ -142,10 +166,10 @@
 
   .chip {
     right: auto;
-    left: calc(50% + 54px);
-    top: 397px;
+    left: calc(50% + 52px);
+    top: 395px;
     bottom: auto;
-    height: 40px;
+    height: 44px;
     font-size: 16px;
   }
 }

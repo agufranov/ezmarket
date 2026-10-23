@@ -105,3 +105,16 @@
     transform: rotate(6deg);
   }
 }
+
+// мобилка (38:2681): пузырь сразу под «Войти» (поверх строки поиска), до правого края почти вплотную
+@include down($bp-sm) {
+  .tip {
+    top: 60px;
+    right: 13px;
+    padding: 14px 13px 13px 16px;
+  }
+
+  .text {
+    color: #6a4224;
+  }
+}
