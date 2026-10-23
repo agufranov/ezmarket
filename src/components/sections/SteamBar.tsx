@@ -69,7 +69,9 @@ export function SteamBar() {
         }}
       >
         <label className={s.field}>
-          <Icon src="/img/icons/user.svg" size={24} />
+          {/* в мобильном макете иконки полей контурные */}
+          <Icon src="/img/icons/user.svg" size={24} className={s.iconDesk} />
+          <Icon src="/img/icons/user-line.svg" size={20} className={s.iconMob} />
           <span className="visually-hidden">Логин Steam</span>
           <input
             value={login}
@@ -79,7 +81,8 @@ export function SteamBar() {
             spellCheck={false}
           />
           <span className={s.info} tabIndex={0} aria-describedby={`${uid}-tip`}>
-            <Icon src="/img/icons/info-circle.svg" size={20} alt="Где найти логин Steam" />
+            <Icon src="/img/icons/info-circle.svg" size={20} alt="Где найти логин Steam" className={s.iconDesk} />
+            <Icon src="/img/icons/info-line.svg" size={16} alt="Где найти логин Steam" className={s.iconMob} />
             <span id={`${uid}-tip`} role="tooltip" className={s.tip}>
               Логин - это имя для входа в Steam, а не никнейм в профиле
             </span>
@@ -87,9 +90,16 @@ export function SteamBar() {
         </label>
 
         <div className={s.field} data-error={amountError ? "" : undefined}>
-          <Icon src="/img/icons/buy-crypto.svg" size={24} />
+          <Icon src="/img/icons/buy-crypto.svg" size={24} className={s.iconDesk} />
+          <Icon src="/img/icons/coins-line.svg" size={20} className={s.iconMob} />
           <label className={s.amount}>
             <span className={s.amountLabel}>{amountError || "Сумма"}</span>
+            {/* символ валюты сразу после суммы, как в макете («500$») */}
+            <span className={s.amountValue}>
+              <span className={s.amountGhost} aria-hidden>
+                {amount}
+                <b>{currency.symbol}</b>
+              </span>
             <input
               value={amount}
               inputMode="numeric"
@@ -97,6 +107,7 @@ export function SteamBar() {
               onBlur={() => setTouched(true)}
               aria-invalid={!!amountError}
             />
+            </span>
           </label>
           <div className={s.currencies} role="radiogroup" aria-label="Валюта">
             {site.steam.currencies.map((c) => (

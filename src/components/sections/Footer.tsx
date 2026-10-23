@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import { footerColumns } from "@/data/mocks";
 import { routes, socials } from "@/config/routes";
@@ -12,16 +11,6 @@ import s from "./Footer.module.scss";
 
 export function Footer() {
   const { openModal } = useModal();
-  // На мобильных колонки ссылок свернуты в аккордеон, на остальных всегда раскрыты
-  const [compact, setCompact] = useState(false);
-
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 767px)");
-    const update = () => setCompact(mq.matches);
-    update();
-    mq.addEventListener("change", update);
-    return () => mq.removeEventListener("change", update);
-  }, []);
 
   return (
     <footer className={s.footer}>
@@ -45,7 +34,7 @@ export function Footer() {
         </div>
 
         {footerColumns.map((col) => (
-          <details key={`${col.title}-${compact}`} className={s.col} open={!compact}>
+          <details key={col.title} className={s.col} open>
             <summary className={s.colTitle}>{col.title}</summary>
             <ul className={s.links}>
               {col.links.map((l) => (

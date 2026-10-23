@@ -378,13 +378,18 @@
   .content {
     max-width: none;
     height: auto;
-    padding: 44px 20px 0;
+    padding: 30px 20px 0;
     gap: 10px;
   }
 
   .dots {
     left: 20px;
     top: 14px;
+  }
+
+  // переносы - по ширине экрана, как в макете («Пополняй Steam за / минуту» на 440)
+  .title br {
+    display: none;
   }
 
   .title {
@@ -394,7 +399,7 @@
   }
 
   .text {
-    max-width: 320px;
+    max-width: 290px;
     padding-bottom: 6px;
     font-size: 15px;
   }
@@ -409,10 +414,16 @@
     scroll-padding-inline: var(--gutter);
   }
 
+  // боковые баннеры лентой: 318×150, шаг 12 (макет 440); на 360 - 256
+  .side {
+    gap: 12px;
+  }
+
   .card {
-    flex: 0 0 78%;
+    flex: 0 0 min(318px, calc(100vw - 104px));
     min-width: 0;
     height: 150px;
+    padding: 20px;
     scroll-snap-align: start;
   }
 }

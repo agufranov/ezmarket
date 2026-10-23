@@ -14,6 +14,7 @@ export function HeroArt({ className }: { className?: string }) {
         <Image src="/img/brands/steam.png" alt="" width={110} height={110} priority />
       </span>
       <span className={s.rub}>₽</span>
+      <span className={s.mascotRing} />
       <Mascot size={150} sideHand className={s.mascot} />
       <span className={s.chip}>
         <Icon src="/img/icons/coin.svg" size={30} />

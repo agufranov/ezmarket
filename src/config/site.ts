@@ -16,6 +16,7 @@ export const site = {
   },
   recommended: {
     pageSize: 10,
+    pageSizeMobile: 6,
     maxItems: 30,
     loaderDelayMs: 1200,
   },

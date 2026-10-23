@@ -297,3 +297,83 @@
     transform: rotate(360deg);
   }
 }
+
+// --- мобилка (макеты 440 / 360): все поля в столбик ---
+@include down($bp-sm) {
+  .bar {
+    gap: 16px;
+    padding: 16px 16px 18px;
+  }
+
+  .head {
+    min-width: 0;
+    // на 440 текст отстоит от логотипа на 32 px, на 360 - на 4 px
+    gap: clamp(4px, calc(35vw - 122px), 32px);
+    padding-left: 4px;
+  }
+
+  .logo {
+    width: 52px;
+    height: 52px;
+  }
+
+  .form {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .field {
+    height: 50px;
+  }
+
+  .pay {
+    height: 52px;
+    margin-top: 4px;
+  }
+}
+
+.iconMob {
+  display: none;
+}
+
+.amountValue {
+  position: relative;
+  display: block;
+
+  input {
+    position: relative;
+    width: 100%;
+    background: none;
+  }
+}
+
+// невидимая копия суммы задает место для символа валюты справа от цифр
+.amountGhost {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  color: transparent;
+  font: inherit;
+  white-space: pre;
+  pointer-events: none;
+  transform: translateY(-50%);
+
+  font-size: 16px;
+  font-weight: 900;
+
+  b {
+    margin-left: 1px;
+    color: #1e2229;
+    font-weight: inherit;
+  }
+}
+
+@include down($bp-sm) {
+  .iconDesk {
+    display: none;
+  }
+
+  .iconMob {
+    display: block;
+  }
+}

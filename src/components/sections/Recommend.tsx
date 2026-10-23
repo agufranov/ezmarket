@@ -17,6 +17,8 @@ const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayout
 
 export function Recommend() {
   const [tab, setTab] = useState<TabId>("games");
+  // на мобилке порция 6 карточек (3 ряда по 2, как в макете), на десктопе - из конфига
+  const [page, setPage] = useState<number>(pageSize);
   const [items, setItems] = useState<Product[]>(() => getRecommended("games", 0, pageSize));
   const [loading, setLoading] = useState(false);
   const [fadeKey, setFadeKey] = useState(0);
@@ -41,6 +43,12 @@ export function Recommend() {
   }, [tab, measure]);
 
   useEffect(() => {
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+    setPage(site.recommended.pageSizeMobile);
+    setItems((prev) => prev.slice(0, site.recommended.pageSizeMobile));
+  }, []);
+
+  useEffect(() => {
     window.addEventListener("resize", measure);
     document.fonts?.ready.then(measure);
     return () => window.removeEventListener("resize", measure);
@@ -49,7 +57,7 @@ export function Recommend() {
   const selectTab = (id: TabId) => {
     if (id === tab) return;
     setTab(id);
-    setItems(getRecommended(id, 0, pageSize));
+    setItems(getRecommended(id, 0, page));
     setFadeKey((k) => k + 1);
   };
 
@@ -62,7 +70,7 @@ export function Recommend() {
         if (!entry.isIntersecting) return;
         setLoading(true);
         window.setTimeout(() => {
-          setItems((prev) => [...prev, ...getRecommended(tab, prev.length, pageSize)]);
+          setItems((prev) => [...prev, ...getRecommended(tab, prev.length, page)]);
           setLoading(false);
         }, loaderDelayMs);
       },
@@ -70,7 +78,7 @@ export function Recommend() {
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [tab, hasMore, loading]);
+  }, [tab, hasMore, loading, page]);
 
   return (
     <section className={s.panel} aria-labelledby="rec-title">
@@ -129,7 +137,7 @@ export function Recommend() {
                   <i />
                 </span>
               </p>
-              <p className={s.bubbleText}>еще {pageSize} товаров · {tabLabel}</p>
+              <p className={s.bubbleText}>еще {page} товаров · {tabLabel}</p>
             </div>
           </div>
           <div className={s.grid}>

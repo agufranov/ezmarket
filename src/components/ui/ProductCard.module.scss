@@ -1,3 +1,5 @@
+@use "../../styles/mixins" as *;
+
 .card {
   position: relative;
   display: flex;
@@ -32,7 +34,9 @@
 .cover {
   position: relative;
   display: block;
-  height: 140px;
+  // высоту обложки задает секция (хиты на мобилке - 105, рекомендации - по пропорции)
+  height: var(--cover-h, 140px);
+  aspect-ratio: var(--cover-ratio, auto);
   border-radius: var(--r-2);
   overflow: hidden;
   background: var(--c-fill);
@@ -175,4 +179,32 @@
   color: #8e939b;
   // в макете старая цена без зачеркивания
   text-decoration: none;
+}
+
+// --- мобилка (макеты 440 / 360) ---
+@include down($bp-sm) {
+  .body {
+    gap: 2px;
+    padding: 12px 4px 0;
+  }
+
+  .title {
+    height: auto;
+    min-height: 40px;
+    font-size: 16px;
+  }
+
+  .prices {
+    height: auto;
+    padding-top: 10px;
+  }
+
+  .price {
+    font-size: 20px;
+  }
+
+  .buy {
+    height: 42px;
+    margin-top: 9px;
+  }
 }

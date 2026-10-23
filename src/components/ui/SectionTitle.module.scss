@@ -28,3 +28,32 @@
 .action {
   margin-left: auto;
 }
+
+// --- мобилка (макеты 440 / 360) ---
+@include down($bp-sm) {
+  .head {
+    gap: 10px;
+  }
+
+  .drop {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+
+  .title {
+    font-size: 22px;
+    letter-spacing: -0.3px;
+  }
+}
+
+// на 360 у ссылки «Все …» остается только стрелка
+@media (max-width: 399px) {
+  .action > span:first-child {
+    display: none;
+  }
+
+  .action {
+    padding: 0 4px;
+  }
+}

@@ -242,3 +242,109 @@
     }
   }
 }
+
+// --- мобилка (макеты 440 / 360): колонки ссылок раскрыты (в макете аккордеона нет) ---
+@include down($bp-sm) {
+  .footer {
+    gap: 16px;
+    padding: 20px;
+    border-radius: 28px;
+  }
+
+  .top {
+    grid-template-columns: 1fr 1fr;
+    gap: 0 16px;
+
+    .brand {
+      grid-column: 1 / -1;
+      padding-bottom: 20px;
+    }
+
+    .bonus {
+      grid-column: 1 / -1;
+      grid-row: auto;
+    }
+  }
+
+  .col {
+    padding: 16px 0 12px;
+    border-top: 1px solid var(--c-line);
+
+    // «Помощь» на всю ширину, ссылки в две колонки
+    &:nth-of-type(3) {
+      grid-column: 1 / -1;
+
+      .links {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        column-gap: 16px;
+      }
+    }
+  }
+
+  .colTitle {
+    font-size: 15px;
+  }
+
+  .links {
+    padding-top: 10px;
+
+    a {
+      padding: 9px 0;
+      font-size: 15px;
+    }
+  }
+
+  .bonus {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 8px;
+    padding: 20px;
+    border-radius: 28px;
+    text-align: center;
+  }
+
+  .bonusMascot {
+    margin: 0;
+  }
+
+  .bonusBody {
+    align-items: center;
+  }
+
+  .bonusTitle {
+    font-size: 22px;
+  }
+
+  .bonusBtn {
+    height: 46px;
+    padding: 0 6px 0 18px;
+    font-size: 15px;
+  }
+
+  .bottom {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    text-align: center;
+  }
+
+  .legal {
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+}
+
+// на 360 колонки ссылок друг под другом
+@media (max-width: 399px) {
+  .top .col,
+  .top .col:nth-of-type(3) {
+    grid-column: 1 / -1;
+
+    .links {
+      display: flex;
+    }
+  }
+}

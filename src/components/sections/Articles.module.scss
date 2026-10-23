@@ -148,3 +148,47 @@
   line-height: 1.28;
   color: var(--c-ink-3);
 }
+
+// --- мобилка (макеты 440 / 360) ---
+@include down($bp-sm) {
+  .section {
+    gap: 14px;
+  }
+
+  .grid {
+    gap: 12px;
+  }
+
+  .main {
+    min-height: 250px;
+    border-radius: 28px;
+  }
+
+  .mainBody {
+    gap: 10px;
+    padding: 0 20px 20px;
+  }
+
+  .mainTitle {
+    font-size: 22px;
+    line-height: 1.15;
+  }
+
+  .item {
+    gap: 12px;
+    padding: 8px 16px 8px 8px;
+  }
+
+  .thumb {
+    width: 84px;
+    height: 84px;
+  }
+
+  .itemBody {
+    gap: 6px;
+  }
+
+  .itemTitle {
+    font-size: 15px;
+  }
+}

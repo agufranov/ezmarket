@@ -115,3 +115,82 @@
     }
   }
 }
+
+// --- мобилка (макеты 440 / 360): лента карточек со скроллом ---
+@include down($bp-sm) {
+  .panel {
+    gap: 14px;
+    padding: 10px 10px 16px;
+  }
+
+  .ribbon {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    column-gap: 12px;
+    row-gap: 14px;
+    align-items: center;
+    padding: 13px 14px 11px;
+    border-radius: 22px;
+  }
+
+  .title {
+    font-size: 22px;
+    letter-spacing: -0.3px;
+  }
+
+  .sub {
+    max-width: 200px;
+    line-height: 1.4;
+  }
+
+  .timer {
+    grid-column: 1 / -1;
+    order: 0;
+    width: auto;
+    padding-left: 0;
+    gap: 8px;
+  }
+
+  .timerLabel {
+    margin-right: 6px;
+  }
+
+  // «Все хиты» в строке заголовка, справа (как в макете)
+  .more {
+    grid-row: 1;
+    grid-column: 3;
+    margin-left: 0;
+  }
+
+  .grid {
+    @include h-scroll;
+    display: flex;
+    gap: 12px;
+    margin: 0 -10px;
+    padding: 0 22px;
+    scroll-padding-inline: 22px;
+  }
+
+  // ширина карточки по макету: (ширина ленты - 24) / 2.2 → 161 на 440, 124 на 360
+  .card,
+  .card:nth-child(n) {
+    display: flex;
+    flex: 0 0 calc((100vw - 32px - 44px - 24px) / 2.2);
+    scroll-snap-align: start;
+  }
+}
+
+// на 360 у «Все хиты» остается только стрелка
+@media (max-width: 399px) {
+  .more > span:first-child {
+    display: none;
+  }
+}
+
+@include down($bp-sm) {
+  // обложка по пропорции макета: 161×105 на 440, 124×81 на 360
+  .grid {
+    --cover-h: auto;
+    --cover-ratio: 161 / 105;
+  }
+}

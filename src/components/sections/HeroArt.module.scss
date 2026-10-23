@@ -59,6 +59,11 @@
   transform: rotate(-10deg);
 }
 
+// кольцо вокруг маскота - только в мобильном макете
+.mascotRing {
+  display: none;
+}
+
 .mascot {
   position: absolute !important;
   left: 30px;
@@ -105,18 +110,31 @@
   }
 
   .rub {
-    left: calc(50% - 88px);
-    top: 271px;
-    width: 40px;
-    height: 40px;
-    border-radius: 20px 20px 20px 9px;
-    font-size: 19px;
+    left: calc(50% - 90px);
+    top: 269px;
+    width: 44px;
+    height: 44px;
+    border-radius: 22px 22px 22px 10px;
+    font-size: 20px;
+  }
+
+  .mascotRing {
+    position: absolute;
+    left: calc(50% - 118px);
+    top: 315px;
+    display: block;
+    width: 148px;
+    height: 148px;
+    border: 1.5px solid rgba(255, 255, 255, 0.55);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
   }
 
   // в макете маскот ~122 px - размер задан инлайном, поэтому масштабом
+  // положение сверено с макетом по глазам маскота (сдвиг +11 / +11)
   .mascot {
-    left: calc(50% - 118px);
-    top: 323px;
+    left: calc(50% - 107px);
+    top: 334px;
     bottom: auto;
     transform: scale(0.82);
     transform-origin: left top;

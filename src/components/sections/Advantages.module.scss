@@ -104,3 +104,37 @@
   line-height: 1.45;
   color: var(--c-muted);
 }
+
+// --- мобилка (макеты 440 / 360): карточки столбиком, содержимое по центру ---
+@include down($bp-sm) {
+  .list {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .card {
+    align-items: center;
+    gap: 2px;
+    padding: 16px 20px 22px;
+    border-radius: 28px;
+    text-align: center;
+  }
+
+  // арт из макета на мобилке меньше: подложка 86, «капля» 54
+  .art {
+    width: 160px;
+    height: 94px;
+    margin-left: 40px;
+    transform: scale(0.78);
+    transform-origin: left top;
+  }
+
+  .title {
+    padding-top: 4px;
+    font-size: 18px;
+  }
+
+  .desc {
+    max-width: 320px;
+  }
+}

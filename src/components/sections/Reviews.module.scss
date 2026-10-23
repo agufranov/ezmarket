@@ -287,3 +287,35 @@
   font-size: 14px;
   font-weight: 800;
 }
+
+// --- мобилка (макеты 440 / 360): рейтинг полосой, отзывы лентой ---
+@include down($bp-sm) {
+  .row {
+    gap: 12px;
+  }
+
+  .rating {
+    min-height: 102px;
+    padding: 0 20px;
+    border-radius: 22px;
+    column-gap: 14px;
+  }
+
+  .ratingValue {
+    font-size: 44px;
+  }
+
+  .ratingMascot {
+    right: 16px;
+  }
+
+  .cards {
+    gap: 12px;
+  }
+
+  // ширина карточки по макету: 358 на 440, 290 на 360
+  .card {
+    flex: 0 0 calc(100vw - 82px);
+    min-height: 266px;
+  }
+}
