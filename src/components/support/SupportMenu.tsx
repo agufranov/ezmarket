@@ -34,17 +34,17 @@ export function SupportMenu({ onPick, onTelegram }: Props) {
         </span>
         Telegram-чат
       </a>
-      <button type="button" className={s.bubble} style={{ animationDelay: "80ms" }} onClick={() => onPick("mail")}>
-        <span className={`${s.bubbleIcon} ${s.iconMail}`}>
-          <MailIcon />
-        </span>
-        Написать нам
-      </button>
-      <button type="button" className={s.bubble} style={{ animationDelay: "120ms" }} onClick={() => onPick("faq")}>
+      <button type="button" className={s.bubble} style={{ animationDelay: "80ms" }} onClick={() => onPick("faq")}>
         <span className={`${s.bubbleIcon} ${s.iconFaq}`}>
           <QuestionIcon />
         </span>
         Частые вопросы
+      </button>
+      <button type="button" className={s.bubble} style={{ animationDelay: "120ms" }} onClick={() => onPick("mail")}>
+        <span className={`${s.bubbleIcon} ${s.iconMail}`}>
+          <MailIcon />
+        </span>
+        Написать нам
       </button>
     </div>
   );
