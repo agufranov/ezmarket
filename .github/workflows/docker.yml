@@ -1,0 +1,54 @@
+# Проверка запуска в Docker с чистой машины: тесты сервера в контейнере и весь проект одной командой
+name: Docker
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "server/**"
+      - "src/**"
+      - "Dockerfile"
+      - "docker-compose.yml"
+      - "nginx.conf"
+      - ".github/workflows/docker.yml"
+  workflow_dispatch:
+
+jobs:
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Тесты сервера (docker compose run --rm test)
+        run: docker compose run --rm test
+
+      - name: Весь проект (docker compose up)
+        run: docker compose up -d --build
+
+      - name: Сайт и API отвечают на одном адресе
+        run: |
+          for i in $(seq 1 60); do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/api/me || true)
+            [ "$code" = "401" ] && break
+            sleep 2
+          done
+          test "$code" = "401"
+          curl -sf http://localhost:8080/ | grep -q "EzMarket"
+
+      - name: Код входа приходит письмом в Mailpit
+        run: |
+          curl -sf -X POST http://localhost:8080/api/auth/code -H "Content-Type: application/json" -d '{"email":"ci@example.com","mode":"login"}'
+          for i in $(seq 1 30); do
+            n=$(curl -s http://localhost:8025/api/v1/messages | grep -o '"total":[0-9]*' | cut -d: -f2)
+            [ "${n:-0}" -ge 1 ] && break
+            sleep 1
+          done
+          test "${n:-0}" -ge 1
+
+      - name: Логи при ошибке
+        if: failure()
+        run: docker compose logs --no-color
+
+      - name: Остановить
+        if: always()
+        run: docker compose down -v
