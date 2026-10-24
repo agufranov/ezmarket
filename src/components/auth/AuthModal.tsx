@@ -5,7 +5,7 @@ import { auth, authProviders, type AuthProviderId } from "@/config/auth";
 import { site } from "@/config/site";
 import { useAuth } from "@/lib/auth";
 import { Modal } from "@/lib/modal";
-import { requestCode, oauthLogin, type AuthError } from "@/services/auth.mock";
+import { requestCode, oauthLogin, type AuthError } from "@/services/auth";
 import { Mascot } from "@/components/ui/Mascot";
 import { MaskIcon } from "@/components/ui/MaskIcon";
 import { ProviderIcon } from "./ProviderIcon";
@@ -92,13 +92,14 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
     setPromoError("");
     setLoading(true);
     try {
-      await requestCode(value, mode === "register" ? promo || undefined : undefined);
+      await requestCode(value, mode, mode === "register" ? promo || undefined : undefined);
       // Шаг «Ввод кода» (12.9) - после макета, пока только закрываем окно
       console.log(`[auth] код отправлен на ${value}, шаг ввода кода - после макета`);
       close();
     } catch (x) {
       const error = x as AuthError;
       if (error.field === "promo") setPromoError(error.error);
+      else if (error.field === "email") setEmailError(error.error);
       else setServerError(error.error);
       setShake(true);
     } finally {

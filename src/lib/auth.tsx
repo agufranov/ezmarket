@@ -2,15 +2,18 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { mockUser, type User } from "@/data/user";
+import { apiEnabled } from "@/services/api";
+import { fetchMe, logoutRequest } from "@/services/auth";
 
-// Авторизация на моках (ТЗ 12.4): пользователь в localStorage.ez_mock_auth.
-// Для демо - ?auth=1 / ?auth=0 в адресе. API позже: GET /me, POST /auth/logout.
+// Авторизация (ТЗ 12.4). С API - сессия на сервере (GET /me, POST /auth/logout).
+// Без API (GitHub Pages) - моки: пользователь в localStorage.ez_mock_auth, для демо ?auth=1 / ?auth=0.
 const KEY = "ez_mock_auth";
 
 type Ctx = {
   // undefined - еще не прочитали (до гидрации), null - гость
   user: User | null | undefined;
-  login: () => void;
+  // вход: пользователь из ответа сервера; без аргумента - мок-пользователь
+  login: (user?: User) => void;
   logout: () => void;
 };
 
@@ -37,9 +40,14 @@ function read(): User | null {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null | undefined>(undefined);
 
-  useEffect(() => setUser(read()), []);
+  useEffect(() => {
+    if (!apiEnabled) return setUser(read());
+    // сервер недоступен - показываем гостя, а не вечный скелет шапки
+    fetchMe().then(setUser, () => setUser(null));
+  }, []);
 
-  const login = useCallback(() => {
+  const login = useCallback((u?: User) => {
+    if (apiEnabled && u) return setUser(u);
     try {
       localStorage.setItem(KEY, JSON.stringify(mockUser));
     } catch {}
@@ -52,6 +60,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       sessionStorage.removeItem("ez_auth_email");
     } catch {}
     setUser(null);
+    if (apiEnabled) logoutRequest().catch(() => {});
   }, []);
 
   const value = useMemo(() => ({ user, login, logout }), [user, login, logout]);

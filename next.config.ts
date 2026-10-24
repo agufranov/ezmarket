@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
     trailingSlash: true,
     images: { loader: "custom", loaderFile: "./src/lib/image-loader.ts" },
   }),
+  // Разработка с сервером: API_PROXY=http://localhost:3001 NEXT_PUBLIC_API_URL=/api npm run dev -
+  // /api на том же адресе, что и сайт (как nginx в Docker), cookie сессии работают без CORS
+  ...(process.env.API_PROXY && {
+    rewrites: async () => [{ source: "/api/:path*", destination: `${process.env.API_PROXY}/api/:path*` }],
+  }),
 };
 
 export default nextConfig;
