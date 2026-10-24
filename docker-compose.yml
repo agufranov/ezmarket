@@ -1,0 +1,86 @@
+# Весь проект одной командой: docker compose up --build
+#   сайт      http://localhost:8080
+#   письма    http://localhost:8025 (Mailpit - коды входа видно здесь)
+# Тесты сервера: docker compose run --rm test
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ezmarket
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-ezmarket}
+      POSTGRES_DB: ezmarket
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ezmarket -d ezmarket"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  mailpit:
+    image: axllent/mailpit:latest
+    ports:
+      - "8025:8025"
+
+  api:
+    build:
+      context: ./server
+      target: runtime
+    environment:
+      DATABASE_URL: postgresql://ezmarket:${POSTGRES_PASSWORD:-ezmarket}@db:5432/ezmarket
+      # пусто - сервер сгенерирует секрет при первом старте и сохранит в томе apidata
+      AUTH_CODE_SECRET: ${AUTH_CODE_SECRET:-}
+      # локально сайт открывается по http; на стенде с HTTPS - true
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      MAIL_FROM: ${MAIL_FROM:-EzMarket <no-reply@ezmarket.local>}
+    volumes:
+      - apidata:/data
+    depends_on:
+      db:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
+
+  web:
+    build: .
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+  # --- тесты: отдельная база в памяти, поднимается только для docker compose run --rm test ---
+  db-test:
+    image: postgres:16-alpine
+    profiles: ["test"]
+    environment:
+      POSTGRES_USER: ezmarket
+      POSTGRES_PASSWORD: ezmarket
+      POSTGRES_DB: ezmarket_test
+    tmpfs:
+      - /var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ezmarket -d ezmarket_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  test:
+    build:
+      context: ./server
+      target: test
+    profiles: ["test"]
+    environment:
+      TEST_DATABASE_URL: postgresql://ezmarket:ezmarket@db-test:5432/ezmarket_test
+    depends_on:
+      db-test:
+        condition: service_healthy
+
+volumes:
+  pgdata:
+  apidata:
