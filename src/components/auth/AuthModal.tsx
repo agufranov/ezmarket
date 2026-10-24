@@ -5,9 +5,11 @@ import { auth, authProviders, type AuthProviderId } from "@/config/auth";
 import { site } from "@/config/site";
 import { useAuth } from "@/lib/auth";
 import { Modal } from "@/lib/modal";
+import { apiEnabled, type ApiError } from "@/services/api";
 import { requestCode, oauthLogin, type AuthError } from "@/services/auth";
 import { Mascot } from "@/components/ui/Mascot";
 import { MaskIcon } from "@/components/ui/MaskIcon";
+import { CodeStep, saveResendAt } from "./CodeStep";
 import { ProviderIcon } from "./ProviderIcon";
 import s from "./AuthModal.module.scss";
 
@@ -52,6 +54,7 @@ const normalizePromo = (v: string) => v.toUpperCase().replace(/[^A-Z0-9-]/g, "")
 export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose: () => void }) {
   const { login } = useAuth();
   const [mode, setMode] = useState<Mode>(initialMode);
+  const [step, setStep] = useState<"email" | "code">("email");
   const [email, setEmail] = useState("");
   const [promo, setPromo] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -92,12 +95,19 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
     setPromoError("");
     setLoading(true);
     try {
-      await requestCode(value, mode, mode === "register" ? promo || undefined : undefined);
-      // Шаг «Ввод кода» (12.9) - после макета, пока только закрываем окно
-      console.log(`[auth] код отправлен на ${value}, шаг ввода кода - после макета`);
-      close();
+      const { resendIn } = await requestCode(value, mode, mode === "register" ? promo || undefined : undefined);
+      // Шаг «Ввод кода» (12.9) - с сервером; на моках (GitHub Pages) окно закрывается, как было
+      if (!apiEnabled) return close();
+      saveResendAt(resendIn);
+      setStep("code");
     } catch (x) {
       const error = x as AuthError;
+      // код на этот email уже отправлен недавно - сразу к вводу, таймер покажет, когда можно повторить
+      if ((x as ApiError).status === 429 && error.retryIn) {
+        saveResendAt(error.retryIn);
+        setStep("code");
+        return;
+      }
       if (error.field === "promo") setPromoError(error.error);
       else if (error.field === "email") setEmailError(error.error);
       else setServerError(error.error);
@@ -154,6 +164,19 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
               </svg>
             </button>
 
+            {step === "code" ? (
+              <CodeStep
+                email={email}
+                mode={mode}
+                promo={mode === "register" ? promo || undefined : undefined}
+                onEdit={() => setStep("email")}
+                onShake={() => setShake(true)}
+                onDone={(user) => {
+                  login(user);
+                  close();
+                }}
+              />
+            ) : (
               <>
                 <div className={s.tabs} role="tablist" aria-label="Вход или регистрация" data-mode={mode}>
                   {(["login", "register"] as const).map((m) => (
@@ -312,6 +335,7 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
                   </a>
                 </p>
               </>
+            )}
           </div>
         </>
       )}

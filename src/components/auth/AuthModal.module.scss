@@ -334,6 +334,41 @@
   text-align: center;
 }
 
+// шаг «Ввод кода» (12.9, макета нет): crossfade 150 ms + сдвиг 12 px влево
+.step {
+  animation: stepIn 150ms ease;
+}
+
+.link {
+  color: var(--c-orange);
+  font-weight: 800;
+  transition: color var(--t-fast) ease;
+
+  @include hover {
+    color: #e06400;
+    text-decoration: underline;
+  }
+
+  &:disabled {
+    color: var(--c-muted);
+    text-decoration: none;
+    cursor: default;
+  }
+}
+
+.codeField input {
+  font-size: 20px;
+  letter-spacing: 8px;
+}
+
+.resend {
+  margin-top: 14px;
+  color: var(--c-muted);
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+}
+
 // поле промокода выезжает плавно - высота окна анимируется вместе с ним
 .collapse {
   display: grid;
@@ -838,6 +873,13 @@
     input::placeholder {
       font-size: 16px;
     }
+  }
+}
+
+@keyframes stepIn {
+  from {
+    opacity: 0;
+    transform: translateX(12px);
   }
 }
 
