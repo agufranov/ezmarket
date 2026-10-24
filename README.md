@@ -17,6 +17,20 @@ docker compose up --build
 `.env` не обязателен: секрет для кодов входа сервер сгенерирует при первом старте и сохранит в томе.
 Переменные (пароль базы, SMTP для настоящей почты, `COOKIE_SECURE` для HTTPS) - в `.env.example`.
 
+## Локально без Docker
+
+Нужен только Node 22. Одна команда поднимает базу, почту, сервер и сайт:
+
+```bash
+npm install
+npm run local
+```
+
+- сайт - http://localhost:3010 (`/api` проксируется на сервер `:3001`)
+- письма - http://localhost:1080 (MailDev)
+
+База - настоящая PostgreSQL из npm-пакета `embedded-postgres`, данные и секрет для кодов - в `.local/` (не в git).
+
 ## Тесты сервера
 
 ```bash

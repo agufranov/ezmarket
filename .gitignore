@@ -45,5 +45,6 @@ next-env.d.ts
 /.next-*/
 
 # сервер
+/.local
 /server/node_modules
 /server/dist
