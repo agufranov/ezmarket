@@ -17,6 +17,18 @@ docker compose up --build
 `.env` не обязателен: секрет для кодов входа сервер сгенерирует при первом старте и сохранит в томе.
 Переменные (пароль базы, SMTP для настоящей почты, `COOKIE_SECURE` для HTTPS) - в `.env.example`.
 
+## Стенд
+
+http://166.88.253.195 - тот же `docker compose` на VPS (Ubuntu 24.04), проект в `/opt/ezmarket`.
+Письма с кодами - http://166.88.253.195:8025 (Mailpit закрыт логином и паролем - `MAILPIT_UI_AUTH` в `/opt/ezmarket/.env`).
+В `.env` на сервере: `WEB_PORT=80`, случайный `POSTGRES_PASSWORD`, `COOKIE_SECURE=false` (пока без HTTPS).
+
+Обновить стенд после пуша в main:
+
+```bash
+ssh root@166.88.253.195 "cd /opt/ezmarket && git pull && docker compose up -d --build"
+```
+
 ## Локально без Docker
 
 Нужен только Node 22. Одна команда поднимает базу, почту, сервер и сайт:
