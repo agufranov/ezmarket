@@ -1,5 +1,5 @@
 // Вход по коду из письма: сервер (server/src/auth) или моки, если API не подключен.
-// POST /auth/code { email, mode, promo? } -> { resendIn } | 422 { field, error } | 429 { error, retryIn }
+// POST /auth/code { email, mode, promo? } -> { resendIn, demoCode? } | 422 { field, error } | 429 { error, retryIn }
 // POST /auth/verify { email, code } -> { user } + cookie сессии | 422 { field: "code", error, attemptsLeft? }
 // GET /me -> { user } | 401;  POST /auth/logout -> 204
 import type { User } from "@/data/user";
@@ -9,7 +9,10 @@ import * as mock from "./auth.mock";
 export type AuthError = Pick<ApiError, "error" | "retryIn" | "attemptsLeft"> & { field?: "email" | "promo" | "code" };
 export type Mode = "login" | "register";
 
-export function requestCode(email: string, mode: Mode, promo?: string): Promise<{ resendIn: number }> {
+// demoCode - только на демо-стенде (AUTH_DEMO_CODE): код подставляется в поле без похода в почту
+export type CodeSent = { resendIn: number; demoCode?: string };
+
+export function requestCode(email: string, mode: Mode, promo?: string): Promise<CodeSent> {
   if (!apiEnabled) return mock.requestCode(email, promo);
   return api("/auth/code", { body: { email, mode, promo } });
 }

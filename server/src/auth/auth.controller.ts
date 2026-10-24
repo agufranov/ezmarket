@@ -14,7 +14,7 @@ export class AuthController {
     @Inject(CONFIG) private readonly config: Config,
   ) {}
 
-  // POST /api/auth/code { email, mode, promo? } -> 200 { resendIn } | 422 { field, error } | 429 { error, retryIn }
+  // POST /api/auth/code { email, mode, promo? } -> 200 { resendIn, demoCode? } | 422 { field, error } | 429 { error, retryIn }
   @Post("auth/code")
   @HttpCode(200)
   requestCode(@Body(new ZodPipe(requestCodeSchema)) body: RequestCodeDto) {

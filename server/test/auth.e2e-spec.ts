@@ -198,3 +198,21 @@ describe("auth", () => {
     expect(row.nextTryAt.getTime()).toBeGreaterThan(Date.now());
   });
 });
+
+describe("auth: демо-режим", () => {
+  let t: TestApp;
+  beforeAll(async () => {
+    t = await startApp({ AUTH_DEMO_CODE: "true" });
+  });
+  afterAll(async () => {
+    await t.app.close();
+  });
+
+  it("код приходит в ответе и подходит для входа", async () => {
+    await resetDb(t.prisma);
+    const res = await request(t.url).post("/api/auth/code").send({ email: "demo@mail.ru", mode: "login" });
+    expect(res.body.demoCode).toBe(await codeFromMail(t.prisma, "demo@mail.ru"));
+    const login = await request(t.url).post("/api/auth/verify").send({ email: "demo@mail.ru", code: res.body.demoCode });
+    expect(login.status).toBe(200);
+  });
+});

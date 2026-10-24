@@ -40,6 +40,10 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
       MAIL_FROM: ${MAIL_FROM:-EzMarket <no-reply@ezmarket.local>}
+      # демо-стенд: код возвращается в ответе и подставляется в поле (в проде - false)
+      AUTH_DEMO_CODE: ${AUTH_DEMO_CODE:-false}
+      AUTH_RESEND_SECONDS: ${AUTH_RESEND_SECONDS:-60}
+      AUTH_CODES_PER_HOUR: ${AUTH_CODES_PER_HOUR:-5}
     volumes:
       - apidata:/data
     depends_on:

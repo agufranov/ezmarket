@@ -29,7 +29,7 @@ export class AuthService {
   ) {}
 
   // Новый код: не чаще раза в AUTH_RESEND_SECONDS и не больше AUTH_CODES_PER_HOUR в час на email; прошлые коды гасятся
-  async requestCode({ email, mode, promo }: RequestCodeDto): Promise<{ resendIn: number }> {
+  async requestCode({ email, mode, promo }: RequestCodeDto): Promise<{ resendIn: number; demoCode?: string }> {
     if (mode === "register" && promo) {
       const ok = await this.prisma.promoCode.findFirst({ where: { code: promo, active: true } });
       if (!ok) throw new ApiError(HttpStatus.UNPROCESSABLE_ENTITY, "Промокод не найден", { field: "promo" });
@@ -68,7 +68,7 @@ export class AuthService {
       });
       // письмо уйдет из очереди (MailService), код остается только в его тексте
       await tx.emailOutbox.create({ data: { to: email, ...codeEmail(code, mode) } });
-      return { resendIn: this.config.AUTH_RESEND_SECONDS };
+      return { resendIn: this.config.AUTH_RESEND_SECONDS, ...(this.config.AUTH_DEMO_CODE && { demoCode: code }) };
     });
   }
 

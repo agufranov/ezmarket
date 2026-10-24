@@ -20,6 +20,11 @@ const schema = z.object({
   // повторный код - не раньше чем через N секунд и не больше M кодов в час на email (для локальных проверок - меньше/больше)
   AUTH_RESEND_SECONDS: z.coerce.number().int().min(0).default(60),
   AUTH_CODES_PER_HOUR: z.coerce.number().int().min(1).default(5),
+  // демо-стенд без почты: код возвращается в ответе на запрос кода и фронт подставляет его сам. В проде - false
+  AUTH_DEMO_CODE: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((v) => v === "true"),
   // фоновые задачи (отправка писем) - выключаются в тестах, там их зовут вручную
   WORKERS: z
     .enum(["true", "false"])

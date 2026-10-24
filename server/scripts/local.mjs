@@ -2,7 +2,7 @@
 //   сайт   http://localhost:3010  (Next dev, /api проксируется на сервер - один адрес, как nginx в Docker)
 //   письма http://localhost:1080  (MailDev: сюда приходят коды входа)
 // База - настоящая PostgreSQL из npm-пакета embedded-postgres, данные в .local/ (не в git).
-import { execSync, spawn } from "node:child_process";
+import { execSync, spawn, spawnSync } from "node:child_process";
 import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import net from "node:net";
@@ -40,14 +40,49 @@ const pg = new EmbeddedPostgres({
   onLog: () => {},
 });
 if (!existsSync(path.join(pgDir, "PG_VERSION"))) await pg.initialise();
-// база могла остаться запущенной после аварийной остановки (порт занят) - тогда работаем с ней
+// база могла остаться запущенной после прошлого запуска - тогда работаем с ней
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const portBusy = (port) =>
   new Promise((resolve) => {
     const sock = net.connect(port, "127.0.0.1", () => (sock.destroy(), resolve(true)));
     sock.on("error", () => resolve(false));
   });
-if (await portBusy(PORTS.db)) console.log(`PostgreSQL уже слушает порт ${PORTS.db} - подключаюсь к нему`);
+const { default: pgLib } = await import("pg");
+const answers = async () => {
+  const client = new pgLib.Client({
+    host: "127.0.0.1",
+    port: PORTS.db,
+    user: "ezmarket",
+    password: "ezmarket",
+    database: "postgres",
+    connectionTimeoutMillis: 1500,
+  });
+  try {
+    await client.connect();
+    await client.query("SELECT 1");
+    return true;
+  } catch {
+    return false;
+  } finally {
+    client.end().catch(() => {});
+  }
+};
+let reuse = false;
+// база может как раз выключаться: несколько попыток, пока она ответит или освободит порт
+for (let i = 0; i < 3 && (await portBusy(PORTS.db)); i++) {
+  if ((reuse = await answers())) break;
+  await sleep(500);
+}
+if (reuse) console.log(`PostgreSQL уже запущен на порту ${PORTS.db} - подключаюсь к нему`);
 else {
+  // на Windows дочерние процессы PostgreSQL переживают убитый родительский: держат порт и не дают базе стартовать
+  if (process.platform === "win32") {
+    // путь к exe у них не читается (урезанные права) - ищем по командной строке, там путь с прямыми слэшами
+    const bin = path.join(serverDir, "node_modules", "@embedded-postgres").replaceAll("\\", "/").replaceAll("'", "''");
+    const ps = `Get-CimInstance Win32_Process -Filter "Name='postgres.exe'" | Where-Object { $_.CommandLine -like '*${bin}*' } | ForEach-Object { Stop-Process -Id $_.ProcessId -Force }`;
+    spawnSync("powershell", ["-NoProfile", "-EncodedCommand", Buffer.from(ps, "utf16le").toString("base64")], { stdio: "ignore" });
+  }
+  for (let i = 0; i < 20 && (await portBusy(PORTS.db)); i++) await sleep(500);
   rmSync(path.join(pgDir, "postmaster.pid"), { force: true });
   await pg.start();
 }
@@ -76,9 +111,11 @@ run("api", [path.join(serverDir, "node_modules/@nestjs/cli/bin/nest.js"), "start
   // для ручных проверок: повторный код через 5 с, лимита в час почти нет
   AUTH_RESEND_SECONDS: "5",
   AUTH_CODES_PER_HOUR: "1000",
+  // код сразу подставляется в поле - без похода в почту
+  AUTH_DEMO_CODE: "true",
 });
 // сайт - после сервера, иначе первые запросы к /api получат ошибку прокси
-for (let i = 0; i < 120 && !(await portBusy(PORTS.api)); i++) await new Promise((r) => setTimeout(r, 500));
+for (let i = 0; i < 120 && !(await portBusy(PORTS.api)); i++) await sleep(500);
 run("web", [path.join(root, "node_modules/next/dist/bin/next"), "dev", root, "-p", String(PORTS.web)], root, {
   // своя папка сборки - не мешает обычному npm run dev
   NEXT_DIST_DIR: ".next-local",

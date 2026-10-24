@@ -21,7 +21,9 @@ docker compose up --build
 
 http://166.88.253.195 - тот же `docker compose` на VPS (Ubuntu 24.04), проект в `/opt/ezmarket`.
 Письма с кодами - http://166.88.253.195:8025 (Mailpit закрыт логином и паролем - `MAILPIT_UI_AUTH` в `/opt/ezmarket/.env`).
-В `.env` на сервере: `WEB_PORT=80`, случайный `POSTGRES_PASSWORD`, `COOKIE_SECURE=false` (пока без HTTPS).
+В `.env` на сервере: `WEB_PORT=80`, случайный `POSTGRES_PASSWORD`, `COOKIE_SECURE=false` (пока без HTTPS),
+`AUTH_DEMO_CODE=true` - код входа подставляется в поле сам, почта не нужна (для настоящего запуска - `false` и SMTP),
+`AUTH_RESEND_SECONDS=5`.
 
 Обновить стенд после пуша в main:
 
@@ -42,7 +44,7 @@ npm run local
 - письма - http://localhost:1080 (MailDev)
 
 База - настоящая PostgreSQL из npm-пакета `embedded-postgres`, данные и секрет для кодов - в `.local/` (не в git).
-Для ручных проверок повторный код можно запросить через 5 секунд (на сервере по умолчанию - через 60, не больше 5 в час:
+Код подставляется в поле сам (`AUTH_DEMO_CODE=true`: сервер возвращает его в ответе), повторный код - через 5 секунд (на сервере по умолчанию - через 60, не больше 5 в час:
 `AUTH_RESEND_SECONDS`, `AUTH_CODES_PER_HOUR`). Остановить - Ctrl+C.
 
 ## Тесты сервера

@@ -55,6 +55,7 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
   const { login } = useAuth();
   const [mode, setMode] = useState<Mode>(initialMode);
   const [step, setStep] = useState<"email" | "code">("email");
+  const [demoCode, setDemoCode] = useState<string>();
   const [email, setEmail] = useState("");
   const [promo, setPromo] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -95,16 +96,18 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
     setPromoError("");
     setLoading(true);
     try {
-      const { resendIn } = await requestCode(value, mode, mode === "register" ? promo || undefined : undefined);
+      const { resendIn, demoCode } = await requestCode(value, mode, mode === "register" ? promo || undefined : undefined);
       // Шаг «Ввод кода» (12.9) - с сервером; на моках (GitHub Pages) окно закрывается, как было
       if (!apiEnabled) return close();
       saveResendAt(resendIn);
+      setDemoCode(demoCode);
       setStep("code");
     } catch (x) {
       const error = x as AuthError;
       // код на этот email уже отправлен недавно - сразу к вводу, таймер покажет, когда можно повторить
       if ((x as ApiError).status === 429 && error.retryIn) {
         saveResendAt(error.retryIn);
+        setDemoCode(undefined);
         setStep("code");
         return;
       }
@@ -169,6 +172,7 @@ export function AuthModal({ initialMode, onClose }: { initialMode: Mode; onClose
                 email={email}
                 mode={mode}
                 promo={mode === "register" ? promo || undefined : undefined}
+                demoCode={demoCode}
                 onEdit={() => setStep("email")}
                 onShake={() => setShake(true)}
                 onDone={(user) => {

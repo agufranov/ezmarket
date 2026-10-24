@@ -31,6 +31,7 @@ export function CodeStep({
   email,
   mode,
   promo,
+  demoCode,
   onEdit,
   onShake,
   onDone,
@@ -38,6 +39,7 @@ export function CodeStep({
   email: string;
   mode: Mode;
   promo?: string;
+  demoCode?: string;
   onEdit: () => void;
   onShake: () => void;
   onDone: (user: User) => void;
@@ -61,6 +63,19 @@ export function CodeStep({
 
   useEffect(() => inputRef.current?.focus(), []);
 
+  // демо-стенд: код из ответа сервера появляется в поле и через мгновение проверяется
+  const fill = (value: string) => {
+    setCode(value);
+    setTimeout(() => check(value), 600);
+  };
+  const filled = useRef(false);
+  useEffect(() => {
+    if (demoCode && !filled.current) {
+      filled.current = true;
+      fill(demoCode);
+    }
+  });
+
   const check = async (value: string) => {
     setChecking(true);
     setError("");
@@ -83,11 +98,12 @@ export function CodeStep({
     setSending(true);
     setError("");
     try {
-      const { resendIn } = await requestCode(email, mode, promo);
-      saveResendAt(resendIn);
+      const sent = await requestCode(email, mode, promo);
+      saveResendAt(sent.resendIn);
       setLocked(false);
       setCode("");
       inputRef.current?.focus();
+      if (sent.demoCode) fill(sent.demoCode);
     } catch (x) {
       const e = x as AuthError;
       if (e.retryIn) saveResendAt(e.retryIn);
