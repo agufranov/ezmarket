@@ -19,8 +19,11 @@ services:
 
   mailpit:
     image: axllent/mailpit:latest
+    environment:
+      # на открытом сервере - обязательно "логин:пароль", иначе чужие коды входа видны всем
+      MP_UI_AUTH: ${MAILPIT_UI_AUTH:-}
     ports:
-      - "8025:8025"
+      - "${MAILPIT_PORT:-8025}:8025"
 
   api:
     build:
@@ -48,7 +51,7 @@ services:
   web:
     build: .
     ports:
-      - "8080:80"
+      - "${WEB_PORT:-8080}:80"
     depends_on:
       - api
 
