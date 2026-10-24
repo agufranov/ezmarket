@@ -17,6 +17,9 @@ const schema = z.object({
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
   MAIL_FROM: z.string().default("EzMarket <no-reply@ezmarket.local>"),
+  // повторный код - не раньше чем через N секунд и не больше M кодов в час на email (для локальных проверок - меньше/больше)
+  AUTH_RESEND_SECONDS: z.coerce.number().int().min(0).default(60),
+  AUTH_CODES_PER_HOUR: z.coerce.number().int().min(1).default(5),
   // фоновые задачи (отправка писем) - выключаются в тестах, там их зовут вручную
   WORKERS: z
     .enum(["true", "false"])
@@ -41,8 +44,6 @@ export const CONFIG = Symbol("CONFIG");
 export const AUTH_RULES = {
   codeTtlMs: 10 * 60 * 1000,
   maxAttempts: 5,
-  resendAfterMs: 60 * 1000,
-  maxCodesPerHour: 5,
   sessionTtlMs: 30 * 24 * 60 * 60 * 1000,
   cookieName: "ez_session",
 } as const;

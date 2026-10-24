@@ -4,7 +4,8 @@
 // База - настоящая PostgreSQL из npm-пакета embedded-postgres, данные в .local/ (не в git).
 import { execSync, spawn } from "node:child_process";
 import { randomBytes } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import net from "node:net";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -39,7 +40,17 @@ const pg = new EmbeddedPostgres({
   onLog: () => {},
 });
 if (!existsSync(path.join(pgDir, "PG_VERSION"))) await pg.initialise();
-await pg.start();
+// база могла остаться запущенной после аварийной остановки (порт занят) - тогда работаем с ней
+const portBusy = (port) =>
+  new Promise((resolve) => {
+    const sock = net.connect(port, "127.0.0.1", () => (sock.destroy(), resolve(true)));
+    sock.on("error", () => resolve(false));
+  });
+if (await portBusy(PORTS.db)) console.log(`PostgreSQL уже слушает порт ${PORTS.db} - подключаюсь к нему`);
+else {
+  rmSync(path.join(pgDir, "postmaster.pid"), { force: true });
+  await pg.start();
+}
 await pg.createDatabase("ezmarket").catch(() => {});
 const DATABASE_URL = `postgresql://ezmarket:ezmarket@localhost:${PORTS.db}/ezmarket`;
 execSync("npx prisma migrate deploy", { cwd: serverDir, stdio: "inherit", shell: true, env: { ...process.env, DATABASE_URL } });
@@ -62,7 +73,12 @@ run("api", [path.join(serverDir, "node_modules/@nestjs/cli/bin/nest.js"), "start
   COOKIE_SECURE: "false",
   SMTP_HOST: "127.0.0.1",
   SMTP_PORT: String(PORTS.smtp),
+  // для ручных проверок: повторный код через 5 с, лимита в час почти нет
+  AUTH_RESEND_SECONDS: "5",
+  AUTH_CODES_PER_HOUR: "1000",
 });
+// сайт - после сервера, иначе первые запросы к /api получат ошибку прокси
+for (let i = 0; i < 120 && !(await portBusy(PORTS.api)); i++) await new Promise((r) => setTimeout(r, 500));
 run("web", [path.join(root, "node_modules/next/dist/bin/next"), "dev", root, "-p", String(PORTS.web)], root, {
   // своя папка сборки - не мешает обычному npm run dev
   NEXT_DIST_DIR: ".next-local",

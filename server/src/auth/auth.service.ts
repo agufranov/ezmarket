@@ -28,7 +28,7 @@ export class AuthService {
     @Inject(CONFIG) private readonly config: Config,
   ) {}
 
-  // Новый код: не чаще раза в минуту и не больше 5 в час на email; прошлые коды гасятся
+  // Новый код: не чаще раза в AUTH_RESEND_SECONDS и не больше AUTH_CODES_PER_HOUR в час на email; прошлые коды гасятся
   async requestCode({ email, mode, promo }: RequestCodeDto): Promise<{ resendIn: number }> {
     if (mode === "register" && promo) {
       const ok = await this.prisma.promoCode.findFirst({ where: { code: promo, active: true } });
@@ -43,12 +43,13 @@ export class AuthService {
         orderBy: { createdAt: "desc" },
         select: { createdAt: true },
       });
+      const resendAfterMs = this.config.AUTH_RESEND_SECONDS * 1000;
       const last = recent[0]?.createdAt.getTime();
-      if (last && now - last < AUTH_RULES.resendAfterMs) {
-        const retryIn = Math.ceil((AUTH_RULES.resendAfterMs - (now - last)) / 1000);
+      if (last && now - last < resendAfterMs) {
+        const retryIn = Math.ceil((resendAfterMs - (now - last)) / 1000);
         throw new ApiError(HttpStatus.TOO_MANY_REQUESTS, `Новый код можно запросить через ${retryIn} с`, { retryIn });
       }
-      if (recent.length >= AUTH_RULES.maxCodesPerHour) {
+      if (recent.length >= this.config.AUTH_CODES_PER_HOUR) {
         const oldest = recent[recent.length - 1].createdAt.getTime();
         const retryIn = Math.ceil((oldest + 60 * 60 * 1000 - now) / 1000);
         throw new ApiError(HttpStatus.TOO_MANY_REQUESTS, "Слишком много кодов за час. Попробуйте позже", { retryIn });
@@ -67,7 +68,7 @@ export class AuthService {
       });
       // письмо уйдет из очереди (MailService), код остается только в его тексте
       await tx.emailOutbox.create({ data: { to: email, ...codeEmail(code, mode) } });
-      return { resendIn: AUTH_RULES.resendAfterMs / 1000 };
+      return { resendIn: this.config.AUTH_RESEND_SECONDS };
     });
   }
 
