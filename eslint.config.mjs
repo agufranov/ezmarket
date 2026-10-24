@@ -24,6 +24,8 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      // сервер проверяется своим tsconfig (server/)
+      "server/**",
     ],
   },
 ];
