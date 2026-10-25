@@ -1,27 +1,25 @@
 @use "../../styles/mixins" as *;
 
+// десктоп (фреймы 54:9625 и др., окно 1920x1080): виджет 64x70 у правого края, 32 px от низа;
+// внутри полоска 3x22 (8, 25), маскот 46 (10, 15), облачко 21x13 (6, 7)
 .toggle {
   position: fixed;
   right: 0;
-  top: 50%;
+  bottom: 32px;
   z-index: var(--z-support);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100px;
-  height: 110px;
-  padding: 0 9px 0 21px;
-  border-radius: 30px 0 0 30px;
+  display: block;
+  width: 64px;
+  height: 70px;
+  border-radius: 18px 0 0 18px;
   background: #fff;
   box-shadow:
     -6px 8px 28px rgba(120, 60, 20, 0.16),
     inset 0 0 0 1px rgba(255, 170, 100, 0.25);
-  transform: translateY(-50%);
 
   transition: transform var(--t-base) ease;
 
   @include hover {
-    transform: translate(-4px, -50%);
+    transform: translateX(-4px);
 
     .tooltip {
       opacity: 1;
@@ -32,42 +30,42 @@
   &[aria-expanded="true"] .tooltip {
     display: none;
   }
-
-  @include down($bp-md) {
-    width: 80px;
-    height: 88px;
-    padding-left: 16px;
-  }
 }
 
 .stripe {
   position: absolute;
-  left: 10px;
-  top: 50%;
-  width: 4px;
-  height: 28px;
-  border-radius: 2px;
+  left: 8px;
+  top: 25px;
+  width: 3px;
+  height: 22px;
+  border-radius: 1.5px;
   background: var(--c-peach-2);
-  transform: translateY(-50%);
 }
 
 .mascotWrap {
-  position: relative;
-  display: grid;
-  place-items: center;
-  width: 70px;
-  height: 70px;
-  border-radius: 50%;
-  background: rgba(255, 122, 0, 0.2);
+  position: absolute;
+  left: 10px;
+  top: 15px;
+  width: 46px;
+  height: 46px;
   animation: float 3.4s ease-in-out infinite;
 
-  @include down($bp-md) {
-    transform: scale(0.8);
+  // круглая подложка маскота: в 70-пиксельном оригинале 1:1063 - 64.41 с отступом 2.8
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 4%;
+    border-radius: 50%;
+    background: rgba(255, 122, 0, 0.2);
   }
 }
 
 .mascot {
-  filter: drop-shadow(0 6px 5px rgba(200, 80, 0, 0.25));
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 3px rgba(200, 80, 0, 0.25));
 }
 
 .eyes {
@@ -87,23 +85,25 @@
   }
 }
 
+// облачко 21x13 в (6, 7) от края виджета, точки 3x3 с шагом 5 от x = 4
 .cloud {
   position: absolute;
-  left: -13px;
-  top: -10px;
+  left: -4px;
+  top: -8px;
   display: flex;
   align-items: center;
-  gap: 3px;
-  height: 24px;
-  padding: 0 6.3px;
-  border-radius: 12px 12px 4px 12px;
+  gap: 2px;
+  width: 21px;
+  height: 13px;
+  padding: 0 4px;
+  border-radius: 6.5px 6.5px 2px 6.5px;
   background: #fff;
-  box-shadow: 0 4px 6px rgba(20, 24, 32, 0.15);
+  box-shadow: 0 2px 4px rgba(20, 24, 32, 0.15);
   animation: pulse 3s ease-in-out infinite;
 
   i {
-    width: 4.2px;
-    height: 4.2px;
+    width: 3px;
+    height: 3px;
     border-radius: 50%;
     background: var(--c-orange);
     animation: dot 1.2s ease-in-out infinite;
@@ -160,29 +160,24 @@
   pointer-events: none;
 }
 
-// мобилка: виджет 58x64 в правом нижнем углу, 14 px от низа (фреймы 54:8760 / 54:8720)
+// мобилка (фреймы 54:8760 / 54:8720): виджет 58x64, 14 px от низа; полоска и облачко там же, маскот 42 в (8, 14)
 @include down($bp-sm) {
   .toggle {
-    top: auto;
     bottom: 14px;
     width: 58px;
     height: 64px;
-    padding: 0 4px 0 10px;
-    border-radius: 18px 0 0 18px;
-    transform: none;
-
-    @include hover {
-      transform: translateX(-4px);
-    }
   }
 
   .mascotWrap {
-    transform: scale(0.52);
+    left: 8px;
+    top: 14px;
+    width: 42px;
+    height: 42px;
   }
 
-  .stripe {
-    left: 7px;
-    height: 22px;
+  .cloud {
+    left: -2px;
+    top: -7px;
   }
 }
 

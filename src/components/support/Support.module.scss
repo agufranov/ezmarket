@@ -1,16 +1,16 @@
 @use "../../styles/mixins" as *;
 
-// Панели поддержки (ТЗ 12.16-12.20): слева от виджета (fixed справа, ширина 100) с зазором 18 px,
-// по центру высоты, не ближе 16 px к краям окна
+// Панели поддержки (фреймы 54:9382, 54:9207, 54:9054, 54:8925, 54:8799 в окне 1920x1080):
+// правый край на 80 px от края окна (виджет 64 + зазор 16), низ - вровень с виджетом, 32 px от низа
 
 .root {
   position: fixed;
-  right: 118px;
-  top: 50%;
+  right: 80px;
+  bottom: 32px;
   z-index: var(--z-support);
   display: flex;
-  max-height: calc(100vh - 32px);
-  transform: translateY(-50%);
+  align-items: flex-end;
+  max-height: calc(100vh - 48px);
   pointer-events: none;
 
   > * {
@@ -22,8 +22,8 @@
   display: grid;
   flex: none;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 38px;
+  height: 38px;
   border-radius: 50%;
   background: var(--c-fill);
   color: var(--c-ink-2);
@@ -54,7 +54,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 12px;
+  gap: 10px;
   outline: none;
 
   // мягкое затемнение под пузырями (макет 54-9382, замечание с демо): кнопки читаются поверх каталога
@@ -75,18 +75,20 @@
   }
 }
 
+// пузыри (54:9492 и мобильные 54:8650): высота 52, шаг 62; иконка 40 в 6 px от края, текст с x = 58,
+// справа 20; приветствие: маскот 26 в 10 px, текст с x = 46 (отступы 9 и 20 дают ширины 239 и 179-205, как в макете)
 .hello {
   display: flex;
   align-items: center;
-  gap: 12px;
-  align-self: flex-start;
-  height: 60px;
-  padding: 0 26px 0 12px;
-  border-radius: 30px 30px 30px 10px;
+  gap: 10px;
+  align-self: flex-end;
+  height: 52px;
+  padding: 0 20px 0 9px;
+  border-radius: 26px 26px 26px 10px;
   background: var(--c-ink);
   box-shadow: var(--sh-hover);
   color: #fff;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 900;
   white-space: nowrap;
 }
@@ -94,19 +96,25 @@
 .helloMascot {
   display: grid;
   place-items: center;
+  width: 26px;
+  height: 26px;
+
+  > * {
+    transform: scale(0.87);
+  }
 }
 
 .bubble {
   display: flex;
   align-items: center;
-  gap: 14px;
-  height: 64px;
-  padding: 0 26px 0 10px;
+  gap: 12px;
+  height: 52px;
+  padding: 0 20px 0 6px;
   border-radius: var(--r-pill);
   background: #fff;
   box-shadow: var(--sh);
   color: var(--c-ink);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 900;
   white-space: nowrap;
   transition:
@@ -130,8 +138,8 @@
 .bubbleIcon {
   display: grid;
   place-items: center;
-  width: 44px;
-  height: 44px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   transition: transform var(--t-fast) ease;
 }
@@ -153,10 +161,15 @@
 
 // --- общая панель (FAQ, форма, успех) ---
 
+// ширина по фреймам: «Частые вопросы» 404 (54:9317), «Написать нам» и «Письмо отправлено» 384 (54:9164, 54:9035)
 .panel {
   display: flex;
   flex-direction: column;
-  width: 400px;
+  width: var(--panel-w, 384px);
+
+  &[data-screen="faq"] {
+    --panel-w: 404px;
+  }
   max-height: 100%;
   overflow-y: auto;
   overscroll-behavior: contain;
@@ -166,7 +179,7 @@
   box-shadow:
     0 1px 2px rgba(20, 24, 32, 0.06),
     0 24px 60px rgba(20, 24, 32, 0.18);
-  transform-origin: right center;
+  transform-origin: right bottom;
   animation: panelIn 250ms ease both;
 }
 
@@ -223,11 +236,18 @@
 }
 
 // --- FAQ (12.17) ---
+// десктоп (54:9317): темы 38 через 8 в 14 px под шапкой, список с y = 114; вопрос 14 + строка 26 + 14,
+// «+» 26 в 14 px от правого края; у открытого вопрос с отступом 18, ответ 15/22 и 14 снизу;
+// «Ответ помог?» 53: кнопки 38 в 15 px от линии, без боковых отступов
+
+.chips[role="tablist"] {
+  gap: 8px;
+}
 
 .faqList {
   display: flex;
   flex-direction: column;
-  margin-top: 10px;
+  margin-top: 6px;
   animation: fade 150ms ease;
 }
 
@@ -256,10 +276,11 @@
   gap: 12px;
   width: 100%;
   min-height: 54px;
-  padding: 10px 12px 10px 14px;
+  padding: 14px;
   color: var(--c-ink);
   font-size: 15px;
   font-weight: 800;
+  line-height: 19.5px;
   text-align: left;
   transition:
     color var(--t-fast) ease,
@@ -278,6 +299,8 @@
   }
 
   .faqItem[data-open] & {
+    padding-top: 18px;
+    padding-bottom: 10.75px;
     color: var(--c-ink);
 
     .faqSign {
@@ -301,12 +324,17 @@
   }
 }
 
+// вопрос сразу под открытым - на 4 px ниже (18 вместо 14; в мобильном 54:8552 - 16 вместо 12)
+.faqItem[data-open] + .faqItem .faqQ {
+  padding-top: 18px;
+}
+
 // «+» / «−» из двух полосок: вертикальная схлопывается
 .faqSign {
   position: relative;
   flex: none;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: var(--c-fill);
   transition:
@@ -346,10 +374,10 @@
 
   p {
     padding: 0 14px 14px;
-    color: var(--c-ink-2);
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 1.45;
+    color: #4a4f57;
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 22px;
   }
 
   .faqItem[data-open] & {
@@ -377,9 +405,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-height: 52px;
-  margin-top: 10px;
-  padding: 8px 4px 0 6px;
+  min-height: 53px;
+  margin-top: 4px;
+  padding: 14px 0 0;
   border-top: 1px solid var(--c-line);
   color: var(--c-muted);
   font-size: 14px;
@@ -392,10 +420,11 @@
   gap: 8px;
 }
 
+// «👍 Да» в макете - одна строка текста через пробел, без зазора
 .vote {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 0;
   height: 38px;
   padding: 0 14px;
   border-radius: var(--r-pill);
@@ -431,15 +460,22 @@
   flex-direction: column;
 }
 
+.mail .chips {
+  gap: 8px 7.23px;
+  margin-top: 12px;
+}
+
+// десктоп (54:9164): шапка 46 (значок 44, крестик 38), между блоками 12; поле 54, чипы 38 через 8/7.23,
+// текст 104, низ 48 (кнопка 161x48, стрелка 36)
 .mailHead {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
 }
 
-// на десктопе при «Назад» значок письма не показываем
-.mailBack + .mailIcon {
+// в макете (54:9164, 54:8291) слева всегда значок письма, кнопки «Назад» нет
+.mailBack {
   display: none;
 }
 
@@ -447,8 +483,8 @@
   display: grid;
   flex: none;
   place-items: center;
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: var(--g-orange);
   box-shadow: var(--sh-orange);
@@ -461,23 +497,26 @@
 }
 
 .mailTitle {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 900;
+  line-height: 25px;
 }
 
 .mailSub {
+  margin-top: 2px;
   color: var(--c-muted);
   font-size: 14px;
   font-weight: 700;
+  line-height: 19px;
 }
 
 .field {
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
   min-height: 54px;
-  padding: 0 20px;
+  padding: 0 18px;
   border-radius: 27px;
   background: var(--c-fill);
   color: var(--c-muted);
@@ -524,14 +563,16 @@
 
 .area {
   align-items: flex-start;
-  margin-top: 14px;
-  padding: 16px 20px;
+  margin-top: 12px;
+  padding: 15px 18px;
   border-radius: 24px;
 
+  // текст 3 строки по 22 (слой 54:9195), поле 104 = 15 + 74 + 15
   textarea {
-    min-height: 66px;
+    height: 74px;
+    min-height: 74px;
     font-family: inherit;
-    line-height: 1.45;
+    line-height: 22px;
     resize: none;
   }
 }
@@ -557,7 +598,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .attach {
@@ -617,15 +658,15 @@
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  height: 54px;
-  padding: 0 7px 0 32px;
+  gap: 14px;
+  height: 48px;
+  padding: 0 6px 0 22px;
   border-radius: var(--r-pill);
   background: var(--g-orange);
   box-shadow: 0 14px 24px rgba(255, 110, 0, 0.28);
   color: #fff;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 900;
   transition:
     filter var(--t-fast) ease,
     transform 0.1s ease;
@@ -654,8 +695,8 @@
 .sendArrow {
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.22);
 }
@@ -670,25 +711,27 @@
 }
 
 // --- «Письмо отправлено!» (12.19) ---
+// десктоп (54:9035, 384x343): крестик 38 в 14 px от углов, маскот 120 с y = 24, заголовок 22/30 с y = 145,
+// текст 15/20 через 8, плашка 38 через 14, кнопка 340x50 через 16 и 22 до низа
 
 .sent {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 18px 8px 4px;
+  padding: 6px 4px 4px;
   text-align: center;
   animation: fade 200ms ease;
 }
 
 .sentClose {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: -4px;
+  right: -4px;
 }
 
 .sentMascot {
-  margin-bottom: 22px;
+  margin-bottom: 1px;
   animation: pop 250ms 100ms ease both;
 
   > div {
@@ -699,16 +742,18 @@
 }
 
 .sentTitle {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 900;
+  line-height: 30px;
   outline: none;
 }
 
 .sentText {
   margin-top: 8px;
-  color: var(--c-muted);
+  color: #8a9099;
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
+  line-height: 20px;
 
   b {
     color: var(--c-ink);
@@ -721,13 +766,13 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 40px;
-  margin-top: 16px;
-  padding: 0 18px;
+  height: 38px;
+  margin-top: 14px;
+  padding: 0 16px;
   border-radius: var(--r-pill);
   background: var(--c-green-soft);
-  color: var(--c-green-ink);
-  font-size: 15px;
+  color: #1f8a4c;
+  font-size: 14px;
   font-weight: 900;
 
   @include hover {
@@ -761,13 +806,13 @@
 
 .done {
   align-self: stretch;
-  height: 54px;
-  margin-top: 18px;
+  height: 50px;
+  margin-top: 16px;
   border-radius: var(--r-pill);
   background: var(--c-ink);
   color: #fff;
-  font-size: 16px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 900;
   transition:
     filter var(--t-fast) ease,
     transform 0.1s ease;
@@ -783,12 +828,13 @@
 
 // --- «Готово, мы на связи!» (12.20) ---
 
+// десктоп (54:8909): 420x163, маскот 80 в 14 px от края, текст с x = 106, справа 20; кнопки 40
 .toast {
   display: flex;
   align-items: center;
-  gap: 18px;
-  width: 400px;
-  padding: 20px 22px 20px 18px;
+  gap: 12px;
+  width: 420px;
+  padding: 20px 20px 20px 14px;
   border-radius: var(--r-3);
   background: var(--c-peach);
   box-shadow: var(--sh-hover);
@@ -809,14 +855,15 @@
   color: var(--c-bonus-title);
   font-size: 18px;
   font-weight: 900;
+  line-height: 25px;
 }
 
 .toastText {
   margin-top: 4px;
   color: var(--c-bonus-text);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1.4;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 21px;
 }
 
 .toastBtns {
@@ -829,13 +876,13 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  height: 42px;
-  padding: 0 20px;
+  height: 40px;
+  padding: 0 16px;
   border-radius: var(--r-pill);
   background: #2aa3e0;
   color: #fff;
-  font-size: 15px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 900;
   transition: filter var(--t-fast) ease;
 
   svg {
@@ -852,13 +899,13 @@
 }
 
 .closeBtn {
-  height: 42px;
-  padding: 0 20px;
+  height: 40px;
+  padding: 0 16px;
   border-radius: var(--r-pill);
   background: #fff;
-  color: var(--c-ink);
-  font-size: 15px;
-  font-weight: 800;
+  color: #4a2a12;
+  font-size: 14px;
+  font-weight: 900;
   transition: background var(--t-fast) ease;
 
   @include hover {
@@ -929,14 +976,12 @@
 @include down($bp-sm) {
   // меню и панели (вопросы, письмо, «отправлено», «на связи») - над виджетом, 14 px от краев
   .root {
-    top: auto;
     left: 14px;
     right: 14px;
     // виджет 64 px в 14 px от низа + 13 px зазор
     bottom: 91px;
     justify-content: flex-end;
     max-height: calc(100dvh - 107px);
-    transform: none;
   }
 
   // на 360 панель во всю ширину (332), на 440 - 360 у правого края
@@ -947,14 +992,10 @@
     border-radius: 28px;
   }
 
-  .round {
-    width: 38px;
-    height: 38px;
-  }
-
   // «Частые вопросы» (54:8475): темы в одну строку с обрезкой, вопросы 54+, ответ 15 / 21.8
   .chips[role="tablist"] {
     flex-wrap: nowrap;
+    gap: 6px;
     overflow: hidden;
   }
 
@@ -980,6 +1021,11 @@
 
   .faqItem[data-open] .faqQ {
     padding-top: 15px;
+    padding-bottom: 12px;
+  }
+
+  .faqItem[data-open] + .faqItem .faqQ {
+    padding-top: 16px;
   }
 
   .faqA p {
@@ -998,24 +1044,19 @@
   }
 
   .vote {
-    gap: 4px;
     height: 37px;
     padding: 0 11px;
     font-weight: 900;
   }
 
-  // «Написать нам» (54:8291): значок письма 40 вместо «Назад», поля 54, кнопка 44 без стрелки
-  .mailBack {
-    display: none;
-  }
-
-  .mailBack + .mailIcon {
-    display: grid;
-  }
-
+  // «Написать нам» (54:8291): значок письма 40, поля 54, кнопка 44 без стрелки
   .mailHead {
     gap: 10px;
     margin-bottom: 15px;
+  }
+
+  .mailSub {
+    margin-top: 0;
   }
 
   .mailIcon {
@@ -1034,7 +1075,7 @@
   }
 
   .mail .chips {
-    margin-top: 12px;
+    gap: 6px;
   }
 
   .field {
@@ -1047,8 +1088,6 @@
   }
 
   .area {
-    margin-top: 12px;
-    padding: 15px 18px;
 
     // поле текста 97 в макете: 15 + 67 + 15
     textarea {
@@ -1097,29 +1136,12 @@
     }
   }
 
-  .sentTitle {
-    font-size: 22px;
-    line-height: 30px;
-  }
-
   .sentText {
-    color: #8a9099;
-    font-weight: 600;
     line-height: 20.5px;
   }
 
   .ticket {
-    height: 38px;
     margin-top: 13px;
-    color: #1f8a4c;
-    font-size: 14px;
-  }
-
-  .done {
-    height: 50px;
-    margin-top: 16px;
-    font-size: 15px;
-    font-weight: 900;
   }
 
   // «Готово, мы на связи!» (54:8036): плашка до 360, маскот 64, кнопки 38
@@ -1131,6 +1153,10 @@
     border-radius: 28px;
   }
 
+  .toastMascot > * {
+    font-size: calc(64px / 112) !important;
+  }
+
   .toastTitle {
     color: #3a1f0b;
     line-height: 24.6px;
@@ -1138,9 +1164,6 @@
 
   .toastText {
     color: #6b3a16;
-    font-size: 15px;
-    font-weight: 600;
-    line-height: 21px;
   }
 
   .toastBtns {
@@ -1150,18 +1173,10 @@
   .tgBtn,
   .closeBtn {
     height: 38px;
-    padding: 0 16px;
-    font-size: 14px;
-    font-weight: 900;
   }
 
-  .closeBtn {
-    color: #4a2a12;
-  }
-
+  // на мобилке «Написать нам» выше «Частых вопросов»
   .menu {
-    gap: 10px;
-
     > :nth-child(3) {
       order: 3;
     }
@@ -1169,36 +1184,6 @@
     > :nth-child(4) {
       order: 2;
     }
-  }
-
-  .hello {
-    align-self: flex-end;
-    gap: 10px;
-    height: 52px;
-    padding: 0 19px 0 9px;
-    border-radius: 26px 26px 26px 10px;
-    font-size: 16px;
-  }
-
-  .helloMascot {
-    width: 26px;
-    height: 26px;
-
-    > * {
-      transform: scale(0.87);
-    }
-  }
-
-  .bubble {
-    gap: 12px;
-    height: 52px;
-    padding: 0 19px 0 6px;
-    font-size: 15px;
-  }
-
-  .bubbleIcon {
-    width: 40px;
-    height: 40px;
   }
 }
 

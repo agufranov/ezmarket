@@ -289,6 +289,20 @@
   &:active {
     transform: scale(0.98);
   }
+
+  // декоративный персиковый круг 46x46 у нижнего края (слой 12:1035 и такие же в каждой карточке):
+  // x = 126.39, y = 48 при высоте карточки 68 - видна верхняя часть
+  &::after {
+    content: "";
+    position: absolute;
+    left: 126.39px;
+    top: 48px;
+    z-index: -1;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #fff1e4;
+  }
 }
 
 .logoWrap {
@@ -722,6 +736,10 @@
     padding: 7px 8px 9px;
     border-radius: 18px;
     box-shadow: inset 0 0 0 1px #eef0f3;
+
+    &::after {
+      display: none;
+    }
   }
 
   // в макете первая карточка подсвечена (персиковый фон, оранжевая обводка и цена)

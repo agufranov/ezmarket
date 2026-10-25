@@ -80,7 +80,7 @@ export function SupportProvider({ children }: { children: ReactNode }) {
       <div ref={rootRef} className={s.root}>
         {screen === "menu" && <SupportMenu onPick={go} onTelegram={() => close()} />}
         {isPanel && (
-          <div key={screen} className={s.panel} role="dialog" aria-labelledby="support-title">
+          <div key={screen} className={s.panel} data-screen={screen} role="dialog" aria-labelledby="support-title">
             {screen === "faq" && (
               <SupportFaq
                 onBack={back}

@@ -72,7 +72,7 @@ export function SupportToast({ onClose }: { onClose: () => void }) {
       onBlur={(e) => !ref.current?.contains(e.relatedTarget as Node) && setPaused(false)}
     >
       <span className={s.toastMascot}>
-        <Mascot size={64} />
+        <Mascot size={80} />
       </span>
       <div>
         <h2 id="support-toast-title" className={s.toastTitle}>
