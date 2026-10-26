@@ -53,15 +53,22 @@ export function SteamBar() {
     // заказ создается только с сессией: гостю - окно входа
     if (apiEnabled && !user) return openModal("login");
     keyRef.current ??= newIdempotencyKey();
+    // оплата - в новом окне. Открываем его сразу по клику (после ответа сервера браузер заблокирует всплывающее окно),
+    // ссылку подставляем, когда заказ создан; при ошибке окно закрываем
+    const win = apiEnabled ? window.open("about:blank", "_blank") : null;
+    if (win) win.opener = null;
     setLoading(true);
     setServerError(null);
     try {
       const { paymentUrl } = await startSteamTopUp({ steamLogin: login.trim(), amount: value, currency: currency.id }, keyRef.current);
-      if (paymentUrl) return window.location.assign(paymentUrl);
       setLoading(false);
-      openModal("steam-pay");
+      if (!paymentUrl) return openModal("steam-pay");
+      if (win && !win.closed) win.location.href = paymentUrl;
+      // всплывающие окна запрещены - уходим на оплату в этой же вкладке
+      else window.location.assign(paymentUrl);
     } catch (e) {
       const err = e as TopUpError;
+      win?.close();
       setLoading(false);
       if (err.status === 401) return openModal("login");
       setServerError(err.field === "currency" ? { ...err, field: undefined } : err);
