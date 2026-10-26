@@ -44,12 +44,13 @@ export class OrdersWorker {
           expiresAt: { lte: new Date() },
           OR: [{ status: "created" }, { paymentProvider: null }, { paymentProvider: { not: "cryptopay" } }],
         },
-        select: { id: true },
+        select: { id: true, status: true },
         take: BATCH,
       });
       let n = 0;
-      // условный переход: если заказ в этот момент оплатили или отменили, он не истечет
-      for (const { id } of due) if (await this.status.move(id, UNPAID, "expired", "истек срок оплаты")) n++;
+      // переход - только из выбранного статуса: заказ, который за это время получил счет Crypto Pay (created -> pending),
+      // не истечет здесь в обход проверки счета; оплаченный или отмененный - тоже
+      for (const { id, status } of due) if (await this.status.move(id, [status], "expired", "истек срок оплаты")) n++;
       return n;
     } finally {
       this.expiring = false;

@@ -56,28 +56,82 @@ export class PaymentsService {
     @Inject(CRYPTOPAY) private readonly cryptoPay: CryptoPayClient | null,
   ) {}
 
-  // Ссылка на оплату. Платеж создается один раз: повторное нажатие отдает ту же ссылку
+  // Ссылка на оплату. Платеж создается один раз: повторное нажатие отдает ту же ссылку.
+  // Статус могли поменять параллельно (оплата, отмена, истечение, другой /pay) - после каждого шага перечитываем заказ
+  // и решаем по фактическому статусу. Срок проверяется и после создания счета: медленный ответ платежки мог его пережить
   async start(userId: string, orderId: string): Promise<{ order: Order; paymentUrl: string }> {
-    let order = await this.orders.get(userId, orderId);
-    if ((order.status === "created" || order.status === "pending") && order.expiresAt.getTime() <= Date.now()) {
-      await this.status.move(order.id, UNPAID, "expired", "истек срок оплаты");
-      throw new ApiError(HttpStatus.CONFLICT, payError.expired!, { status: "expired" });
-    }
-    if (order.status === "created") {
-      const payment = await this.createPayment(order);
-      const moved = await this.status.move(order.id, ["created"], "pending", "создан платеж", {
-        paymentProvider: this.config.PAYMENT_PROVIDER,
-        paymentId: payment.id,
-        paymentUrl: payment.url,
-      });
-      // одновременное нажатие: платеж уже создал другой запрос - лишний счет удаляем
-      if (!moved && this.cryptoPay) await this.cryptoPay.deleteInvoice(payment.id).catch(() => {});
-      order = await this.orders.get(userId, orderId);
-    }
-    if (order.status !== "pending" || !order.paymentUrl) {
+    for (let step = 0; step < 4; step++) {
+      const order = await this.orders.get(userId, orderId);
+      if (UNPAID.includes(order.status) && order.expiresAt.getTime() <= Date.now()) {
+        await this.expireOne(order);
+        continue;
+      }
+      if (order.status === "created") {
+        const payment = await this.createPayment(order);
+        const moved = await this.status.move(order.id, ["created"], "pending", "создан платеж", {
+          paymentProvider: this.config.PAYMENT_PROVIDER,
+          paymentId: payment.id,
+          paymentUrl: payment.url,
+        });
+        // платеж уже создал другой запрос или заказ отменили/истекли, пока создавался счет - лишний счет удаляем
+        if (!moved) await this.discardInvoice(payment.id);
+        continue;
+      }
+      if (order.status === "pending" && order.paymentUrl) return { order, paymentUrl: order.paymentUrl };
       throw new ApiError(HttpStatus.CONFLICT, payError[order.status] ?? "Заказ нельзя оплатить", { status: order.status });
     }
-    return { order, paymentUrl: order.paymentUrl };
+    throw new ApiError(HttpStatus.CONFLICT, "Заказ меняется прямо сейчас - попробуйте еще раз");
+  }
+
+  // Истечение одного неоплаченного заказа - единый путь для /pay и фоновых задач.
+  // Переход - только из прочитанного статуса. Заказ, ждущий оплаты в Crypto Pay, - только после проверки счета:
+  // оплачен - проводим оплату, активен - удаляем счет и истекаем; Crypto Pay не ответил - 502, заказ не трогаем
+  private async expireOne(order: Order) {
+    if (order.status === "pending" && order.paymentProvider === "cryptopay" && order.paymentId) {
+      const unavailable = () => new ApiError(HttpStatus.BAD_GATEWAY, "Платежная система не ответила. Попробуйте еще раз");
+      if (!this.cryptoPay) throw unavailable();
+      let invoice: CryptoPayInvoice | undefined;
+      try {
+        [invoice] = await this.cryptoPay.getInvoices([order.paymentId]);
+      } catch (e) {
+        if (!(e instanceof CryptoPayError)) throw e;
+        this.log.warn(`истечение: нет ответа Crypto Pay по счету ${order.paymentId} (${e.message})`);
+        throw unavailable();
+      }
+      if ((await this.expireCryptoPayOrder(order, invoice)) === "unavailable") throw unavailable();
+      return;
+    }
+    await this.status.move(order.id, [order.status], "expired", "истек срок оплаты");
+  }
+
+  // Заказ Crypto Pay с истекшим сроком по уже полученному счету.
+  // changed - статус успел смениться параллельно (оплата, отмена): решать по перечитанному заказу
+  private async expireCryptoPayOrder(
+    order: { id: string; paymentId: string | null },
+    invoice: CryptoPayInvoice | undefined,
+  ): Promise<"paid" | "expired" | "changed" | "unavailable"> {
+    if (invoice?.status === "paid") {
+      await this.applyEvent(this.invoicePaidEvent(invoice));
+      return "paid";
+    }
+    if (invoice?.status === "active") {
+      try {
+        await this.cryptoPay!.deleteInvoice(order.paymentId!);
+      } catch (e) {
+        // не удалили - возможно, его как раз оплатили: следующая проверка увидит paid
+        this.log.warn(`истечение: счет ${order.paymentId} не удален (${e instanceof Error ? e.message : String(e)})`);
+        return "unavailable";
+      }
+    }
+    return (await this.status.move(order.id, ["pending"], "expired", "истек срок оплаты")) ? "expired" : "changed";
+  }
+
+  // Счет, который не достался заказу: удалить, чтобы по нему нельзя было заплатить. Ссылку на него никто не получил
+  private async discardInvoice(paymentId: string) {
+    if (!this.cryptoPay) return;
+    await this.cryptoPay.deleteInvoice(paymentId).catch((e) => {
+      this.log.error(`лишний счет ${paymentId} не удален: ${e instanceof Error ? e.message : String(e)}`);
+    });
   }
 
   private async createPayment(order: Order): Promise<{ id: string; url: string }> {
@@ -208,23 +262,7 @@ export class PaymentsService {
     }
     const byId = new Map(invoices.map((i) => [String(i.invoice_id), i]));
     let expired = 0;
-    for (const order of due) {
-      const invoice = byId.get(order.paymentId!);
-      if (invoice?.status === "paid") {
-        await this.applyEvent(this.invoicePaidEvent(invoice));
-        continue;
-      }
-      if (invoice?.status === "active") {
-        try {
-          await this.cryptoPay.deleteInvoice(order.paymentId!);
-        } catch (e) {
-          // не удалили - возможно, его как раз оплатили: следующий проход увидит paid
-          this.log.warn(`истечение: счет ${order.paymentId} не удален (${e instanceof Error ? e.message : String(e)})`);
-          continue;
-        }
-      }
-      if (await this.status.move(order.id, ["pending"], "expired", "истек срок оплаты")) expired++;
-    }
+    for (const order of due) if ((await this.expireCryptoPayOrder(order, byId.get(order.paymentId!))) === "expired") expired++;
     return expired;
   }
 

@@ -3,6 +3,7 @@ import type { AddressInfo } from "node:net";
 import { randomUUID } from "node:crypto";
 import request from "supertest";
 import { cryptoPaySignature } from "../src/payments/cryptopay.client";
+import { OrderStatusService } from "../src/orders/order-status.service";
 import { OrdersWorker } from "../src/orders/orders.worker";
 import { PaymentsService } from "../src/payments/payments.service";
 import { loginAs, resetDb, startApp, type TestApp } from "./helpers";
@@ -15,18 +16,22 @@ function fakeCryptoPay() {
   const calls: { method: string; token: string | undefined; body: Record<string, unknown> }[] = [];
   let nextId = 1000;
   let down = false;
+  // для гонок: задержать ответ на createInvoice, пока тест не отпустит; создать счет сразу оплаченным
+  let holdCreate: Promise<void> | null = null;
+  let payOnCreate = false;
   const server: Server = createServer((req, res) => {
     let raw = "";
     req.on("data", (c) => (raw += c));
-    req.on("end", () => {
+    req.on("end", async () => {
       const method = req.url!.split("/").pop()!;
       const body = raw ? JSON.parse(raw) : {};
       calls.push({ method, token: req.headers["crypto-pay-api-token"] as string | undefined, body });
       const send = (result: unknown) => res.end(JSON.stringify({ ok: true, result }));
       if (down) return res.writeHead(500).end(JSON.stringify({ ok: false, error: { name: "INTERNAL" } }));
       if (method === "createInvoice") {
+        if (holdCreate) await holdCreate;
         const id = nextId++;
-        const inv = { invoice_id: id, hash: `H${id}`, status: "active", currency_type: "fiat", fiat: body.fiat, amount: String(Number(body.amount)), bot_invoice_url: `https://t.me/CryptoTestnetBot?start=H${id}`, payload: body.payload };
+        const inv = { invoice_id: id, hash: `H${id}`, status: payOnCreate ? "paid" : "active", currency_type: "fiat", fiat: body.fiat, amount: String(Number(body.amount)), bot_invoice_url: `https://t.me/CryptoTestnetBot?start=H${id}`, payload: body.payload };
         invoices.set(id, inv);
         return send(inv);
       }
@@ -38,7 +43,23 @@ function fakeCryptoPay() {
       res.writeHead(404).end(JSON.stringify({ ok: false, error: { name: "METHOD_NOT_FOUND" } }));
     });
   });
-  return { server, invoices, calls, setDown: (v: boolean) => (down = v), pay: (id: number) => (invoices.get(id)!.status = "paid") };
+  return {
+    server,
+    invoices,
+    calls,
+    setDown: (v: boolean) => (down = v),
+    pay: (id: number) => (invoices.get(id)!.status = "paid"),
+    // задержать создание счета: возвращает функцию «отпустить»
+    holdCreate: () => {
+      let release!: () => void;
+      holdCreate = new Promise<void>((r) => (release = r));
+      return () => {
+        holdCreate = null;
+        release();
+      };
+    },
+    setPayOnCreate: (v: boolean) => (payOnCreate = v),
+  };
 }
 
 describe("payments: Crypto Pay", () => {
@@ -59,6 +80,30 @@ describe("payments: Crypto Pay", () => {
   const poll = () => t.app.get(PaymentsService).pollCryptoPay();
   const expireCp = () => t.app.get(PaymentsService).expireCryptoPay();
   const backdate = (id: string) => t.prisma.order.update({ where: { id }, data: { expiresAt: new Date(Date.now() - 1000) } });
+  // ждать условия (гонки в тестах - управляемые, без sleep наугад)
+  const until = async (cond: () => boolean | Promise<boolean>) => {
+    for (let i = 0; i < 300; i++) {
+      if (await cond()) return;
+      await new Promise((r) => setTimeout(r, 10));
+    }
+    throw new Error("условие не наступило");
+  };
+  // первый переход в expired (его делает фоновая задача) - задержать до release()
+  const holdFirstExpire = () => {
+    const svc = t.app.get(OrderStatusService);
+    const move = svc.move.bind(svc);
+    let release!: () => void;
+    const gate = new Promise<void>((r) => (release = r));
+    let held = false;
+    const spy = jest.spyOn(svc, "move").mockImplementation(async (...args) => {
+      if (args[2] === "expired" && !held) {
+        held = true;
+        await gate;
+      }
+      return move(...args);
+    });
+    return { release, held: () => held, spy };
+  };
 
   beforeAll(async () => {
     await new Promise<void>((r) => cp.server.listen(0, "127.0.0.1", () => r()));
@@ -80,6 +125,8 @@ describe("payments: Crypto Pay", () => {
     cp.invoices.clear();
     cp.calls.length = 0;
     cp.setDown(false);
+    cp.setPayOnCreate(false);
+    jest.restoreAllMocks();
   });
 
   it("счет в валюте заказа с токеном в заголовке, ссылка на бота, повтор - тот же счет", async () => {
@@ -199,6 +246,66 @@ describe("payments: Crypto Pay", () => {
       expect(await expireCp()).toBe(1);
       expect(await status(order.id)).toBe("expired");
     });
+
+    it("повтор /pay после срока: счет уже оплачен - оплата проводится, ответ 409 paid (ревью F1)", async () => {
+      const order = await newOrder();
+      await pay(order.id);
+      cp.pay((await invoiceOf(order.id)).invoice_id);
+      await backdate(order.id);
+      const res = await pay(order.id);
+      expect(res.status).toBe(409);
+      expect(res.body.status).toBe("paid");
+      expect(await status(order.id)).toBe("paid");
+      // вебхук того же счета - уже обработанное событие, а не late
+      expect((await webhook(update(await invoiceOf(order.id)))).body.result).toBe("duplicate");
+    });
+
+    it("повтор /pay после срока: счет не оплачен - удаляется, заказ истекает", async () => {
+      const order = await newOrder();
+      await pay(order.id);
+      const inv = await invoiceOf(order.id);
+      await backdate(order.id);
+      const res = await pay(order.id);
+      expect(res.status).toBe(409);
+      expect(res.body.status).toBe("expired");
+      expect(cp.invoices.has(inv.invoice_id)).toBe(false);
+    });
+
+    it("повтор /pay после срока, Crypto Pay не отвечает - 502, заказ ждет проверки", async () => {
+      const order = await newOrder();
+      await pay(order.id);
+      await backdate(order.id);
+      cp.setDown(true);
+      expect((await pay(order.id)).status).toBe(502);
+      expect(await status(order.id)).toBe("pending");
+    });
+
+    // ревью F3: счет создается медленно, срок проходит, фоновая задача выбирает заказ еще в created
+    for (const paidInBot of [true, false]) {
+      it(`счет создан, пока фоновая задача истекала created: ${paidInBot ? "оплачен - заказ оплачен" : "не оплачен - удален, заказ истек"} (ревью F3)`, async () => {
+        const order = await newOrder();
+        cp.setPayOnCreate(paidInBot);
+        const releaseCreate = cp.holdCreate();
+        const payReq = pay(order.id).then((r) => r);
+        await until(() => cp.calls.some((c) => c.method === "createInvoice"));
+        await backdate(order.id);
+
+        const gate = holdFirstExpire();
+        const expiring = t.app.get(OrdersWorker).expire();
+        await until(gate.held);
+
+        releaseCreate();
+        const res = await payReq;
+        gate.release();
+        expect(await expiring).toBe(0);
+
+        expect(res.status).toBe(409);
+        expect(await status(order.id)).toBe(paidInBot ? "paid" : "expired");
+        const inv = cp.calls.find((c) => c.method === "createInvoice")!;
+        expect(cp.calls.filter((c) => c.method === "deleteInvoice")).toHaveLength(paidInBot ? 0 : 1);
+        expect(inv).toBeTruthy();
+      });
+    }
 
     it("свежий заказ не истекает", async () => {
       const order = await newOrder();
