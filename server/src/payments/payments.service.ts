@@ -150,25 +150,32 @@ export class PaymentsService {
     await this.expireCryptoPay();
   }
 
-  // Все заказы, ждущие оплаты в Crypto Pay, пачками по 100 от старых к новым: ни один не ждет проверки дольше прохода
+  // Все заказы, ждущие оплаты в Crypto Pay, пачками по 100 от старых к новым: ни один не ждет проверки дольше прохода.
+  // Граница пачки - неизменяемая пара (createdAt, id) «строго после последней»: заказы прошлой пачки, ставшие paid,
+  // выпадают из фильтра и не сдвигают следующую (курсор Prisma со skip: 1 в этом случае пропускал заказ)
   async pollCryptoPay(): Promise<number> {
     if (!this.cryptoPay || this.polling) return 0;
     this.polling = true;
     let applied = 0;
     try {
-      for (let cursor: string | undefined; ; ) {
+      for (let after: { createdAt: Date; id: string } | undefined; ; ) {
         const batch = await this.prisma.order.findMany({
-          where: { paymentProvider: "cryptopay", status: "pending", paymentId: { not: null } },
-          select: { id: true, paymentId: true },
+          where: {
+            paymentProvider: "cryptopay",
+            status: "pending",
+            paymentId: { not: null },
+            ...(after && { OR: [{ createdAt: { gt: after.createdAt } }, { createdAt: after.createdAt, id: { gt: after.id } }] }),
+          },
+          select: { id: true, paymentId: true, createdAt: true },
           orderBy: [{ createdAt: "asc" }, { id: "asc" }],
           take: POLL_BATCH,
-          ...(cursor && { cursor: { id: cursor }, skip: 1 }),
         });
         if (!batch.length) break;
         const paid = await this.cryptoPay.getInvoices(batch.map((o) => o.paymentId!), "paid");
         for (const invoice of paid) if ((await this.applyEvent(this.invoicePaidEvent(invoice))).result === "applied") applied++;
         if (batch.length < POLL_BATCH) break;
-        cursor = batch[batch.length - 1].id;
+        const last = batch[batch.length - 1];
+        after = { createdAt: last.createdAt, id: last.id };
       }
     } catch (e) {
       if (e instanceof CryptoPayError) this.log.warn(`опрос Crypto Pay: ${e.message}`);

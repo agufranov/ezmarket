@@ -253,32 +253,59 @@ describe("payments: Crypto Pay", () => {
     });
   });
 
-  it("опрос проходит все ждущие заказы, даже больше 100", async () => {
-    const user = await t.prisma.user.findUniqueOrThrow({ where: { email: "alex@mail.ru" } });
-    const base = Date.now() - 60_000;
-    const rows = Array.from({ length: 150 }, (_, i) => ({
-      userId: user.id,
-      idempotencyKey: `bulk-${i}-00000`,
-      steamLogin: "gaben",
-      amount: 100_00,
-      currency: "RUB",
-      payAmount: 100_00,
-      status: "pending" as const,
-      paymentProvider: "cryptopay",
-      paymentId: String(50_000 + i),
-      expiresAt: new Date(Date.now() + 10 * 60_000),
-      createdAt: new Date(base + i * 10),
-    }));
-    await t.prisma.order.createMany({ data: rows });
-    for (const r of rows) {
-      const id = Number(r.paymentId);
-      cp.invoices.set(id, { invoice_id: id, hash: `H${id}`, status: "active", currency_type: "fiat", fiat: "RUB", amount: "100", bot_invoice_url: "", payload: "" });
-    }
-    // самый новый заказ - во второй пачке (100 + 50)
-    cp.pay(50_149);
-    expect(await poll()).toBe(1);
-    expect(await t.prisma.order.count({ where: { status: "paid" } })).toBe(1);
-    expect(cp.calls.filter((c) => c.method === "getInvoices")).toHaveLength(2);
+  describe("опрос больше 100 заказов", () => {
+    // 150 ждущих заказов Crypto Pay со счетами; sameTime - у всех одно время создания (граница пачки - только по id)
+    const bulkPending = async (sameTime = false) => {
+      const user = await t.prisma.user.findUniqueOrThrow({ where: { email: "alex@mail.ru" } });
+      const base = Date.now() - 60_000;
+      const rows = Array.from({ length: 150 }, (_, i) => ({
+        userId: user.id,
+        idempotencyKey: `bulk-${i}-00000`,
+        steamLogin: "gaben",
+        amount: 100_00,
+        currency: "RUB",
+        payAmount: 100_00,
+        status: "pending" as const,
+        paymentProvider: "cryptopay",
+        paymentId: String(50_000 + i),
+        expiresAt: new Date(Date.now() + 10 * 60_000),
+        createdAt: new Date(sameTime ? base : base + i * 10),
+      }));
+      await t.prisma.order.createMany({ data: rows });
+      for (const r of rows) {
+        const id = Number(r.paymentId);
+        cp.invoices.set(id, { invoice_id: id, hash: `H${id}`, status: "active", currency_type: "fiat", fiat: "RUB", amount: "100", bot_invoice_url: "", payload: "" });
+      }
+    };
+    const paidCount = () => t.prisma.order.count({ where: { status: "paid" } });
+
+    it("оплачен самый новый - находится во второй пачке", async () => {
+      await bulkPending();
+      cp.pay(50_149);
+      expect(await poll()).toBe(1);
+      expect(await paidCount()).toBe(1);
+      expect(cp.calls.filter((c) => c.method === "getInvoices")).toHaveLength(2);
+    });
+
+    it("оплачены все 150 - один проход проводит все (заказы первой пачки, ставшие paid, не сдвигают вторую)", async () => {
+      await bulkPending();
+      for (let i = 0; i < 150; i++) cp.pay(50_000 + i);
+      expect(await poll()).toBe(150);
+      expect(await paidCount()).toBe(150);
+    });
+
+    it("оплачены последний заказ первой пачки и первый второй", async () => {
+      await bulkPending();
+      cp.pay(50_099);
+      cp.pay(50_100);
+      expect(await poll()).toBe(2);
+    });
+
+    it("одинаковое время создания у всех - граница по id, тоже ничего не пропускается", async () => {
+      await bulkPending(true);
+      for (let i = 0; i < 150; i++) cp.pay(50_000 + i);
+      expect(await poll()).toBe(150);
+    });
   });
 
   it("тестовая страница оплаты при Crypto Pay недоступна", async () => {
