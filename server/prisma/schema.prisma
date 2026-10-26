@@ -20,8 +20,64 @@ model User {
   bonusBalance Int       @default(0) @map("bonus_balance")
   createdAt    DateTime  @default(now()) @map("created_at")
   sessions     Session[]
+  orders       Order[]
 
   @@map("users")
+}
+
+// Статусы заказа пополнения Steam. Допустимые переходы проверяет триггер в миграции 20261026090000_orders
+enum OrderStatus {
+  created
+  pending
+  paid
+  processing
+  completed
+  failed
+  canceled
+  expired
+
+  @@map("order_status")
+}
+
+// Заказ пополнения Steam. Текущий статус - здесь, каждая его смена пишется триггером в order_status_history
+model Order {
+  id             String               @id @default(uuid())
+  userId         String               @map("user_id")
+  user           User                 @relation(fields: [userId], references: [id], onDelete: Restrict)
+  // ключ повтора от клиента: повторный POST с тем же ключом вернет тот же заказ
+  idempotencyKey String               @map("idempotency_key")
+  steamLogin     String               @map("steam_login")
+  // суммы - целым числом в минимальных единицах валюты (копейки, центы, тиыны)
+  amount         Int
+  currency       String
+  // сколько платить деньгами (пока равно amount; скидка и бонусы уменьшат)
+  payAmount      Int                  @map("pay_amount")
+  status         OrderStatus          @default(created)
+  // неоплаченный заказ истекает через 30 минут после создания
+  expiresAt      DateTime             @map("expires_at")
+  // id платежа у платежной системы
+  paymentId      String?              @unique @map("payment_id")
+  createdAt      DateTime             @default(now()) @map("created_at")
+  updatedAt      DateTime             @updatedAt @map("updated_at")
+  history        OrderStatusHistory[]
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, createdAt])
+  @@map("orders")
+}
+
+// История статусов: строки добавляет только триггер, приложение их не пишет
+model OrderStatusHistory {
+  id         BigInt       @id @default(autoincrement())
+  orderId    String       @map("order_id")
+  order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus OrderStatus? @map("from_status")
+  toStatus   OrderStatus  @map("to_status")
+  reason     String?
+  createdAt  DateTime     @default(now()) @map("created_at")
+
+  @@index([orderId, id])
+  @@map("order_status_history")
 }
 
 // Коды входа: сам код нигде не хранится, только HMAC-SHA256 с серверным секретом
