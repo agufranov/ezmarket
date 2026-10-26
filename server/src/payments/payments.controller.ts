@@ -27,4 +27,11 @@ export class PaymentsController {
   webhook(@Req() req: RawBodyRequest<FastifyRequest>, @Headers("x-signature") signature: string | undefined) {
     return this.payments.handleWebhook(req.rawBody, signature);
   }
+
+  // POST /api/payments/cryptopay/webhook (от Crypto Pay) + crypto-pay-api-signature -> 200 { ok, result } | 401 | 400
+  @Post("payments/cryptopay/webhook")
+  @HttpCode(200)
+  cryptoPayWebhook(@Req() req: RawBodyRequest<FastifyRequest>, @Headers("crypto-pay-api-signature") signature: string | undefined) {
+    return this.payments.handleCryptoPayWebhook(req.rawBody, signature);
+  }
 }

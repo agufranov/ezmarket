@@ -55,8 +55,11 @@ model Order {
   status         OrderStatus          @default(created)
   // неоплаченный заказ истекает через 30 минут после создания
   expiresAt      DateTime             @map("expires_at")
-  // id платежа у платежной системы
+  // платеж: какая платежная система (fake | cryptopay) и его id у нее
+  paymentProvider String?             @map("payment_provider")
   paymentId      String?              @unique @map("payment_id")
+  // куда отправить покупателя платить (страница тестовой платежки или счет в боте Crypto Pay)
+  paymentUrl     String?              @map("payment_url")
   createdAt      DateTime             @default(now()) @map("created_at")
   updatedAt      DateTime             @updatedAt @map("updated_at")
   history        OrderStatusHistory[]
@@ -64,6 +67,7 @@ model Order {
 
   @@unique([userId, idempotencyKey])
   @@index([userId, createdAt])
+  @@index([paymentProvider, status])
   @@map("orders")
 }
 

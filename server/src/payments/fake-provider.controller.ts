@@ -11,7 +11,7 @@ const notFound = () => new ApiError(HttpStatus.NOT_FOUND, "Платеж не н�
 const money = (minor: number, currency: string) =>
   new Intl.NumberFormat("ru-RU", { style: "currency", currency, maximumFractionDigits: 2 }).format(minor / 100);
 
-// Встроенная тестовая платежная система (PAYMENT_FAKE=true): страница оплаты и подписанное уведомление,
+// Встроенная тестовая платежная система (PAYMENT_PROVIDER=fake): страница оплаты и подписанное уведомление,
 // которое идет через тот же обработчик, что и уведомления настоящей платежки
 @Controller("payments/fake")
 export class FakeProviderController {
@@ -58,9 +58,9 @@ fetch(location.pathname+"/"+b.dataset.act,{method:"POST"}).then(function(){locat
   }
 
   private async order(paymentId: string) {
-    if (!this.config.PAYMENT_FAKE) throw notFound();
+    if (this.config.PAYMENT_PROVIDER !== "fake") throw notFound();
     const order = await this.prisma.order.findUnique({ where: { paymentId } });
-    if (!order) throw notFound();
+    if (!order || order.paymentProvider !== "fake") throw notFound();
     return order;
   }
 }

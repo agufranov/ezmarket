@@ -165,7 +165,7 @@ describe("payments", () => {
 describe("payments: тестовая платежка выключена", () => {
   let t: TestApp;
   beforeAll(async () => {
-    t = await startApp({ PAYMENT_FAKE: "false" });
+    t = await startApp({ PAYMENT_PROVIDER: "cryptopay", CRYPTOPAY_TOKEN: "1:test", CRYPTOPAY_API_URL: "http://127.0.0.1:1/api" });
   });
   afterAll(async () => {
     await t.app.close();

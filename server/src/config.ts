@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // Переменные окружения. У секретов нет значений по умолчанию: без них сервер не стартует.
-const schema = z.object({
+const base = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().default(3001),
   DATABASE_URL: z.string().min(1),
@@ -27,16 +27,26 @@ const schema = z.object({
     .transform((v) => v === "true"),
   // секрет HMAC, которым платежная система подписывает уведомления об оплате (заголовок X-Signature)
   PAYMENT_WEBHOOK_SECRET: z.string().min(32, "PAYMENT_WEBHOOK_SECRET - не короче 32 символов"),
-  // встроенная тестовая платежная система: страница оплаты /api/payments/fake/:id (пока нет настоящей). В проде - false
-  PAYMENT_FAKE: z
-    .enum(["true", "false"])
-    .default("true")
-    .transform((v) => v === "true"),
+  // платежная система: fake - встроенная тестовая (страница /api/payments/fake/:id), cryptopay - Crypto Pay (@CryptoBot)
+  PAYMENT_PROVIDER: z.enum(["fake", "cryptopay"]).default("fake"),
+  // Crypto Pay: токен приложения (Crypto Pay -> My Apps в боте), сеть testnet (@CryptoTestnetBot) или mainnet
+  CRYPTOPAY_TOKEN: z.string().optional(),
+  CRYPTOPAY_NETWORK: z.enum(["testnet", "mainnet"]).default("testnet"),
+  // адрес API вместо стандартного (для тестов - подставной сервер)
+  CRYPTOPAY_API_URL: z.string().url().optional(),
+  // адрес сайта: кнопка «Вернуться в магазин» после оплаты в боте
+  SITE_URL: z.string().url().optional(),
   // фоновые задачи (отправка писем) - выключаются в тестах, там их зовут вручную
   WORKERS: z
     .enum(["true", "false"])
     .default("true")
     .transform((v) => v === "true"),
+});
+
+const schema = base.superRefine((c, ctx) => {
+  if (c.PAYMENT_PROVIDER === "cryptopay" && !c.CRYPTOPAY_TOKEN) {
+    ctx.addIssue({ code: z.ZodIssueCode.custom, path: ["CRYPTOPAY_TOKEN"], message: "нужен для PAYMENT_PROVIDER=cryptopay" });
+  }
 });
 
 export type Config = z.infer<typeof schema>;

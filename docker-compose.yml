@@ -46,8 +46,12 @@ services:
       AUTH_CODES_PER_HOUR: ${AUTH_CODES_PER_HOUR:-5}
       # пусто - секрет подписи уведомлений об оплате сгенерируется при первом старте (том apidata)
       PAYMENT_WEBHOOK_SECRET: ${PAYMENT_WEBHOOK_SECRET:-}
-      # встроенная тестовая платежка со страницей оплаты (пока нет настоящей)
-      PAYMENT_FAKE: ${PAYMENT_FAKE:-true}
+      # платежка: fake - встроенная тестовая со страницей оплаты, cryptopay - Crypto Pay (нужен CRYPTOPAY_TOKEN)
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-fake}
+      CRYPTOPAY_TOKEN: ${CRYPTOPAY_TOKEN:-}
+      CRYPTOPAY_NETWORK: ${CRYPTOPAY_NETWORK:-testnet}
+      # кнопка «Вернуться в магазин» после оплаты в боте (например http://166.88.253.195)
+      SITE_URL: ${SITE_URL:-}
     volumes:
       - apidata:/data
     depends_on:
