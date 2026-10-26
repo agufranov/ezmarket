@@ -48,3 +48,6 @@ next-env.d.ts
 /.local
 /server/node_modules
 /server/dist
+
+# доступы базы знаний (репозиторий публичный): ссылки на макет, ТЗ, стенд
+docs/kb/*.local.md
