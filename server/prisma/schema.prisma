@@ -55,6 +55,10 @@ model Order {
   status         OrderStatus          @default(created)
   // неоплаченный заказ истекает через 30 минут после создания
   expiresAt      DateTime             @map("expires_at")
+  // выполнение: когда заказ последний раз взят в работу и сколько было попыток. Захват с ограниченным сроком:
+  // если процесс упал или не записал итог, заказ в processing берется снова (OrdersWorker)
+  fulfilClaimedAt DateTime?           @map("fulfil_claimed_at")
+  fulfilAttempts Int                  @default(0) @map("fulfil_attempts")
   // платеж: какая платежная система (fake | cryptopay) и его id у нее
   paymentProvider String?             @map("payment_provider")
   paymentId      String?              @unique @map("payment_id")
