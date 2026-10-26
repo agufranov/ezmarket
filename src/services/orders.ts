@@ -4,6 +4,9 @@
 // POST /orders/:id/pay -> { order, paymentUrl } | 409 { error, status }
 import { site } from "@/config/site";
 import { api, apiEnabled, type ApiError } from "./api";
+import type { TopUpAttempt } from "./topUpAttempt";
+
+export { attemptInput, nextAttempt, type TopUpAttempt } from "./topUpAttempt";
 
 export type TopUpError = Pick<ApiError, "status" | "error"> & { field?: "steamLogin" | "amount" | "currency" };
 
@@ -47,21 +50,10 @@ export async function fetchLimits(): Promise<Limits> {
   }
 }
 
-// Попытка оплаты: ключ повтора и заказ, который по нему создан. Тот же ключ (двойной клик, повтор после ошибки сети) -
-// тот же заказ; заказ попытки завершен - следующее нажатие начинает новую попытку (ревью F7)
-export type TopUpAttempt = { key: string; orderId?: string };
-
-export const newIdempotencyKey = () =>
-  typeof crypto !== "undefined" && "randomUUID" in crypto ? crypto.randomUUID() : `k${Date.now().toString(36)}${Math.random().toString(36).slice(2, 12)}`;
-
-// Продолжить попытку или начать новую, если ее заказ уже завершен. Не удалось узнать статус - продолжаем ту же
-// (сервер с тем же ключом вернет тот же заказ, дубля не будет)
-export async function nextAttempt(prev: TopUpAttempt | null): Promise<TopUpAttempt> {
-  if (prev?.orderId && apiEnabled) {
-    const order = await getOrder(prev.orderId).catch(() => null);
-    if (order && FINAL_STATUSES.includes(order.status)) return { key: newIdempotencyKey() };
-  }
-  return prev ?? { key: newIdempotencyKey() };
+// завершен ли заказ попытки (для nextAttempt); без API заказов нет - не завершен
+export async function orderFinished(id: string): Promise<boolean> {
+  if (!apiEnabled) return false;
+  return FINAL_STATUSES.includes((await getOrder(id)).status);
 }
 
 // amount - в целых единицах, как в поле суммы; на сервер уходит в минимальных (копейки, центы, тиыны).

@@ -5,7 +5,7 @@ import { site } from "@/config/site";
 import { useAuth } from "@/lib/auth";
 import { useModal } from "@/lib/modal";
 import { apiEnabled } from "@/services/api";
-import { fetchLimits, nextAttempt, startSteamTopUp, type Limits, type TopUpAttempt, type TopUpError } from "@/services/orders";
+import { attemptInput, fetchLimits, nextAttempt, orderFinished, startSteamTopUp, type Limits, type TopUpAttempt, type TopUpError } from "@/services/orders";
 import { formatAmount, formatNumber } from "@/lib/format";
 import { Icon } from "@/components/ui/Icon";
 import s from "./SteamBar.module.scss";
@@ -27,11 +27,11 @@ export function SteamBar() {
   useEffect(() => {
     fetchLimits().then(setLimits);
   }, []);
-  // попытка оплаты (ключ повтора + ее заказ): живет, пока не поменялись логин, сумма или валюта и пока ее заказ
-  // не завершен - двойной клик и повтор после ошибки дают тот же заказ, покупка после выполненного - новый
+  // попытка оплаты (ключ повтора + ее заказ + данные формы): подходит, только пока данные формы те же и ее заказ
+  // не завершен - двойной клик и повтор после ошибки дают тот же заказ, покупка после выполненного или с другими
+  // данными - новый. Попытка сама помнит свои данные, поэтому сброса при правке полей не нужно (ревью F10)
   const attemptRef = useRef<TopUpAttempt | null>(null);
   useEffect(() => {
-    attemptRef.current = null;
     setServerError(null);
   }, [login, amount, currency]);
 
@@ -59,9 +59,12 @@ export function SteamBar() {
     if (win) win.opener = null;
     setLoading(true);
     setServerError(null);
+    // данные - на момент нажатия: если форму поменяют, пока идут запросы, этот запрос доведет свои данные
+    const data = { steamLogin: login.trim(), amount: value, currency: currency.id };
     try {
-      const attempt = (attemptRef.current = await nextAttempt(attemptRef.current));
-      const { paymentUrl } = await startSteamTopUp({ steamLogin: login.trim(), amount: value, currency: currency.id }, attempt);
+      const attempt = await nextAttempt(attemptRef.current, attemptInput(data), orderFinished);
+      attemptRef.current = attempt;
+      const { paymentUrl } = await startSteamTopUp(data, attempt);
       setLoading(false);
       if (!paymentUrl) return openModal("steam-pay");
       if (win && !win.closed) win.location.href = paymentUrl;
