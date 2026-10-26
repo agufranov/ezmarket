@@ -27,6 +27,9 @@ mkdirSync(dataDir, { recursive: true });
 const secretFile = path.join(dataDir, "auth_code_secret");
 if (!existsSync(secretFile)) writeFileSync(secretFile, randomBytes(48).toString("base64url"));
 const AUTH_CODE_SECRET = readFileSync(secretFile, "utf8").trim();
+const webhookSecretFile = path.join(dataDir, "payment_webhook_secret");
+if (!existsSync(webhookSecretFile)) writeFileSync(webhookSecretFile, randomBytes(48).toString("base64url"));
+const PAYMENT_WEBHOOK_SECRET = readFileSync(webhookSecretFile, "utf8").trim();
 
 const pgDir = path.join(dataDir, "pg");
 const pg = new EmbeddedPostgres({
@@ -105,6 +108,7 @@ run("api", [path.join(serverDir, "node_modules/@nestjs/cli/bin/nest.js"), "start
   PORT: String(PORTS.api),
   DATABASE_URL,
   AUTH_CODE_SECRET,
+  PAYMENT_WEBHOOK_SECRET,
   COOKIE_SECURE: "false",
   SMTP_HOST: "127.0.0.1",
   SMTP_PORT: String(PORTS.smtp),

@@ -60,6 +60,7 @@ model Order {
   createdAt      DateTime             @default(now()) @map("created_at")
   updatedAt      DateTime             @updatedAt @map("updated_at")
   history        OrderStatusHistory[]
+  paymentEvents  PaymentEvent[]
 
   @@unique([userId, idempotencyKey])
   @@index([userId, createdAt])
@@ -132,4 +133,24 @@ model EmailOutbox {
 
   @@index([sentAt, nextTryAt])
   @@map("email_outbox")
+}
+
+// Уведомления платежной системы. id события уникален: повтор того же уведомления не обрабатывается второй раз.
+// result - что сделали: applied | already_paid | late | amount_mismatch | unknown_payment
+model PaymentEvent {
+  id              String   @id @default(uuid())
+  providerEventId String   @unique @map("provider_event_id")
+  paymentId       String   @map("payment_id")
+  orderId         String?  @map("order_id")
+  order           Order?   @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  type            String
+  amount          Int
+  currency        String
+  result          String
+  payload         Json
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  @@index([paymentId])
+  @@index([orderId])
+  @@map("payment_events")
 }

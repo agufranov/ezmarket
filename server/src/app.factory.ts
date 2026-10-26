@@ -14,6 +14,8 @@ export async function createApp(config: Config, logStream?: Writable): Promise<N
   });
   const app = await NestFactory.create<NestFastifyApplication>(AppModule.with(config), adapter, {
     logger: config.NODE_ENV === "test" ? ["error", "warn"] : undefined,
+    // подпись уведомления об оплате считается по телу байт в байт - нужен исходный буфер (req.rawBody)
+    rawBody: true,
   });
   await app.register(fastifyCookie);
   app.setGlobalPrefix("api");

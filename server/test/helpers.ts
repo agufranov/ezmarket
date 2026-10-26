@@ -15,6 +15,7 @@ export function testConfig(overrides: Record<string, string> = {}): Config {
     NODE_ENV: "test",
     DATABASE_URL: process.env.TEST_DATABASE_URL || DEFAULT_TEST_DB,
     AUTH_CODE_SECRET: "test-secret-test-secret-test-secret-123",
+    PAYMENT_WEBHOOK_SECRET: "test-webhook-secret-test-webhook-secret",
     COOKIE_SECURE: "false",
     WORKERS: "false",
     // SMTP в тестах - закрытый порт: письма остаются в очереди, их текст читается из базы
@@ -42,7 +43,7 @@ export async function startApp(overrides: Record<string, string> = {}): Promise<
 }
 
 export async function resetDb(prisma: PrismaService) {
-  await prisma.$executeRawUnsafe(`TRUNCATE "order_status_history", "orders", "sessions", "auth_codes", "email_outbox", "users" CASCADE`);
+  await prisma.$executeRawUnsafe(`TRUNCATE "payment_events", "order_status_history", "orders", "sessions", "auth_codes", "email_outbox", "users" CASCADE`);
 }
 
 // Код «из письма»: последнее письмо на адрес в очереди

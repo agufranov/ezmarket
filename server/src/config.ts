@@ -25,6 +25,13 @@ const schema = z.object({
     .enum(["true", "false"])
     .default("false")
     .transform((v) => v === "true"),
+  // секрет HMAC, которым платежная система подписывает уведомления об оплате (заголовок X-Signature)
+  PAYMENT_WEBHOOK_SECRET: z.string().min(32, "PAYMENT_WEBHOOK_SECRET - не короче 32 символов"),
+  // встроенная тестовая платежная система: страница оплаты /api/payments/fake/:id (пока нет настоящей). В проде - false
+  PAYMENT_FAKE: z
+    .enum(["true", "false"])
+    .default("true")
+    .transform((v) => v === "true"),
   // фоновые задачи (отправка писем) - выключаются в тестах, там их зовут вручную
   WORKERS: z
     .enum(["true", "false"])

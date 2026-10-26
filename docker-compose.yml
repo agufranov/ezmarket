@@ -44,6 +44,10 @@ services:
       AUTH_DEMO_CODE: ${AUTH_DEMO_CODE:-false}
       AUTH_RESEND_SECONDS: ${AUTH_RESEND_SECONDS:-60}
       AUTH_CODES_PER_HOUR: ${AUTH_CODES_PER_HOUR:-5}
+      # пусто - секрет подписи уведомлений об оплате сгенерируется при первом старте (том apidata)
+      PAYMENT_WEBHOOK_SECRET: ${PAYMENT_WEBHOOK_SECRET:-}
+      # встроенная тестовая платежка со страницей оплаты (пока нет настоящей)
+      PAYMENT_FAKE: ${PAYMENT_FAKE:-true}
     volumes:
       - apidata:/data
     depends_on:
