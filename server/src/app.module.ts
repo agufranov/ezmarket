@@ -3,6 +3,7 @@ import { ScheduleModule } from "@nestjs/schedule";
 import { AuthModule } from "./auth/auth.module";
 import { CONFIG, type Config } from "./config";
 import { MailModule } from "./mail/mail.module";
+import { OrdersModule } from "./orders/orders.module";
 import { PrismaService } from "./prisma.service";
 
 @Global()
@@ -20,6 +21,6 @@ class CoreModule {
 @Module({})
 export class AppModule {
   static with(config: Config): DynamicModule {
-    return { module: AppModule, imports: [CoreModule.with(config), ScheduleModule.forRoot(), MailModule, AuthModule] };
+    return { module: AppModule, imports: [CoreModule.with(config), ScheduleModule.forRoot(), MailModule, AuthModule, OrdersModule] };
   }
 }

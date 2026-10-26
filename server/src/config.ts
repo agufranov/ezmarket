@@ -45,6 +45,16 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
 
 export const CONFIG = Symbol("CONFIG");
 
+// Правила заказа пополнения Steam. Суммы - в минимальных единицах валюты (100 = 1 ₽ / $1 / 1 ₸);
+// пределы как на фронте (src/config/site.ts: steam.minAmount / maxAmount)
+export const ORDER_RULES = {
+  currencies: ["RUB", "USD", "KZT"] as const,
+  minAmount: 100_00,
+  maxAmount: 50_000_00,
+  // неоплаченный заказ истекает через 30 минут
+  ttlMs: 30 * 60 * 1000,
+} as const;
+
 // Правила входа по коду (критерии из плана недели)
 export const AUTH_RULES = {
   codeTtlMs: 10 * 60 * 1000,

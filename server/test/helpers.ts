@@ -1,6 +1,7 @@
 import type { NestFastifyApplication } from "@nestjs/platform-fastify";
 import { Writable } from "node:stream";
 import { createApp } from "../src/app.factory";
+import { hashToken, newToken } from "../src/auth/crypto";
 import { loadConfig, type Config } from "../src/config";
 import { MailService } from "../src/mail/mail.service";
 import { PrismaService } from "../src/prisma.service";
@@ -63,3 +64,11 @@ export async function ageCodes(prisma: PrismaService, email: string, ms: number)
 }
 
 export const mail = (app: NestFastifyApplication) => app.get(MailService);
+
+// Вход без писем: пользователь и сессия сразу в базе, в ответ - заголовок Cookie для запросов
+export async function loginAs(prisma: PrismaService, email: string) {
+  const user = await prisma.user.upsert({ where: { email }, create: { email }, update: {} });
+  const token = newToken();
+  await prisma.session.create({ data: { tokenHash: hashToken(token), userId: user.id, expiresAt: new Date(Date.now() + 60 * 60 * 1000) } });
+  return { user, cookie: `ez_session=${token}` };
+}
