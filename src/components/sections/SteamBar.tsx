@@ -5,7 +5,7 @@ import { site } from "@/config/site";
 import { useAuth } from "@/lib/auth";
 import { useModal } from "@/lib/modal";
 import { apiEnabled } from "@/services/api";
-import { fetchLimits, newIdempotencyKey, startSteamTopUp, type Limits, type TopUpError } from "@/services/orders";
+import { fetchLimits, nextAttempt, startSteamTopUp, type Limits, type TopUpAttempt, type TopUpError } from "@/services/orders";
 import { formatAmount, formatNumber } from "@/lib/format";
 import { Icon } from "@/components/ui/Icon";
 import s from "./SteamBar.module.scss";
@@ -27,10 +27,11 @@ export function SteamBar() {
   useEffect(() => {
     fetchLimits().then(setLimits);
   }, []);
-  // ключ повтора живет, пока не поменялись логин, сумма или валюта: двойной клик и повтор после ошибки - тот же заказ
-  const keyRef = useRef<string | null>(null);
+  // попытка оплаты (ключ повтора + ее заказ): живет, пока не поменялись логин, сумма или валюта и пока ее заказ
+  // не завершен - двойной клик и повтор после ошибки дают тот же заказ, покупка после выполненного - новый
+  const attemptRef = useRef<TopUpAttempt | null>(null);
   useEffect(() => {
-    keyRef.current = null;
+    attemptRef.current = null;
     setServerError(null);
   }, [login, amount, currency]);
 
@@ -52,7 +53,6 @@ export function SteamBar() {
     if (!canPay || loading) return;
     // заказ создается только с сессией: гостю - окно входа
     if (apiEnabled && !user) return openModal("login");
-    keyRef.current ??= newIdempotencyKey();
     // оплата - в новом окне. Открываем его сразу по клику (после ответа сервера браузер заблокирует всплывающее окно),
     // ссылку подставляем, когда заказ создан; при ошибке окно закрываем
     const win = apiEnabled ? window.open("about:blank", "_blank") : null;
@@ -60,7 +60,8 @@ export function SteamBar() {
     setLoading(true);
     setServerError(null);
     try {
-      const { paymentUrl } = await startSteamTopUp({ steamLogin: login.trim(), amount: value, currency: currency.id }, keyRef.current);
+      const attempt = (attemptRef.current = await nextAttempt(attemptRef.current));
+      const { paymentUrl } = await startSteamTopUp({ steamLogin: login.trim(), amount: value, currency: currency.id }, attempt);
       setLoading(false);
       if (!paymentUrl) return openModal("steam-pay");
       if (win && !win.closed) win.location.href = paymentUrl;

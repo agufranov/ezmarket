@@ -5,7 +5,7 @@ import { asset } from "@/lib/asset";
 import { AuthProvider, useAuth } from "@/lib/auth";
 import { ModalProvider, useModal } from "@/lib/modal";
 import { apiEnabled, type ApiError } from "@/services/api";
-import { cancelOrder, getOrder, listOrders, type OrderDto, type OrderStatus } from "@/services/orders";
+import { cancelOrder, getOrder, listOrders, payOrder, type OrderDto, type OrderStatus } from "@/services/orders";
 import s from "./OrdersPage.module.scss";
 
 // Мои заказы: простая страница без макета - список заказов, статусы и история переходов.
@@ -123,6 +123,27 @@ function OrderRow({ order, onChange }: { order: OrderDto; onChange: () => void }
     }
   };
 
+  // заказ без счета (платежка была недоступна) - создать счет через /pay; окно открывается сразу по клику,
+  // иначе браузер заблокирует всплывающее; при ошибке закрывается (ревью F8)
+  const pay = async () => {
+    const win = window.open("about:blank", "_blank");
+    if (win) win.opener = null;
+    setBusy(true);
+    setError("");
+    try {
+      const url = await payOrder(order.id);
+      if (win && !win.closed) win.location.href = url;
+      else window.location.assign(url);
+      onChange();
+    } catch (e) {
+      win?.close();
+      setError((e as ApiError).error);
+      onChange();
+    } finally {
+      setBusy(false);
+    }
+  };
+
   return (
     <li className={s.card}>
       <div className={s.main}>
@@ -139,10 +160,14 @@ function OrderRow({ order, onChange }: { order: OrderDto; onChange: () => void }
 
       {cancelable && (
         <div className={s.actions}>
-          {order.paymentUrl && (
+          {order.paymentUrl ? (
             <a href={order.paymentUrl} target="_blank" rel="noopener noreferrer" className={s.btn}>
               Оплатить
             </a>
+          ) : (
+            <button type="button" className={s.btn} onClick={pay} disabled={busy}>
+              Оплатить
+            </button>
           )}
           <button type="button" className={s.btnGhost} onClick={cancel} disabled={busy}>
             Отменить
