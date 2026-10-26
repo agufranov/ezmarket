@@ -31,13 +31,19 @@ export class OrdersWorker {
     if (this.config.WORKERS) await this.fulfil();
   }
 
-  // Неоплаченные заказы старше 30 минут -> expired (частичный индекс orders_unpaid_expires_at_idx)
+  // Неоплаченные заказы старше 30 минут -> expired (частичный индекс orders_unpaid_expires_at_idx).
+  // Заказы, которые ждут оплаты в Crypto Pay, здесь не трогаем: перед истечением нужно спросить статус счета -
+  // это делает PaymentsService.expireCryptoPay (иначе оплата в последние секунды пропала бы)
   async expire(): Promise<number> {
     if (this.expiring) return 0;
     this.expiring = true;
     try {
       const due = await this.prisma.order.findMany({
-        where: { status: { in: UNPAID }, expiresAt: { lte: new Date() } },
+        where: {
+          status: { in: UNPAID },
+          expiresAt: { lte: new Date() },
+          OR: [{ status: "created" }, { paymentProvider: null }, { paymentProvider: { not: "cryptopay" } }],
+        },
         select: { id: true },
         take: BATCH,
       });

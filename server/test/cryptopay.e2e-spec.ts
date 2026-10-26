@@ -3,6 +3,7 @@ import type { AddressInfo } from "node:net";
 import { randomUUID } from "node:crypto";
 import request from "supertest";
 import { cryptoPaySignature } from "../src/payments/cryptopay.client";
+import { OrdersWorker } from "../src/orders/orders.worker";
 import { PaymentsService } from "../src/payments/payments.service";
 import { loginAs, resetDb, startApp, type TestApp } from "./helpers";
 
@@ -56,6 +57,8 @@ describe("payments: Crypto Pay", () => {
   const webhook = (body: string, signature = cryptoPaySignature(TOKEN, body)) =>
     http().post("/api/payments/cryptopay/webhook").set("Content-Type", "application/json").set("crypto-pay-api-signature", signature).send(body);
   const poll = () => t.app.get(PaymentsService).pollCryptoPay();
+  const expireCp = () => t.app.get(PaymentsService).expireCryptoPay();
+  const backdate = (id: string) => t.prisma.order.update({ where: { id }, data: { expiresAt: new Date(Date.now() - 1000) } });
 
   beforeAll(async () => {
     await new Promise<void>((r) => cp.server.listen(0, "127.0.0.1", () => r()));
@@ -155,6 +158,82 @@ describe("payments: Crypto Pay", () => {
     await Promise.all([webhook(update(inv)), poll()]);
     expect(await status(order.id)).toBe("paid");
     expect(await t.prisma.paymentEvent.count()).toBe(1);
+  });
+
+  describe("истечение", () => {
+    it("общая задача истечения заказ, ждущий оплаты в Crypto Pay, не трогает", async () => {
+      const order = await newOrder();
+      await pay(order.id);
+      await backdate(order.id);
+      expect(await t.app.get(OrdersWorker).expire()).toBe(0);
+      expect(await status(order.id)).toBe("pending");
+    });
+
+    it("счет оплачен в последние секунды - заказ оплачивается, а не истекает", async () => {
+      const order = await newOrder();
+      await pay(order.id);
+      cp.pay((await invoiceOf(order.id)).invoice_id);
+      await backdate(order.id);
+      expect(await expireCp()).toBe(0);
+      expect(await status(order.id)).toBe("paid");
+    });
+
+    it("счет не оплачен - сначала удаляется в Crypto Pay, потом заказ истекает", async () => {
+      const order = await newOrder();
+      await pay(order.id);
+      const inv = await invoiceOf(order.id);
+      await backdate(order.id);
+      expect(await expireCp()).toBe(1);
+      expect(cp.invoices.has(inv.invoice_id)).toBe(false);
+      expect(await status(order.id)).toBe("expired");
+    });
+
+    it("Crypto Pay не отвечает - заказ ждет следующего прохода", async () => {
+      const order = await newOrder();
+      await pay(order.id);
+      await backdate(order.id);
+      cp.setDown(true);
+      expect(await expireCp()).toBe(0);
+      expect(await status(order.id)).toBe("pending");
+      cp.setDown(false);
+      expect(await expireCp()).toBe(1);
+      expect(await status(order.id)).toBe("expired");
+    });
+
+    it("свежий заказ не истекает", async () => {
+      const order = await newOrder();
+      await pay(order.id);
+      expect(await expireCp()).toBe(0);
+      expect(await status(order.id)).toBe("pending");
+    });
+  });
+
+  it("опрос проходит все ждущие заказы, даже больше 100", async () => {
+    const user = await t.prisma.user.findUniqueOrThrow({ where: { email: "alex@mail.ru" } });
+    const base = Date.now() - 60_000;
+    const rows = Array.from({ length: 150 }, (_, i) => ({
+      userId: user.id,
+      idempotencyKey: `bulk-${i}-00000`,
+      steamLogin: "gaben",
+      amount: 100_00,
+      currency: "RUB",
+      payAmount: 100_00,
+      status: "pending" as const,
+      paymentProvider: "cryptopay",
+      paymentId: String(50_000 + i),
+      expiresAt: new Date(Date.now() + 10 * 60_000),
+      createdAt: new Date(base + i * 10),
+    }));
+    await t.prisma.order.createMany({ data: rows });
+    for (const r of rows) {
+      const id = Number(r.paymentId);
+      cp.invoices.set(id, { invoice_id: id, hash: `H${id}`, status: "active", currency_type: "fiat", fiat: "RUB", amount: "100", bot_invoice_url: "", payload: "" });
+    }
+    // самый новый заказ - во второй пачке (100 + 50)
+    cp.pay(50_149);
+    expect(await poll()).toBe(1);
+    expect(await t.prisma.order.count({ where: { status: "paid" } })).toBe(1);
+    expect(cp.calls.filter((c) => c.method === "getInvoices")).toHaveLength(2);
   });
 
   it("тестовая страница оплаты при Crypto Pay недоступна", async () => {

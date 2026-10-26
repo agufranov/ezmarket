@@ -31,6 +31,8 @@ const cryptoPayUpdateSchema = z.object({
   payload: z.object({ invoice_id: z.number(), status: z.string(), fiat: z.string().optional(), amount: z.string() }).passthrough(),
 });
 
+const POLL_BATCH = 100;
+
 const payError: Partial<Record<Order["status"], string>> = {
   paid: "Заказ уже оплачен",
   processing: "Заказ уже оплачен",
@@ -147,30 +149,80 @@ export class PaymentsService {
   // Опрос Crypto Pay: вебхуки приходят только на HTTPS-адрес, а у стенда и локалки его нет
   @Interval(10_000)
   async pollTick() {
-    if (this.config.WORKERS && this.cryptoPay) await this.pollCryptoPay();
+    if (!this.config.WORKERS || !this.cryptoPay) return;
+    await this.pollCryptoPay();
+    await this.expireCryptoPay();
   }
 
+  // Все заказы, ждущие оплаты в Crypto Pay, пачками по 100 от старых к новым: ни один не ждет проверки дольше прохода
   async pollCryptoPay(): Promise<number> {
     if (!this.cryptoPay || this.polling) return 0;
     this.polling = true;
+    let applied = 0;
     try {
-      const pending = await this.prisma.order.findMany({
-        where: { paymentProvider: "cryptopay", status: "pending", paymentId: { not: null } },
-        select: { paymentId: true },
-        take: 100,
-      });
-      if (!pending.length) return 0;
-      const paid = await this.cryptoPay.getInvoices(pending.map((o) => o.paymentId!), "paid");
-      let applied = 0;
-      for (const invoice of paid) if ((await this.applyEvent(this.invoicePaidEvent(invoice))).result === "applied") applied++;
-      return applied;
+      for (let cursor: string | undefined; ; ) {
+        const batch = await this.prisma.order.findMany({
+          where: { paymentProvider: "cryptopay", status: "pending", paymentId: { not: null } },
+          select: { id: true, paymentId: true },
+          orderBy: [{ createdAt: "asc" }, { id: "asc" }],
+          take: POLL_BATCH,
+          ...(cursor && { cursor: { id: cursor }, skip: 1 }),
+        });
+        if (!batch.length) break;
+        const paid = await this.cryptoPay.getInvoices(batch.map((o) => o.paymentId!), "paid");
+        for (const invoice of paid) if ((await this.applyEvent(this.invoicePaidEvent(invoice))).result === "applied") applied++;
+        if (batch.length < POLL_BATCH) break;
+        cursor = batch[batch.length - 1].id;
+      }
     } catch (e) {
       if (e instanceof CryptoPayError) this.log.warn(`опрос Crypto Pay: ${e.message}`);
       else throw e;
-      return 0;
     } finally {
       this.polling = false;
     }
+    return applied;
+  }
+
+  // Истечение заказов Crypto Pay: сначала статус счета. Оплачен - проводим оплату, а не истечение;
+  // еще активен - удаляем счет (его больше нельзя оплатить) и только потом истекаем; Crypto Pay не ответил -
+  // заказ не трогаем до следующего прохода
+  async expireCryptoPay(): Promise<number> {
+    if (!this.cryptoPay) return 0;
+    const due = await this.prisma.order.findMany({
+      where: { paymentProvider: "cryptopay", status: "pending", paymentId: { not: null }, expiresAt: { lte: new Date() } },
+      select: { id: true, paymentId: true },
+      orderBy: { expiresAt: "asc" },
+      take: POLL_BATCH,
+    });
+    if (!due.length) return 0;
+    let invoices: CryptoPayInvoice[];
+    try {
+      invoices = await this.cryptoPay.getInvoices(due.map((o) => o.paymentId!));
+    } catch (e) {
+      if (e instanceof CryptoPayError) this.log.warn(`истечение: нет ответа Crypto Pay (${e.message}), повторим позже`);
+      else throw e;
+      return 0;
+    }
+    const byId = new Map(invoices.map((i) => [String(i.invoice_id), i]));
+    let expired = 0;
+    for (const order of due) {
+      const invoice = byId.get(order.paymentId!);
+      if (invoice?.status === "paid") {
+        await this.applyEvent(this.invoicePaidEvent(invoice));
+        continue;
+      }
+      if (invoice?.status === "active") {
+        try {
+          await this.cryptoPay.deleteInvoice(order.paymentId!);
+        } catch (e) {
+          // не удалили - возможно, его как раз оплатили: следующий проход увидит paid
+          this.log.warn(`истечение: счет ${order.paymentId} не удален (${e instanceof Error ? e.message : String(e)})`);
+          continue;
+        }
+      }
+      if (await this.status.move(order.id, ["pending"], "expired", "истек срок оплаты")) expired++;
+    }
+    return expired;
   }
 
   // Общая обработка: ровно одна на id события; сумма и валюта сверяются с заказом;
