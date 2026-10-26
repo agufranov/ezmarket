@@ -1,8 +1,11 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { site } from "@/config/site";
+import { useAuth } from "@/lib/auth";
 import { useModal } from "@/lib/modal";
+import { apiEnabled } from "@/services/api";
+import { newIdempotencyKey, startSteamTopUp, type TopUpError } from "@/services/orders";
 import { formatAmount, formatNumber } from "@/lib/format";
 import { Icon } from "@/components/ui/Icon";
 import s from "./SteamBar.module.scss";
@@ -16,23 +19,48 @@ export function SteamBar() {
   const [touched, setTouched] = useState(false);
   const [promoOpen, setPromoOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  // ошибка с сервера: у поля (логин, сумма) или общая (сеть, заказ уже нельзя оплатить)
+  const [serverError, setServerError] = useState<TopUpError | null>(null);
+  const { user } = useAuth();
+  // ключ повтора живет, пока не поменялись логин, сумма или валюта: двойной клик и повтор после ошибки - тот же заказ
+  const keyRef = useRef<string | null>(null);
+  useEffect(() => {
+    keyRef.current = null;
+    setServerError(null);
+  }, [login, amount, currency]);
 
   const value = Number(amount || 0);
   const amountError =
-    touched && value < site.steam.minAmount
+    serverError?.field === "amount"
+      ? serverError.error
+      : touched && value < site.steam.minAmount
       ? `Минимум ${site.steam.minAmount}`
       : value > site.steam.maxAmount
         ? `Максимум ${site.steam.maxAmount.toLocaleString("ru-RU")}`
         : "";
   const canPay = login.trim().length > 0 && value >= site.steam.minAmount && value <= site.steam.maxAmount;
 
-  const pay = () => {
+  const loginError = serverError?.field === "steamLogin" ? serverError.error : "";
+  const commonError = serverError && !serverError.field ? serverError.error : "";
+
+  const pay = async () => {
     if (!canPay || loading) return;
+    // заказ создается только с сессией: гостю - окно входа
+    if (apiEnabled && !user) return openModal("login");
+    keyRef.current ??= newIdempotencyKey();
     setLoading(true);
-    window.setTimeout(() => {
+    setServerError(null);
+    try {
+      const { paymentUrl } = await startSteamTopUp({ steamLogin: login.trim(), amount: value, currency: currency.id }, keyRef.current);
+      if (paymentUrl) return window.location.assign(paymentUrl);
       setLoading(false);
       openModal("steam-pay");
-    }, 1200);
+    } catch (e) {
+      const err = e as TopUpError;
+      setLoading(false);
+      if (err.status === 401) return openModal("login");
+      setServerError(err.field === "currency" ? { ...err, field: undefined } : err);
+    }
   };
 
   return (
@@ -68,13 +96,14 @@ export function SteamBar() {
           pay();
         }}
       >
-        <label className={s.field}>
+        <label className={s.field} data-error={loginError ? "" : undefined} title={loginError || undefined}>
           {/* в мобильном макете иконки полей контурные */}
           <Icon src="/img/icons/user.svg" size={24} className={s.iconDesk} />
           <Icon src="/img/icons/user-line.svg" size={20} className={s.iconMob} />
-          <span className="visually-hidden">Логин Steam</span>
+          <span className="visually-hidden">Логин Steam{loginError && `: ${loginError}`}</span>
           <input
             value={login}
+            aria-invalid={!!loginError}
             onChange={(e) => setLogin(e.target.value)}
             placeholder="Логин Steam"
             autoComplete="off"
@@ -126,6 +155,10 @@ export function SteamBar() {
           </div>
         </div>
 
+        {/* общей ошибки в макете нет: пока только для экранных дикторов, кнопка снова доступна для повтора */}
+        <span className="visually-hidden" role="alert">
+          {commonError}
+        </span>
         <button type="submit" className={s.pay} disabled={!canPay} aria-busy={loading || undefined}>
           {loading ? <span className={s.spinner} aria-label="Обработка" /> : `Оплатить ${formatNumber(value)}${currency.symbol}`}
         </button>

@@ -7,14 +7,14 @@ export const apiEnabled = BASE !== "";
 // Ошибка API в формате сервера: { error, field?, retryIn?, attemptsLeft? } + HTTP-статус
 export type ApiError = { status: number; error: string; field?: string; retryIn?: number; attemptsLeft?: number };
 
-export async function api<T>(path: string, init: { method?: string; body?: unknown } = {}): Promise<T> {
+export async function api<T>(path: string, init: { method?: string; body?: unknown; headers?: Record<string, string> } = {}): Promise<T> {
   let res: Response;
   try {
     res = await fetch(`${BASE}${path}`, {
       method: init.method ?? (init.body ? "POST" : "GET"),
       // сессия - в httpOnly cookie того же адреса
       credentials: "include",
-      headers: init.body ? { "Content-Type": "application/json" } : undefined,
+      headers: { ...(init.body ? { "Content-Type": "application/json" } : {}), ...init.headers },
       body: init.body ? JSON.stringify(init.body) : undefined,
     });
   } catch {
