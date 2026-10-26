@@ -1,7 +1,9 @@
-import { HttpStatus, Injectable } from "@nestjs/common";
+import { HttpStatus, Inject, Injectable, Logger } from "@nestjs/common";
 import { Prisma, type Order, type OrderStatusHistory } from "@prisma/client";
 import { ORDER_RULES } from "../config";
 import { ApiError } from "../common/http";
+import { CryptoPayError, type CryptoPayClient } from "../payments/cryptopay.client";
+import { CRYPTOPAY } from "../payments/cryptopay.module";
 import { PrismaService } from "../prisma.service";
 import { OrderStatusService, UNPAID } from "./order-status.service";
 import type { CreateOrderDto } from "./orders.schemas";
@@ -47,9 +49,12 @@ const sameRequest = (o: Order, dto: CreateOrderDto) => o.steamLogin === dto.stea
 
 @Injectable()
 export class OrdersService {
+  private readonly log = new Logger("orders");
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly status: OrderStatusService,
+    @Inject(CRYPTOPAY) private readonly cryptoPay: CryptoPayClient | null,
   ) {}
 
   // Повтор с тем же ключом отдает тот же заказ (created: false); тот же ключ с другими данными - 409
@@ -95,6 +100,7 @@ export class OrdersService {
   async cancel(userId: string, id: string) {
     const order = await this.get(userId, id);
     if (order.status === "canceled") return order;
+    if (order.status === "pending" && order.paymentProvider === "cryptopay" && order.paymentId) await this.closeInvoice(order.paymentId);
     const moved = await this.status.move(id, UNPAID, "canceled", "отменен пользователем");
     if (!moved) {
       const now = await this.get(userId, id);
@@ -102,6 +108,23 @@ export class OrdersService {
       throw new ApiError(HttpStatus.CONFLICT, cancelError[now.status] ?? "Заказ уже нельзя отменить", { status: now.status });
     }
     return this.get(userId, id);
+  }
+
+  // Перед отменой счет в Crypto Pay должен стать неоплачиваемым: иначе по старой ссылке в боте можно заплатить
+  // за отмененный заказ. Оплачен - не отменяем (опрос проведет оплату); активен - удаляем; нет ответа - просим повторить
+  private async closeInvoice(paymentId: string) {
+    if (!this.cryptoPay) return;
+    try {
+      const [invoice] = await this.cryptoPay.getInvoices([paymentId]);
+      if (invoice?.status === "paid") {
+        throw new ApiError(HttpStatus.CONFLICT, "Заказ уже оплачен - статус обновится через несколько секунд", { status: "paid" });
+      }
+      if (invoice?.status === "active") await this.cryptoPay.deleteInvoice(paymentId);
+    } catch (e) {
+      if (!(e instanceof CryptoPayError)) throw e;
+      this.log.warn(`отмена: счет ${paymentId} не закрыт (${e.message})`);
+      throw new ApiError(HttpStatus.BAD_GATEWAY, "Не удалось отменить: платежная система не ответила. Попробуйте еще раз");
+    }
   }
 
   private checkSame(order: Order, dto: CreateOrderDto) {

@@ -9,6 +9,7 @@ import { OrderStatusService, UNPAID } from "../orders/order-status.service";
 import { OrdersService } from "../orders/orders.service";
 import { PrismaService } from "../prisma.service";
 import { CryptoPayClient, CryptoPayError, fromMinor, toMinor, validCryptoPaySignature, type CryptoPayInvoice } from "./cryptopay.client";
+import { CRYPTOPAY } from "./cryptopay.module";
 import { validSignature } from "./signature";
 
 // Событие платежной системы в общем виде: в него переводятся уведомления и тестовой платежки, и Crypto Pay
@@ -45,7 +46,6 @@ const payError: Partial<Record<Order["status"], string>> = {
 @Injectable()
 export class PaymentsService {
   private readonly log = new Logger("payments");
-  private readonly cryptoPay: CryptoPayClient | null;
   private polling = false;
 
   constructor(
@@ -53,12 +53,8 @@ export class PaymentsService {
     private readonly orders: OrdersService,
     private readonly status: OrderStatusService,
     @Inject(CONFIG) private readonly config: Config,
-  ) {
-    this.cryptoPay =
-      config.PAYMENT_PROVIDER === "cryptopay" && config.CRYPTOPAY_TOKEN
-        ? new CryptoPayClient(config.CRYPTOPAY_TOKEN, config.CRYPTOPAY_NETWORK, config.CRYPTOPAY_API_URL)
-        : null;
-  }
+    @Inject(CRYPTOPAY) private readonly cryptoPay: CryptoPayClient | null,
+  ) {}
 
   // Ссылка на оплату. Платеж создается один раз: повторное нажатие отдает ту же ссылку
   async start(userId: string, orderId: string): Promise<{ order: Order; paymentUrl: string }> {

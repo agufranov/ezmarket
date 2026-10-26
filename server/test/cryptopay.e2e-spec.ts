@@ -208,6 +208,51 @@ describe("payments: Crypto Pay", () => {
     });
   });
 
+  describe("отмена", () => {
+    const cancel = (id: string) => http().post(`/api/orders/${id}/cancel`).set("Cookie", cookie);
+
+    it("неоплаченный счет удаляется в Crypto Pay, потом заказ отменяется", async () => {
+      const order = await newOrder();
+      await pay(order.id);
+      const inv = await invoiceOf(order.id);
+      const res = await cancel(order.id);
+      expect(res.status).toBe(200);
+      expect(res.body.order.status).toBe("canceled");
+      expect(cp.invoices.has(inv.invoice_id)).toBe(false);
+    });
+
+    it("счет уже оплачен в боте - отмена не проходит, опрос проводит оплату", async () => {
+      const order = await newOrder();
+      await pay(order.id);
+      cp.pay((await invoiceOf(order.id)).invoice_id);
+      const res = await cancel(order.id);
+      expect(res.status).toBe(409);
+      expect(res.body.status).toBe("paid");
+      expect(await status(order.id)).toBe("pending");
+      await poll();
+      expect(await status(order.id)).toBe("paid");
+    });
+
+    it("Crypto Pay не отвечает - 502, заказ не отменен, счет цел", async () => {
+      const order = await newOrder();
+      await pay(order.id);
+      const inv = await invoiceOf(order.id);
+      cp.setDown(true);
+      const res = await cancel(order.id);
+      expect(res.status).toBe(502);
+      expect(await status(order.id)).toBe("pending");
+      expect(cp.invoices.has(inv.invoice_id)).toBe(true);
+      cp.setDown(false);
+      expect((await cancel(order.id)).status).toBe(200);
+    });
+
+    it("заказ без счета отменяется без запросов в Crypto Pay", async () => {
+      const order = await newOrder();
+      expect((await cancel(order.id)).status).toBe(200);
+      expect(cp.calls).toHaveLength(0);
+    });
+  });
+
   it("опрос проходит все ждущие заказы, даже больше 100", async () => {
     const user = await t.prisma.user.findUniqueOrThrow({ where: { email: "alex@mail.ru" } });
     const base = Date.now() - 60_000;
