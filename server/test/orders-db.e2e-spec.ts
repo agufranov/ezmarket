@@ -46,6 +46,15 @@ describe("orders: база", () => {
     ]);
   });
 
+  it("время в истории - в UTC, как у заказа, при любом часовом поясе базы", async () => {
+    await t.prisma.$executeRawUnsafe(`ALTER DATABASE "${(await t.prisma.$queryRaw<{ db: string }[]>`SELECT current_database() AS db`)[0].db}" SET timezone TO 'Asia/Yekaterinburg'`);
+    await t.prisma.$disconnect();
+    await t.prisma.$connect();
+    const order = await newOrder();
+    const [h] = await t.prisma.orderStatusHistory.findMany({ where: { orderId: order.id } });
+    expect(Math.abs(h.createdAt.getTime() - order.createdAt.getTime())).toBeLessThan(5000);
+  });
+
   it("запрещенный переход отклоняет база, история не меняется", async () => {
     const order = await newOrder();
     await expect(t.prisma.order.update({ where: { id: order.id }, data: { status: "completed" } })).rejects.toThrow(/not allowed/);
