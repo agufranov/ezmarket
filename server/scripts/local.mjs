@@ -31,6 +31,19 @@ const webhookSecretFile = path.join(dataDir, "payment_webhook_secret");
 if (!existsSync(webhookSecretFile)) writeFileSync(webhookSecretFile, randomBytes(48).toString("base64url"));
 const PAYMENT_WEBHOOK_SECRET = readFileSync(webhookSecretFile, "utf8").trim();
 
+// платежка из .env в корне (там же токен Crypto Pay - в git он не попадает); без .env - встроенная тестовая
+const dotenv = {};
+const envFile = path.join(root, ".env");
+if (existsSync(envFile)) {
+  for (const line of readFileSync(envFile, "utf8").split(/\r?\n/)) {
+    const m = line.match(/^\s*([A-Z0-9_]+)\s*=\s*(.*?)\s*$/);
+    if (m && m[2] !== "") dotenv[m[1]] = m[2].replace(/^(['"])(.*)\1$/, "$2");
+  }
+}
+const payment = Object.fromEntries(
+  ["PAYMENT_PROVIDER", "CRYPTOPAY_TOKEN", "CRYPTOPAY_NETWORK"].filter((k) => dotenv[k]).map((k) => [k, dotenv[k]]),
+);
+
 const pgDir = path.join(dataDir, "pg");
 const pg = new EmbeddedPostgres({
   databaseDir: pgDir,
@@ -117,6 +130,9 @@ run("api", [path.join(serverDir, "node_modules/@nestjs/cli/bin/nest.js"), "start
   AUTH_CODES_PER_HOUR: "1000",
   // код сразу подставляется в поле - без похода в почту
   AUTH_DEMO_CODE: "true",
+  ...payment,
+  // «Вернуться в магазин» после оплаты в боте Crypto Pay
+  SITE_URL: `http://localhost:${PORTS.web}`,
 });
 // сайт - после сервера, иначе первые запросы к /api получат ошибку прокси
 for (let i = 0; i < 120 && !(await portBusy(PORTS.api)); i++) await sleep(500);

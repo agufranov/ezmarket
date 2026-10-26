@@ -108,8 +108,28 @@ API_PROXY=http://localhost:3001 NEXT_PUBLIC_API_URL=/api npm run dev
 сохраняется в `payment_events` с итогом: `applied`, `already_paid`, `late` (оплата после отмены/истечения - вернуть
 деньги вручную), `amount_mismatch`, `unknown_payment`; повтор того же `id` - `duplicate`.
 
-Тестовая платежка (`PAYMENT_FAKE=true`, по умолчанию): `paymentUrl` ведет на страницу `/api/payments/fake/:id`
-с кнопками «Оплатить» и «Отменить» - они шлют подписанное уведомление в тот же обработчик. Пополнение Steam - пока
+Платежка выбирается `PAYMENT_PROVIDER`:
+
+- `fake` (по умолчанию) - встроенная тестовая: `paymentUrl` ведет на страницу `/api/payments/fake/:id`
+  с кнопками «Оплатить» и «Отменить» - они шлют подписанное уведомление в тот же обработчик.
+- `cryptopay` - [Crypto Pay](https://help.cr.bot/en/articles/10279948-crypto-pay-api) (@CryptoBot): счет
+  выставляется в валюте заказа (RUB, USD, KZT), покупатель платит любой монетой в боте, `paymentUrl` - ссылка
+  на счет в Telegram. Нужен `CRYPTOPAY_TOKEN` (бот → Crypto Pay → My Apps), сеть - `CRYPTOPAY_NETWORK`
+  (`testnet` по умолчанию: @CryptoTestnetBot и тестовые монеты). Оплату сервер узнает двумя путями: вебхук
+  `POST /api/payments/cryptopay/webhook` (подпись `crypto-pay-api-signature`; Crypto Pay шлет вебхуки только на
+  HTTPS - адрес задается в боте: My Apps → приложение → Webhooks) и опрос оплаченных счетов раз в 10 секунд -
+  он работает и без HTTPS. Вебхук и опрос по одному счету дают одно зачисление.
+
+Токен Crypto Pay - только в `.env` (в git и Docker-образы не попадает). `npm run local` и `docker compose`
+читают его оттуда:
+
+```bash
+PAYMENT_PROVIDER=cryptopay
+CRYPTOPAY_TOKEN=...
+CRYPTOPAY_NETWORK=testnet
+```
+
+Тестовые монеты: в Telegram @testgiver_ton_bot выдает тестовые TON, их нужно перевести на @CryptoTestnetBot. Пополнение Steam - пока
 заглушка: заказ выполняется через пару секунд, логин с `fail_` - отказ поставщика (для проверки ошибки).
 
 ## Структура
