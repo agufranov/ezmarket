@@ -54,6 +54,9 @@ describe("payments", () => {
       expect(first.body.paymentUrl).toMatch(/^\/api\/payments\/fake\/[0-9a-f-]{36}$/);
       const second = await pay(order.id);
       expect(second.body.paymentUrl).toBe(first.body.paymentUrl);
+      // ссылка видна и в списке заказов, пока заказ ждет оплаты
+      const list = await http().get("/api/orders").set("Cookie", cookie);
+      expect(list.body.orders[0].paymentUrl).toBe(first.body.paymentUrl);
       expect(await t.prisma.orderStatusHistory.count({ where: { orderId: order.id, toStatus: "pending" } })).toBe(1);
     });
 

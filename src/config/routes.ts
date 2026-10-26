@@ -1,6 +1,8 @@
 // Все переходы в одном месте. Точные URL заказчик пришлет позже - пока "#".
 export const routes = {
   home: "/",
+  // мои заказы (страница src/app/orders); в ссылках - через asset(), чтобы работало и в подпапке GitHub Pages
+  orders: "/orders",
   search: "#",
   catalog: "#",
   steamTopUp: "#",

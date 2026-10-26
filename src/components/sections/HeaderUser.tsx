@@ -201,7 +201,7 @@ export function HeaderUser({ user, open, setOpen, rowRef, onLogout, onHelp }: Pr
             { id: "bonuses", label: "Бонусы", icon: <GiftIcon />, count: 0 },
             { id: "referrals", label: "Рефералы", icon: <UsersIcon />, count: user.counters.referrals },
           ].map((t) => (
-            <a key={t.id} href={routes.page(t.id)} role="menuitem" tabIndex={open === "profile" ? 0 : -1} className={s.tile}>
+            <a key={t.id} href={t.id === "orders" ? asset(routes.orders) : routes.page(t.id)} role="menuitem" tabIndex={open === "profile" ? 0 : -1} className={s.tile}>
               <span className={s.tileIcon}>
                 {t.icon}
                 {t.count > 0 && <span className={s.tileBadge}>{badge(t.count, 99)}</span>}

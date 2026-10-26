@@ -1,0 +1,202 @@
+@use "../../styles/mixins" as *;
+
+// Простая страница без макета: карточки на сером фоне, цвета и скругления - токены из globals.scss
+
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 32px 16px 64px;
+}
+
+.top {
+  margin-bottom: 24px;
+}
+
+.back {
+  color: var(--c-muted);
+  font-size: 14px;
+  font-weight: 800;
+
+  @include hover {
+    color: var(--c-orange);
+  }
+}
+
+.title {
+  margin-top: 8px;
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.note {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 24px;
+  border-radius: var(--r-2);
+  background: var(--c-card);
+  color: var(--c-muted);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  padding: 18px 20px;
+  border-radius: var(--r-2);
+  background: var(--c-card);
+  box-shadow: var(--sh-soft);
+}
+
+.main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.sum {
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.meta {
+  margin-top: 2px;
+  color: var(--c-muted);
+  font-size: 14px;
+  font-weight: 700;
+
+  b {
+    color: var(--c-ink-2);
+  }
+}
+
+.status {
+  flex: none;
+  padding: 6px 12px;
+  border-radius: var(--r-pill);
+  font-size: 13px;
+  font-weight: 900;
+  white-space: nowrap;
+
+  &[data-tone="wait"] {
+    background: var(--c-peach);
+    color: var(--c-peach-ink);
+  }
+
+  &[data-tone="ok"] {
+    background: var(--c-green-soft);
+    color: var(--c-green-ink);
+  }
+
+  &[data-tone="bad"] {
+    background: #fdeaea;
+    color: var(--c-red);
+  }
+
+  &[data-tone="off"] {
+    background: var(--c-fill);
+    color: var(--c-muted);
+  }
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.btn,
+.btnGhost {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 18px;
+  border-radius: var(--r-pill);
+  font-size: 14px;
+  font-weight: 900;
+  transition: filter var(--t-fast) ease;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: progress;
+  }
+}
+
+.btn {
+  background: var(--g-orange);
+  color: #fff;
+
+  @include hover {
+    filter: brightness(1.05);
+  }
+}
+
+.btnGhost {
+  background: var(--c-fill);
+  color: var(--c-ink);
+
+  @include hover {
+    background: var(--c-fill-2);
+  }
+}
+
+.hint {
+  color: var(--c-muted-2);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.error {
+  margin-top: 8px;
+  color: var(--c-red);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.details {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--c-line);
+
+  summary {
+    color: var(--c-ink-2);
+    font-size: 14px;
+    font-weight: 800;
+    cursor: pointer;
+  }
+}
+
+.history {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.histTime {
+  display: inline-block;
+  min-width: 110px;
+  color: var(--c-muted-2);
+}
+
+.histReason {
+  color: var(--c-muted);
+}
+
+.id {
+  margin-top: 10px;
+  color: var(--c-muted-2);
+  font-size: 12px;
+  font-weight: 700;
+}

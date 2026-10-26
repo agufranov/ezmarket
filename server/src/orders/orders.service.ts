@@ -13,6 +13,8 @@ export type OrderDto = {
   currency: string;
   payAmount: number;
   status: Order["status"];
+  // куда идти платить - только пока заказ ждет оплаты
+  paymentUrl: string | null;
   expiresAt: string;
   createdAt: string;
   history?: { from: string | null; to: string; reason: string | null; at: string }[];
@@ -25,6 +27,7 @@ export const toOrderDto = (o: Order & { history?: OrderStatusHistory[] }): Order
   currency: o.currency,
   payAmount: o.payAmount,
   status: o.status,
+  paymentUrl: o.status === "pending" ? o.paymentUrl : null,
   expiresAt: o.expiresAt.toISOString(),
   createdAt: o.createdAt.toISOString(),
   ...(o.history && {

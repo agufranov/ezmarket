@@ -9,6 +9,25 @@ export type TopUpError = Pick<ApiError, "status" | "error"> & { field?: "steamLo
 
 type Order = { id: string; status: string };
 
+// Заказ в ответах сервера (server/src/orders/orders.service.ts: OrderDto); суммы - в минимальных единицах
+export type OrderStatus = "created" | "pending" | "paid" | "processing" | "completed" | "failed" | "canceled" | "expired";
+export type OrderDto = {
+  id: string;
+  steamLogin: string;
+  amount: number;
+  currency: string;
+  payAmount: number;
+  status: OrderStatus;
+  paymentUrl: string | null;
+  expiresAt: string;
+  createdAt: string;
+  history?: { from: OrderStatus | null; to: OrderStatus; reason: string | null; at: string }[];
+};
+
+export const listOrders = async () => (await api<{ orders: OrderDto[] }>("/orders")).orders;
+export const getOrder = async (id: string) => (await api<{ order: OrderDto }>(`/orders/${id}`)).order;
+export const cancelOrder = async (id: string) => (await api<{ order: OrderDto }>(`/orders/${id}/cancel`, { method: "POST" })).order;
+
 export type Limits = { minAmount: number; maxAmount: number };
 
 // лимиты суммы в целых единицах, как в поле суммы; без API или при ошибке - из src/config/site.ts
