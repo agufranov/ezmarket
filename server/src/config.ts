@@ -54,7 +54,10 @@ const schema = base.superRefine((c, ctx) => {
 export type Config = z.infer<typeof schema>;
 
 export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
-  const r = schema.safeParse(env);
+  // пустая переменная = не задана: docker compose передает `${SITE_URL:-}` и пустые строки из .env.example,
+  // иначе необязательные настройки с проверкой формата (SITE_URL - url) роняли бы запуск без .env
+  const given = Object.fromEntries(Object.entries(env).filter(([, v]) => v !== undefined && v.trim() !== ""));
+  const r = schema.safeParse(given);
   if (!r.success) {
     const lines = r.error.issues.map((i) => `  ${i.path.join(".")}: ${i.message}`).join("\n");
     throw new Error(`Неверные переменные окружения:\n${lines}`);
