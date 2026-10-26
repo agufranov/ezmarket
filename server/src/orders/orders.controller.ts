@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Headers, HttpStatus, Param, ParseUUIDPipe, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Headers, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Res, UseGuards } from "@nestjs/common";
 import type { User } from "@prisma/client";
 import type { FastifyReply } from "fastify";
 import { ApiError, ZodPipe } from "../common/http";
@@ -32,6 +32,13 @@ export class OrdersController {
   @Get()
   async list(@CurrentUser() user: User) {
     return { orders: (await this.orders.list(user.id)).map((o) => toOrderDto(o)) };
+  }
+
+  // POST /api/orders/:id/cancel -> 200 { order } | 409 { error, status } уже оплачен/истек | 404
+  @Post(":id/cancel")
+  @HttpCode(200)
+  async cancel(@CurrentUser() user: User, @Param("id", new ParseUUIDPipe({ exceptionFactory: notFound })) id: string) {
+    return { order: toOrderDto(await this.orders.cancel(user.id, id)) };
   }
 
   // GET /api/orders/:id -> 200 { order } с историей статусов | 404 (и для чужого)

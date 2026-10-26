@@ -112,4 +112,39 @@ describe("orders", () => {
     expect((await http().get(`/api/orders/${mine.body.order.id}`).set("Cookie", other.cookie)).status).toBe(404);
     expect((await http().get("/api/orders/not-a-uuid").set("Cookie", other.cookie)).status).toBe(404);
   });
+  describe("отмена", () => {
+    const cancel = (id: string, c = cookie) => http().post(`/api/orders/${id}/cancel`).set("Cookie", c);
+
+    it("неоплаченный заказ отменяется, в истории - причина", async () => {
+      const { body: b } = await create();
+      const res = await cancel(b.order.id);
+      expect(res.status).toBe(200);
+      expect(res.body.order.status).toBe("canceled");
+      expect(res.body.order.history.at(-1)).toMatchObject({ from: "created", to: "canceled", reason: "отменен пользователем" });
+    });
+
+    it("10 одновременных отмен - один переход в истории, все ответы 200", async () => {
+      const { body: b } = await create();
+      const results = await Promise.all(Array.from({ length: 10 }, () => cancel(b.order.id)));
+      expect(results.map((r) => r.status)).toEqual(Array(10).fill(200));
+      expect(await t.prisma.orderStatusHistory.count({ where: { orderId: b.order.id, toStatus: "canceled" } })).toBe(1);
+    });
+
+    it("оплаченный заказ отменить нельзя - 409 со статусом", async () => {
+      const { body: b } = await create();
+      await t.prisma.order.update({ where: { id: b.order.id }, data: { status: "pending" } });
+      await t.prisma.order.update({ where: { id: b.order.id }, data: { status: "paid" } });
+      const res = await cancel(b.order.id);
+      expect(res.status).toBe(409);
+      expect(res.body).toMatchObject({ status: "paid" });
+      expect((await t.prisma.order.findUniqueOrThrow({ where: { id: b.order.id } })).status).toBe("paid");
+    });
+
+    it("чужой заказ отменить нельзя - 404", async () => {
+      const { body: b } = await create();
+      const other = await loginAs(t.prisma, "bob@mail.ru");
+      expect((await cancel(b.order.id, other.cookie)).status).toBe(404);
+      expect((await t.prisma.order.findUniqueOrThrow({ where: { id: b.order.id } })).status).toBe("created");
+    });
+  });
 });

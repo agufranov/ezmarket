@@ -3,6 +3,7 @@ import { Prisma, type Order, type OrderStatusHistory } from "@prisma/client";
 import { ORDER_RULES } from "../config";
 import { ApiError } from "../common/http";
 import { PrismaService } from "../prisma.service";
+import { OrderStatusService, UNPAID } from "./order-status.service";
 import type { CreateOrderDto } from "./orders.schemas";
 
 export type OrderDto = {
@@ -31,11 +32,22 @@ export const toOrderDto = (o: Order & { history?: OrderStatusHistory[] }): Order
   }),
 });
 
+const cancelError: Partial<Record<Order["status"], string>> = {
+  paid: "Заказ уже оплачен - отменить нельзя",
+  processing: "Заказ уже выполняется - отменить нельзя",
+  completed: "Заказ уже выполнен",
+  expired: "Заказ истек",
+  failed: "Заказ завершился ошибкой",
+};
+
 const sameRequest = (o: Order, dto: CreateOrderDto) => o.steamLogin === dto.steamLogin && o.amount === dto.amount && o.currency === dto.currency;
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly status: OrderStatusService,
+  ) {}
 
   // Повтор с тем же ключом отдает тот же заказ (created: false); тот же ключ с другими данными - 409
   async create(userId: string, idempotencyKey: string, dto: CreateOrderDto): Promise<{ order: Order; created: boolean }> {
@@ -74,6 +86,19 @@ export class OrdersService {
     const order = await this.prisma.order.findFirst({ where: { id, userId }, include: { history: { orderBy: { id: "asc" } } } });
     if (!order) throw new ApiError(HttpStatus.NOT_FOUND, "Заказ не найден");
     return order;
+  }
+
+  // Отмена пользователем - только пока заказ не оплачен; повторная отмена отдает тот же отмененный заказ
+  async cancel(userId: string, id: string) {
+    const order = await this.get(userId, id);
+    if (order.status === "canceled") return order;
+    const moved = await this.status.move(id, UNPAID, "canceled", "отменен пользователем");
+    if (!moved) {
+      const now = await this.get(userId, id);
+      if (now.status === "canceled") return now;
+      throw new ApiError(HttpStatus.CONFLICT, cancelError[now.status] ?? "Заказ уже нельзя отменить", { status: now.status });
+    }
+    return this.get(userId, id);
   }
 
   private checkSame(order: Order, dto: CreateOrderDto) {
