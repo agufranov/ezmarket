@@ -4,6 +4,7 @@ import { randomUUID } from "node:crypto";
 import request from "supertest";
 import { cryptoPaySignature } from "../src/payments/cryptopay.client";
 import { OrderStatusService } from "../src/orders/order-status.service";
+import { OrdersService } from "../src/orders/orders.service";
 import { OrdersWorker } from "../src/orders/orders.worker";
 import { PaymentsService } from "../src/payments/payments.service";
 import { loginAs, resetDb, startApp, type TestApp } from "./helpers";
@@ -317,6 +318,49 @@ describe("payments: Crypto Pay", () => {
 
   describe("отмена", () => {
     const cancel = (id: string) => http().post(`/api/orders/${id}/cancel`).set("Cookie", cookie);
+    // первое чтение заказа (его делает отмена) - вернуть прочитанное только после release()
+    const holdFirstGet = () => {
+      const svc = t.app.get(OrdersService);
+      const get = svc.get.bind(svc);
+      let release!: () => void;
+      const gate = new Promise<void>((r) => (release = r));
+      let held = false;
+      jest.spyOn(svc, "get").mockImplementationOnce(async (...args) => {
+        const order = await get(...args);
+        held = true;
+        await gate;
+        return order;
+      });
+      return { release, held: () => held };
+    };
+
+    // ревью F2: отмена прочитала created, параллельный /pay создал счет, потом отмена продолжилась
+    for (const paidInBot of [true, false]) {
+      it(`отмена по устаревшему created, /pay успел создать счет: ${paidInBot ? "счет оплачен - 409, оплата проводится" : "счет удаляется, заказ отменен"} (ревью F2)`, async () => {
+        const order = await newOrder();
+        const gate = holdFirstGet();
+        const canceling = cancel(order.id).then((r) => r);
+        await until(gate.held);
+
+        expect((await pay(order.id)).status).toBe(200);
+        const inv = await invoiceOf(order.id);
+        if (paidInBot) cp.pay(inv.invoice_id);
+        gate.release();
+        const res = await canceling;
+
+        if (paidInBot) {
+          expect(res.status).toBe(409);
+          expect(res.body.status).toBe("paid");
+          expect(await status(order.id)).toBe("pending");
+          expect(await poll()).toBe(1);
+          expect(await status(order.id)).toBe("paid");
+        } else {
+          expect(res.status).toBe(200);
+          expect(res.body.order.status).toBe("canceled");
+          expect(cp.invoices.has(inv.invoice_id)).toBe(false);
+        }
+      });
+    }
 
     it("неоплаченный счет удаляется в Crypto Pay, потом заказ отменяется", async () => {
       const order = await newOrder();

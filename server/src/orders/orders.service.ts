@@ -96,18 +96,20 @@ export class OrdersService {
     return order;
   }
 
-  // Отмена пользователем - только пока заказ не оплачен; повторная отмена отдает тот же отмененный заказ
+  // Отмена пользователем - только пока заказ не оплачен; повторная отмена отдает тот же отмененный заказ.
+  // Переход - только из прочитанного статуса: если параллельный /pay успел создать счет (created -> pending),
+  // отмена перечитывает заказ и сначала закрывает этот счет - иначе по нему можно было бы заплатить за отмененный заказ
   async cancel(userId: string, id: string) {
-    const order = await this.get(userId, id);
-    if (order.status === "canceled") return order;
-    if (order.status === "pending" && order.paymentProvider === "cryptopay" && order.paymentId) await this.closeInvoice(order.paymentId);
-    const moved = await this.status.move(id, UNPAID, "canceled", "отменен пользователем");
-    if (!moved) {
-      const now = await this.get(userId, id);
-      if (now.status === "canceled") return now;
-      throw new ApiError(HttpStatus.CONFLICT, cancelError[now.status] ?? "Заказ уже нельзя отменить", { status: now.status });
+    for (let step = 0; step < 3; step++) {
+      const order = await this.get(userId, id);
+      if (order.status === "canceled") return order;
+      if (!UNPAID.includes(order.status)) {
+        throw new ApiError(HttpStatus.CONFLICT, cancelError[order.status] ?? "Заказ уже нельзя отменить", { status: order.status });
+      }
+      if (order.status === "pending" && order.paymentProvider === "cryptopay" && order.paymentId) await this.closeInvoice(order.paymentId);
+      if (await this.status.move(id, [order.status], "canceled", "отменен пользователем")) return this.get(userId, id);
     }
-    return this.get(userId, id);
+    throw new ApiError(HttpStatus.CONFLICT, "Заказ меняется прямо сейчас - попробуйте еще раз");
   }
 
   // Перед отменой счет в Crypto Pay должен стать неоплачиваемым: иначе по старой ссылке в боте можно заплатить
