@@ -74,6 +74,7 @@ docker compose run --rm test
 ```bash
 npm install
 npm run dev     # фронт на моках: http://localhost:3000
+npm test        # unit-тесты фронта (node --test)
 ```
 
 С сервером: сервер на `:3001` (`cd server && npm run dev`, переменные - как в `docker-compose.yml`), фронт:

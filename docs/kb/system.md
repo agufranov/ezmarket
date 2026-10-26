@@ -26,6 +26,7 @@
 | Фронт на моках | `npm run dev` | :3000 |
 | Тесты сервера в Docker | `docker compose run --rm test` | отдельная база в памяти |
 | Тесты сервера без Docker | PostgreSQL на :5433 (`ezmarket`/`ezmarket`, база `ezmarket_test`) + `cd server && npm test` | |
+| Тесты фронта | `npm test` (`node --test` с type stripping, файлы `src/**/*.test.mjs`) | без браузера и сборки |
 
 `npm run local` читает из `.env` в корне `PAYMENT_PROVIDER`, `CRYPTOPAY_TOKEN`, `CRYPTOPAY_NETWORK`, `ORDER_MIN_AMOUNT`;
 демо-код входа включен, повтор кода через 5 с.
