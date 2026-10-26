@@ -52,6 +52,8 @@ services:
       CRYPTOPAY_NETWORK: ${CRYPTOPAY_NETWORK:-testnet}
       # кнопка «Вернуться в магазин» после оплаты в боте (например http://166.88.253.195)
       SITE_URL: ${SITE_URL:-}
+      # минимальная сумма заказа в копейках/центах (10000 = 100); меньше - только для проверки оплаты
+      ORDER_MIN_AMOUNT: ${ORDER_MIN_AMOUNT:-10000}
     volumes:
       - apidata:/data
     depends_on:

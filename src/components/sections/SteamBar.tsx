@@ -5,7 +5,7 @@ import { site } from "@/config/site";
 import { useAuth } from "@/lib/auth";
 import { useModal } from "@/lib/modal";
 import { apiEnabled } from "@/services/api";
-import { newIdempotencyKey, startSteamTopUp, type TopUpError } from "@/services/orders";
+import { fetchLimits, newIdempotencyKey, startSteamTopUp, type Limits, type TopUpError } from "@/services/orders";
 import { formatAmount, formatNumber } from "@/lib/format";
 import { Icon } from "@/components/ui/Icon";
 import s from "./SteamBar.module.scss";
@@ -22,6 +22,11 @@ export function SteamBar() {
   // ошибка с сервера: у поля (логин, сумма) или общая (сеть, заказ уже нельзя оплатить)
   const [serverError, setServerError] = useState<TopUpError | null>(null);
   const { user } = useAuth();
+  // лимиты суммы с сервера (ТЗ 8.3); пока не пришли - из site.ts
+  const [limits, setLimits] = useState<Limits>({ minAmount: site.steam.minAmount, maxAmount: site.steam.maxAmount });
+  useEffect(() => {
+    fetchLimits().then(setLimits);
+  }, []);
   // ключ повтора живет, пока не поменялись логин, сумма или валюта: двойной клик и повтор после ошибки - тот же заказ
   const keyRef = useRef<string | null>(null);
   useEffect(() => {
@@ -33,12 +38,12 @@ export function SteamBar() {
   const amountError =
     serverError?.field === "amount"
       ? serverError.error
-      : touched && value < site.steam.minAmount
-      ? `Минимум ${site.steam.minAmount}`
-      : value > site.steam.maxAmount
-        ? `Максимум ${site.steam.maxAmount.toLocaleString("ru-RU")}`
+      : touched && value < limits.minAmount
+      ? `Минимум ${limits.minAmount}`
+      : value > limits.maxAmount
+        ? `Максимум ${limits.maxAmount.toLocaleString("ru-RU")}`
         : "";
-  const canPay = login.trim().length > 0 && value >= site.steam.minAmount && value <= site.steam.maxAmount;
+  const canPay = login.trim().length > 0 && value >= limits.minAmount && value <= limits.maxAmount;
 
   const loginError = serverError?.field === "steamLogin" ? serverError.error : "";
   const commonError = serverError && !serverError.field ? serverError.error : "";

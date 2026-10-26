@@ -1,11 +1,27 @@
 // Заказ пополнения Steam: сервер (server/src/orders, server/src/payments) или мок, если API не подключен.
+// GET /orders/limits -> { minAmount, maxAmount } в минимальных единицах (ТЗ 8.3: лимиты - с бэкенда)
 // POST /orders { steamLogin, amount, currency } + Idempotency-Key -> { order } | 422 { field, error } | 409
 // POST /orders/:id/pay -> { order, paymentUrl } | 409 { error, status }
+import { site } from "@/config/site";
 import { api, apiEnabled, type ApiError } from "./api";
 
 export type TopUpError = Pick<ApiError, "status" | "error"> & { field?: "steamLogin" | "amount" | "currency" };
 
 type Order = { id: string; status: string };
+
+export type Limits = { minAmount: number; maxAmount: number };
+
+// лимиты суммы в целых единицах, как в поле суммы; без API или при ошибке - из src/config/site.ts
+export async function fetchLimits(): Promise<Limits> {
+  const fallback = { minAmount: site.steam.minAmount, maxAmount: site.steam.maxAmount };
+  if (!apiEnabled) return fallback;
+  try {
+    const r = await api<Limits>("/orders/limits");
+    return { minAmount: Math.ceil(r.minAmount / 100), maxAmount: Math.floor(r.maxAmount / 100) };
+  } catch {
+    return fallback;
+  }
+}
 
 // amount - в целых единицах, как в поле суммы; на сервер уходит в минимальных (копейки, центы, тиыны)
 export async function startSteamTopUp(

@@ -31,7 +31,7 @@ const webhookSecretFile = path.join(dataDir, "payment_webhook_secret");
 if (!existsSync(webhookSecretFile)) writeFileSync(webhookSecretFile, randomBytes(48).toString("base64url"));
 const PAYMENT_WEBHOOK_SECRET = readFileSync(webhookSecretFile, "utf8").trim();
 
-// платежка из .env в корне (там же токен Crypto Pay - в git он не попадает); без .env - встроенная тестовая
+// платежка и минимум заказа из .env в корне (там же токен Crypto Pay - в git он не попадает); без .env - встроенная тестовая
 const dotenv = {};
 const envFile = path.join(root, ".env");
 if (existsSync(envFile)) {
@@ -41,7 +41,7 @@ if (existsSync(envFile)) {
   }
 }
 const payment = Object.fromEntries(
-  ["PAYMENT_PROVIDER", "CRYPTOPAY_TOKEN", "CRYPTOPAY_NETWORK"].filter((k) => dotenv[k]).map((k) => [k, dotenv[k]]),
+  ["PAYMENT_PROVIDER", "CRYPTOPAY_TOKEN", "CRYPTOPAY_NETWORK", "ORDER_MIN_AMOUNT"].filter((k) => dotenv[k]).map((k) => [k, dotenv[k]]),
 );
 
 const pgDir = path.join(dataDir, "pg");

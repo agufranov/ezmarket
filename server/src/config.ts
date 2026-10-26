@@ -36,6 +36,8 @@ const base = z.object({
   CRYPTOPAY_API_URL: z.string().url().optional(),
   // адрес сайта: кнопка «Вернуться в магазин» после оплаты в боте
   SITE_URL: z.string().url().optional(),
+  // минимальная сумма заказа в минимальных единицах (по умолчанию 10000 = 100 ₽/$/₸); меньше - только для проверок оплаты
+  ORDER_MIN_AMOUNT: z.coerce.number().int().min(1).default(10_000),
   // фоновые задачи (отправка писем) - выключаются в тестах, там их зовут вручную
   WORKERS: z
     .enum(["true", "false"])
@@ -62,11 +64,10 @@ export function loadConfig(env: NodeJS.ProcessEnv = process.env): Config {
 
 export const CONFIG = Symbol("CONFIG");
 
-// Правила заказа пополнения Steam. Суммы - в минимальных единицах валюты (100 = 1 ₽ / $1 / 1 ₸);
-// пределы как на фронте (src/config/site.ts: steam.minAmount / maxAmount)
+// Правила заказа пополнения Steam. Суммы - в минимальных единицах валюты (100 = 1 ₽ / $1 / 1 ₸).
+// Минимум меняется настройкой ORDER_MIN_AMOUNT, фронт берет лимиты с сервера (GET /api/orders/limits)
 export const ORDER_RULES = {
   currencies: ["RUB", "USD", "KZT"] as const,
-  minAmount: 100_00,
   maxAmount: 50_000_00,
   // неоплаченный заказ истекает через 30 минут
   ttlMs: 30 * 60 * 1000,

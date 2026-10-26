@@ -148,3 +148,30 @@ describe("orders", () => {
     });
   });
 });
+
+describe("orders: лимиты", () => {
+  let t: TestApp;
+  afterEach(async () => {
+    await t.app.close();
+  });
+
+  it("по умолчанию минимум 100, лимиты доступны без входа", async () => {
+    t = await startApp();
+    const res = await request(t.url).get("/api/orders/limits");
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ minAmount: 100_00, maxAmount: 50_000_00, currencies: ["RUB", "USD", "KZT"] });
+  });
+
+  it("ORDER_MIN_AMOUNT снижает минимум и для проверки, и в лимитах", async () => {
+    t = await startApp({ ORDER_MIN_AMOUNT: "100" });
+    await resetDb(t.prisma);
+    const { cookie } = await loginAs(t.prisma, "alex@mail.ru");
+    expect((await request(t.url).get("/api/orders/limits")).body.minAmount).toBe(100);
+    const send = (amount: number) =>
+      request(t.url).post("/api/orders").set("Cookie", cookie).set("Idempotency-Key", `key-${amount}-0000`).send({ steamLogin: "gaben", amount, currency: "USD" });
+    expect((await send(100)).status).toBe(201);
+    const low = await send(99);
+    expect(low.status).toBe(422);
+    expect(low.body).toMatchObject({ field: "amount", error: "Минимум 1" });
+  });
+});

@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Headers, HttpCode, HttpStatus, Param, ParseUUIDPipe, Post, Res, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Headers, HttpCode, HttpStatus, Inject, Param, ParseUUIDPipe, Post, Res, UseGuards } from "@nestjs/common";
 import type { User } from "@prisma/client";
 import type { FastifyReply } from "fastify";
+import { CONFIG, ORDER_RULES, type Config } from "../config";
 import { ApiError, ZodPipe } from "../common/http";
 import { CurrentUser, SessionGuard } from "../auth/session.guard";
 import { createOrderSchema, idempotencyKeySchema, type CreateOrderDto } from "./orders.schemas";
@@ -8,10 +9,28 @@ import { OrdersService, toOrderDto } from "./orders.service";
 
 const notFound = () => new ApiError(HttpStatus.NOT_FOUND, "Заказ не найден");
 
+// GET /api/orders/limits -> { minAmount, maxAmount, currencies } - лимиты для плашки Steam, без входа
+@Controller("orders/limits")
+export class OrderLimitsController {
+  constructor(@Inject(CONFIG) private readonly config: Config) {}
+
+  @Get()
+  limits() {
+    return { minAmount: this.config.ORDER_MIN_AMOUNT, maxAmount: ORDER_RULES.maxAmount, currencies: ORDER_RULES.currencies };
+  }
+}
+
 @Controller("orders")
 @UseGuards(SessionGuard)
 export class OrdersController {
-  constructor(private readonly orders: OrdersService) {}
+  private readonly bodyPipe: ZodPipe;
+
+  constructor(
+    private readonly orders: OrdersService,
+    @Inject(CONFIG) config: Config,
+  ) {
+    this.bodyPipe = new ZodPipe(createOrderSchema(config.ORDER_MIN_AMOUNT));
+  }
 
   // POST /api/orders { steamLogin, amount, currency } + Idempotency-Key
   //   -> 201 { order } новый | 200 { order } повтор того же запроса | 409 ключ занят другим заказом | 422 { field, error }
@@ -19,10 +38,11 @@ export class OrdersController {
   async create(
     @CurrentUser() user: User,
     @Headers("idempotency-key") rawKey: string | undefined,
-    @Body(new ZodPipe(createOrderSchema)) body: CreateOrderDto,
+    @Body() rawBody: unknown,
     @Res({ passthrough: true }) res: FastifyReply,
   ) {
     const key = new ZodPipe(idempotencyKeySchema).transform(rawKey) as string;
+    const body = this.bodyPipe.transform(rawBody) as CreateOrderDto;
     const { order, created } = await this.orders.create(user.id, key, body);
     res.status(created ? HttpStatus.CREATED : HttpStatus.OK);
     return { order: toOrderDto(order) };
