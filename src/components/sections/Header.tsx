@@ -256,14 +256,21 @@ export function Header() {
                   className={[s.cat, i === 0 && s.catActive, c.accent && s.catAccent].filter(Boolean).join(" ")}
                   aria-current={i === 0 ? "page" : undefined}
                 >
-                  <MaskIcon src={c.icon} size={16} />
+                  <MaskIcon src={c.icon} size={18} />
                   {c.label}
                 </a>
               </li>
             ))}
+            {/* на мобилке «Помощь» - последний пункт ленты (макеты 38:147 / 38:1110), на десктопе - кнопка справа */}
+            <li className={s.helpItem}>
+              <button type="button" className={`${s.cat} ${s.catHelp}`} onClick={onHelp}>
+                <MaskIcon src="/img/icons/cat-help.svg" size={18} />
+                Помощь
+              </button>
+            </li>
           </ul>
           <button type="button" className={s.help} onClick={onHelp}>
-            <MaskIcon src="/img/icons/cat-help.svg" size={16} />
+            <MaskIcon src="/img/icons/cat-help.svg" size={18} />
             Помощь
             <span className={s.tooltip} role="tooltip">
               Поддержка онлайн 24/7 · ответ 1 мин

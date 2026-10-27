@@ -110,10 +110,12 @@
     box-shadow: var(--ring-focus);
   }
 
+  // текст сразу за лупой через 10, без стандартного отступа поля браузера в 2 px (24:35, 38:88)
   input {
     flex: 1;
     min-width: 0;
     height: 100%;
+    padding: 0;
     border: 0;
     background: none;
     outline: none;
@@ -489,9 +491,6 @@
   color: var(--c-ink-2);
   font-size: 14px;
   font-weight: 800;
-  // Chrome рисует Nunito чуть уже Figma: без этого «Пополнить Steam» 147 px вместо 150 по макету,
-  // и полоска активного пункта не доходит до края
-  letter-spacing: 0.2px;
   white-space: nowrap;
   transition: color var(--t-base) ease;
   // иконка по ТЗ: серая, на hover и у активного пункта - оранжевая
@@ -538,6 +537,16 @@
   @include hover {
     color: #c45500;
   }
+}
+
+// «Помощь» в ленте категорий - только на мобилке (см. ниже)
+.helpItem {
+  display: none;
+}
+
+.catHelp {
+  color: var(--c-muted);
+  --icon-color: var(--c-muted-2);
 }
 
 .help {
@@ -614,7 +623,8 @@
     grid-template-areas:
       "logo logo . cur login"
       "cat search search search search";
-    gap: 12px 8px;
+    // между валютой и «Войти», каталогом и поиском - 10 (38:90-38:97, 38:78-38:84)
+    gap: 12px 10px;
     height: auto;
     padding-top: 12px;
     padding-bottom: 12px;
@@ -642,18 +652,17 @@
     }
   }
 
-  // в макете между кнопкой каталога и поиском 10 px (колонки - 8)
   .search {
     grid-area: search;
     height: 44px;
-    margin-left: 2px;
     padding-left: 14px;
   }
 
+  // валюта 71: монета 34 с отступом 7, стрелка через 6, справа 12 (38:91)
   .currencyBtn {
     grid-area: cur;
     height: 40px;
-    padding: 0 8px 0 4px;
+    padding: 0 12px 0 7px;
   }
 
   .login,
@@ -661,10 +670,11 @@
     grid-area: login;
   }
 
+  // «Войти» 106: текст с отступом 15, кружок 34 через 8, справа 6 (38:97-38:99)
   .login {
     gap: 8px;
     height: 40px;
-    padding: 0 4px 0 16px;
+    padding: 0 6px 0 15px;
     font-size: 14px;
 
     .loginText {
@@ -672,8 +682,8 @@
     }
 
     .loginArrow {
-      width: 32px;
-      height: 32px;
+      width: 34px;
+      height: 34px;
     }
   }
 
@@ -682,12 +692,19 @@
     height: 46px;
   }
 
+  // при 15 px Chrome рисует Nunito как Figma: десктопная поправка 0.2 px дает +3 px на «Пополнить Steam» (38:110: 132)
   .nav .cat {
     font-size: 15px;
+    letter-spacing: 0;
   }
 
+  // пункты через 15.5 (38:104-38:147: 16, 190, 312, 455 ...), «Помощь» - последним пунктом
   .nav .cats {
-    gap: 14px;
+    gap: 15.5px;
+  }
+
+  .helpItem {
+    display: flex;
   }
 
   .help {

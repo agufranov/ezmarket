@@ -524,10 +524,12 @@
     background var(--t-fast) ease,
     box-shadow var(--t-fast) ease;
 
+  // текст ровно от отступа поля, без стандартных 2 px браузера (12:199, 54:8361)
   input,
   textarea {
     flex: 1;
     min-width: 0;
+    padding: 0;
     border: 0;
     background: none;
     color: var(--c-ink);
@@ -601,10 +603,11 @@
   margin-top: 12px;
 }
 
+// скрепка 16 и текст через 8 (54:9201, 54:8285; на 360 - 6)
 .attach {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   color: var(--c-peach-ink);
   font-size: 14px;
   font-weight: 800;
@@ -978,8 +981,8 @@
   .root {
     left: 14px;
     right: 14px;
-    // виджет 64 px в 14 px от низа + 13 px зазор
-    bottom: 91px;
+    // низ панели в 90 от низа экрана: виджет 64 в 14 от низа + 12 (54:8514, 54:8410)
+    bottom: 90px;
     justify-content: flex-end;
     max-height: calc(100dvh - 107px);
   }
@@ -993,35 +996,45 @@
   }
 
   // «Частые вопросы» (54:8475): темы в одну строку с обрезкой, вопросы 54+, ответ 15 / 21.8
+  // темы 36: на 440 по бокам 12 и через 8 (54:8423, 54:8270), на 360 - 9 и 6 (ниже)
   .chips[role="tablist"] {
     flex-wrap: nowrap;
-    gap: 6px;
+    gap: 8px;
     overflow: hidden;
   }
 
   .chip {
     flex: none;
     height: 36px;
-    padding: 0 9px;
+    padding: 0 12px;
     color: var(--c-ink-3);
   }
 
+  // список в 4 под темами, первая строка еще на 2 ниже; «Ответ помог?» в 4 под списком (54:8535, 54:8536, 54:8572)
   .faqList {
-    margin-top: 2px;
+    margin-top: 6px;
   }
 
   .faqItem {
     border-radius: 16px;
   }
 
+  // строка вопроса 12 + 26 + 12 и линия 1 - всего 51 (54:8536), без десктопного минимума 54
   .faqQ {
+    min-height: 0;
     padding: 12px;
     line-height: 19.5px;
   }
 
+  // открытый вопрос: 16 сверху, ответ через 11 (54:8544, 54:8550)
   .faqItem[data-open] .faqQ {
-    padding-top: 15px;
-    padding-bottom: 12px;
+    padding-top: 16px;
+    padding-bottom: 11px;
+  }
+
+  // под открытым вопросом линии нет и места под нее тоже (54:8543 - 54:8552)
+  .faqItem[data-open] + .faqItem {
+    border-top-width: 0;
   }
 
   .faqItem[data-open] + .faqItem .faqQ {
@@ -1036,34 +1049,18 @@
     line-height: 21.8px;
   }
 
+  // строка 53: линия, 14 и кнопки 38, как на десктопе (54:8572 / 54:8468)
   .helpful {
-    min-height: 0;
-    margin-top: 0;
-    padding: 12px 0 0;
     color: #8a9099;
   }
 
   .vote {
-    height: 37px;
-    padding: 0 11px;
     font-weight: 900;
   }
 
   // «Написать нам» (54:8291): значок письма 40, поля 54, кнопка 44 без стрелки
-  .mailHead {
-    gap: 10px;
-    margin-bottom: 15px;
-  }
-
-  .mailSub {
-    margin-top: 0;
-  }
-
-  .mailIcon {
-    width: 40px;
-    height: 40px;
-  }
-
+  // шапка 46: заголовок 25, через 2 подпись 19; до поля 12 (54:8333 - 54:8345);
+  // значок письма 44 и текст через 12, как на десктопе (54:8252), на 360 - 40 и 10 (ниже)
   .mailTitle {
     font-size: 18px;
     line-height: 24.6px;
@@ -1075,7 +1072,7 @@
   }
 
   .mail .chips {
-    gap: 6px;
+    gap: 8px;
   }
 
   .field {
@@ -1087,9 +1084,10 @@
     }
   }
 
+  // поле текста 97 в макете: 15 + 67 + 15 (54:8360); отступы сверху и снизу заново - .field выше их обнуляет
   .area {
+    padding: 15px 18px;
 
-    // поле текста 97 в макете: 15 + 67 + 15
     textarea {
       height: 67px;
       min-height: 67px;
@@ -1106,17 +1104,6 @@
     color: #b4510c;
     font-weight: 900;
     white-space: nowrap;
-  }
-
-  .send {
-    height: 44px;
-    padding: 0 26px;
-    font-size: 15px;
-    font-weight: 900;
-  }
-
-  .sendArrow {
-    display: none;
   }
 
   // «Письмо отправлено» (54:8150): маскот 84, заголовок 22, текст 15/600, плашка 38, кнопка 50
@@ -1191,5 +1178,45 @@
 @media (max-width: 419px) {
   .sentText {
     max-width: 256px;
+  }
+}
+
+// на 360 у «👍 Да» / «👎 Нет» по бокам 11, на 440 - 14, как на десктопе (54:8575 / 54:8471);
+// «Отправить» на 360 - 44 без стрелки, по бокам 20 (54:8368), на 440 - как на десктопе, со стрелкой (54:8286)
+@media (max-width: 399px) {
+  .chips[role="tablist"],
+  .mail .chips {
+    gap: 6px;
+  }
+
+  .chip {
+    padding: 0 9px;
+  }
+
+  .vote {
+    padding: 0 11px;
+  }
+
+  // «Написать нам» на 360: значок 40, текст через 10, скрепка через 6 (54:8334, 54:8363)
+  .mailHead {
+    gap: 10px;
+  }
+
+  .mailIcon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .attach {
+    gap: 6px;
+  }
+
+  .send {
+    height: 44px;
+    padding: 0 20px;
+  }
+
+  .sendArrow {
+    display: none;
   }
 }

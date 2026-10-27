@@ -1,7 +1,8 @@
 import type { CSSProperties } from "react";
 import { asset } from "@/lib/asset";
 
-type Props = { src: string; size?: number; className?: string };
+// size - число в px или CSS-значение (например, переменная, если размер зависит от экрана)
+type Props = { src: string; size?: number | string; className?: string };
 
 // Одноцветная SVG-иконка, которая красится через background (currentColor не нужен в самом файле).
 // Нужна там, где по ТЗ иконка меняет цвет на hover/active.

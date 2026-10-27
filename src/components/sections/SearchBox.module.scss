@@ -277,6 +277,10 @@
     border-radius: 26px 26px 26px 12px;
   }
 
+  .thumbIcon {
+    display: none;
+  }
+
   .thumbGame {
     position: absolute;
     right: -4px;
@@ -557,6 +561,7 @@
 
 // «хит» с огоньком (макеты 12:1197, 38:4642)
 .hit {
+  --hit-icon: 12px;
   display: inline-flex;
   align-items: center;
   gap: 2px;
@@ -696,6 +701,11 @@
     box-shadow: none;
     overflow: visible;
     transform: none;
+  }
+
+  // закрытая панель не занимает место в строке шапки: иначе поле сжимается до 4 px и не видно плейсхолдера (38:70)
+  .panel:not([data-open]) {
+    display: none;
   }
 
   .label {
@@ -839,6 +849,17 @@
     height: 48px;
   }
 
+  // плитка 48 со скруглением 16 и значком категории 24 по центру (38:4598, 38:4599)
+  .thumb .thumbTint {
+    display: grid;
+    place-items: center;
+    border-radius: 16px;
+  }
+
+  .thumb .thumbIcon {
+    display: flex;
+  }
+
   .productText {
     b,
     span {
@@ -933,9 +954,10 @@
     margin: 26px 0 0 -92px;
   }
 
+  // в макете под лупу место 16, текст в 36 от края: наша лупа 14 по центру этого места (38:4682)
   .fix {
-    gap: 4px;
-    padding: 0 14px 0 16px;
+    gap: 7px;
+    padding: 0 14px 0 15px;
     background: #fff;
 
     svg {
@@ -966,8 +988,13 @@
       height: 44px;
     }
 
+    // «от» и цена в одну строку: плашка 36, по бокам 12, между ними 4 (38:4710, 38:4723)
     .price {
+      display: flex;
+      align-items: center;
+      gap: 4px;
       height: 36px;
+      padding: 0 12px;
       background: #fff;
       box-shadow:
         0 0 0 1px #f0f2f4,
@@ -1004,11 +1031,19 @@
     }
   }
 
+  // огонек 13, до «хит» 2, от подписи 6 (38:4706). «хит» - на базовой линии подписи, огонек по центру:
+  // иначе базовая линия плашки берется от низа иконки и «хит» поднимается на 3 px
   .hit {
-    gap: 4px;
-    margin-left: 10px;
+    --hit-icon: 13px;
+    align-items: baseline;
+    gap: 2px;
+    margin-left: 6px;
     font-size: 14px;
     font-weight: 800;
+
+    > span {
+      align-self: center;
+    }
   }
 
   .gameText {

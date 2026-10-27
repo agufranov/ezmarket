@@ -256,10 +256,15 @@
 
 // --- мобилка (макеты 440 / 360): колонки ссылок раскрыты (в макете аккордеона нет) ---
 @include down($bp-sm) {
+  // слои 38:914 / 38:1882: логотип на 24 от верха, между верхом и низом 20, снизу 20
   .footer {
-    gap: 16px;
-    padding: 20px;
+    gap: 20px;
+    padding: 24px 20px 20px;
     border-radius: 28px;
+  }
+
+  .logo img {
+    margin-top: 0;
   }
 
   .top {
@@ -277,8 +282,9 @@
     }
   }
 
+  // колонка 217: заголовок 23 на 18 от линии, ссылки по 40, первая текстом на 15 ниже заголовка, снизу 11 (38:933)
   .col {
-    padding: 16px 0 12px;
+    padding: 17px 0 11px;
     border-top: 1px solid var(--c-line);
 
     // «Помощь» на всю ширину, ссылки в две колонки
@@ -293,30 +299,33 @@
     }
   }
 
-  // кегли мобильных макетов: описание 15, заголовки и ссылки 16, шаг ссылок 40
+  // кегли мобильных макетов: описание 15 (на всю ширину - в 2 строки, 38:918), заголовки и ссылки 16, шаг ссылок 40
   .about {
+    max-width: none;
     font-size: 15px;
   }
 
   .colTitle {
     font-size: 16px;
+    line-height: 23px;
   }
 
   .links {
-    padding-top: 10px;
+    padding-top: 5px;
 
     a {
-      padding: 10.4px 0;
+      padding: 10px 0;
       font-size: 16px;
-      line-height: 19.2px;
+      line-height: 20px;
     }
   }
 
+  // карточка 228 - через 12 после колонок, текст через 13 после маскота (38:967, 38:981)
   .bonus {
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    margin-top: 8px;
+    gap: 13px;
+    margin-top: 12px;
     padding: 20px;
     border-radius: 28px;
     text-align: center;
@@ -334,7 +343,9 @@
     font-size: 22px;
   }
 
+  // подпись с отступом до кнопки - 35 (38:983 «Small:margin»), карточка 228
   .bonusText {
+    padding-bottom: 16px;
     color: #a6501a;
   }
 
@@ -344,17 +355,25 @@
     font-size: 16px;
   }
 
+  // низ 120: копирайт на 21 от линии, ссылки - строками по 36, текст +7 (38:991-38:998)
   .bottom {
     flex-direction: column;
     align-items: center;
-    gap: 14px;
+    gap: 8px;
+    padding-top: 20px;
+    line-height: 19px;
     text-align: center;
   }
 
   .legal {
     flex-direction: column;
     align-items: center;
-    gap: 14px;
+    gap: 0;
+
+    a {
+      display: block;
+      padding: 7px 0 10px;
+    }
   }
 }
 

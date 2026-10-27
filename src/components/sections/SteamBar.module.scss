@@ -61,11 +61,12 @@
   font-size: 14px;
 }
 
+// «Ввести промокод» 157x28: текст с 14, справа 10 (24:162)
 .promo {
   display: inline-flex;
   align-items: center;
   height: 28px;
-  padding: 0 10px 0 12px;
+  padding: 0 10px 0 14px;
   border-radius: var(--r-pill);
   background: #f3f4f6;
   color: #454b55;
@@ -306,21 +307,48 @@
 
 // --- мобилка (макеты 440 / 360): все поля в столбик ---
 @include down($bp-sm) {
+  // слои 38:233 / 38:1196: шапка 59, поля 52 и кнопка 56 - через 12, снизу 16
   .bar {
-    gap: 16px;
-    padding: 16px 16px 18px;
+    gap: 12px;
+    padding: 16px;
   }
 
+  // логотип 56: на 360 выступает на 6 px влево (52:7969: x 26), на 440 - по краю (38:1198: x 32);
+  // текст от логотипа на 4 px (360) и на 33 px (440), между ними - по ширине экрана
   .head {
     min-width: 0;
-    // на 440 текст отстоит от логотипа на 32 px, на 360 - на 4 px
-    gap: clamp(4px, calc(35vw - 122px), 32px);
-    padding-left: 4px;
+    gap: clamp(4px, calc(36.25vw - 126.5px), 33px);
   }
 
   .logo {
-    width: 52px;
-    height: 52px;
+    width: 56px;
+    height: 56px;
+    margin-left: clamp(-6px, calc(7.5vw - 33px), 0px);
+  }
+
+  // заголовок 25 и «Ввести промокод» под ним через 6 (52:7971, 52:7975)
+  .headText {
+    gap: 6px;
+  }
+
+  .title {
+    gap: 7px;
+    line-height: 25px;
+  }
+
+  // «5%» - 34x22 (52:7973)
+  .badge {
+    height: 22px;
+    padding: 0 6px;
+  }
+
+  // «Ввести промокод»: 152 px на 360 (отступы 9, до стрелки 7), 159 на 440 (14 и 8); стрелка в иконке 14 - глиф 8 по центру
+  .promo {
+    padding: 0 clamp(6px, calc(1.25vw + 1.5px), 7px) 0 clamp(9px, calc(6.25vw - 13.5px), 14px);
+  }
+
+  .promoChevron {
+    margin-left: clamp(4px, calc(1.25vw - 0.5px), 5px);
   }
 
   .form {
@@ -328,8 +356,43 @@
     gap: 12px;
   }
 
+  // поля 52; иконка - текст через 10. Логин: иконка в 21 от края, «i» 18 в 8 от правого (38:246);
+  // сумма: иконка в 16, валюты в 12 от правого (38:258)
   .field {
-    height: 50px;
+    gap: 10px;
+    height: 52px;
+  }
+
+  .form > .field:first-child {
+    padding: 0 8px 0 21px;
+
+    .info img {
+      width: 18px;
+      height: 18px;
+    }
+  }
+
+  .form > .field:nth-child(2) {
+    padding: 0 12px 0 16px;
+  }
+
+  // «Сумма» 16 и «500$» 21 по центру поля (38:264, 38:265)
+  .amountLabel {
+    line-height: 16px;
+  }
+
+  .amountValue {
+    height: 21px;
+  }
+
+  // валюты 32x32 через 7 (38:268-38:272)
+  .currencies {
+    gap: 7px;
+  }
+
+  .cur {
+    width: 32px;
+    height: 32px;
   }
 
   // кегли по мобильным макетам: логин 16, символы валют 14, «Оплатить» 17
@@ -342,8 +405,7 @@
   }
 
   .pay {
-    height: 52px;
-    margin-top: 4px;
+    height: 56px;
     font-size: 17px;
   }
 }

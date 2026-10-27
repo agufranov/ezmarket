@@ -112,30 +112,72 @@
     gap: 12px;
   }
 
+  // карточка 205: арт на 16 от верха, заголовок через 4, описание через 3, снизу 20 (38:872 / 38:1840)
   .card {
     align-items: center;
-    gap: 2px;
-    padding: 16px 20px 22px;
+    gap: 4px;
+    padding: 16px 20px 20px;
     border-radius: 28px;
     text-align: center;
   }
 
-  // арт из макета на мобилке меньше: подложка 86, «капля» 54
+  // арт на мобилке собран по-своему (точка слева внизу), координаты от блока 117x94 (38:873 / 38:1841)
   .art {
-    width: 160px;
+    width: 117px;
     height: 94px;
-    margin-left: 40px;
-    transform: scale(0.78);
-    transform-origin: left top;
+  }
+
+  .halo {
+    left: 15px;
+    top: 4px;
+    width: 86px;
+    height: 86px;
+  }
+
+  .dash {
+    left: 82px;
+    top: -3px;
+    width: 41px;
+    height: 41px;
+  }
+
+  .dot {
+    left: 7px;
+    top: 72px;
+    width: 14px;
+    height: 14px;
+  }
+
+  // «капля» 55 с иконкой 25 (38:877, 38:878)
+  .drop {
+    left: 31px;
+    top: 20px;
+    width: 55px;
+    height: 55px;
+    border-radius: 27.5px 27.5px 27.5px 17px;
+
+    img {
+      width: 25px;
+      height: 25px;
+    }
+
+    .card:nth-child(2) & {
+      border-radius: 27.5px 27.5px 17px 27.5px;
+    }
+  }
+
+  .text {
+    gap: 3px;
   }
 
   .title {
-    padding-top: 4px;
+    padding-top: 0;
     font-size: 18px;
+    line-height: 26px;
   }
 
+  // описание на всю ширину карточки: на 440 «Отвечаем за пару минут…» в одну строку (38:1866: 368x21)
   .desc {
-    max-width: 320px;
     font-size: 15px;
     line-height: 1.4;
   }

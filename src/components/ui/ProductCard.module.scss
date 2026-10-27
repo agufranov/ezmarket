@@ -183,22 +183,41 @@
 
 // --- мобилка (макеты 440 / 360) ---
 @include down($bp-sm) {
+  // скидка 55x26 и «Хит» 44x26 - в 8 от краев обложки (38:308, 38:1273, 38:1294)
+  .discount,
+  .badge {
+    top: 8px;
+  }
+
+  .discount {
+    left: 8px;
+    padding: 0 8px;
+  }
+
+  // место «Хит» секция может задать сама (--badge-top/--badge-right): у хитов на 360 он внизу обложки
+  .badge {
+    top: var(--badge-top, 8px);
+    right: var(--badge-right, 8px);
+    padding: 0 9px;
+  }
+
+  // слои 38:310 / 38:502: подпись +12 от обложки, название через 4 (38), цены через 4 (38, цена +4), кнопка через 4
   .body {
-    gap: 2px;
+    gap: 4px;
     padding: 12px 4px 0;
   }
 
   // кегли по слоям мобильных макетов 38:70 / 38:1032
   .title {
-    height: auto;
-    min-height: 40px;
+    height: 38px;
+    min-height: 0;
     font-size: 16px;
     line-height: 20px;
   }
 
   .prices {
-    height: auto;
-    padding-top: 10px;
+    height: 38px;
+    padding-top: 4px;
   }
 
   .price {
@@ -208,6 +227,6 @@
 
   .buy {
     height: 42px;
-    margin-top: 9px;
+    margin-top: 0;
   }
 }

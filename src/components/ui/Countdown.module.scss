@@ -16,6 +16,11 @@
   border-radius: 12px 12px 12px 4px;
   background: rgba(255, 255, 255, 0.2);
   color: #fff;
+
+  // мобильные макеты: ячейки высотой 34 (38:289-38:297, 38:1252-38:1260)
+  @include down($bp-sm) {
+    height: 34px;
+  }
 }
 
 .value {

@@ -13,7 +13,7 @@ type Props = {
   onSent: (r: { email: string; ticketId: number }) => void;
 };
 
-const topics = ["Заказ не пришел", "Возврат", "Оплата", "Другое"];
+const topics = ["Заказ не пришёл", "Возврат", "Оплата", "Другое"];
 const DRAFT_KEY = "ez_support_draft";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 const MIN = 10;

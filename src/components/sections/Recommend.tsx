@@ -31,7 +31,10 @@ export function Recommend() {
   // Подчеркивание переезжает под активную вкладку
   const measure = useCallback(() => {
     const el = tabsRef.current?.querySelector<HTMLElement>('[aria-selected="true"]');
-    if (el) setIndicator({ x: el.offsetLeft + 10, w: el.offsetWidth - 20 });
+    if (!el) return;
+    // отступ подчеркивания от краев вкладки - в CSS (--indicator-inset): на десктопе внутри, на мобилке шире вкладки
+    const inset = parseFloat(getComputedStyle(el).getPropertyValue("--indicator-inset")) || 0;
+    setIndicator({ x: el.offsetLeft + inset, w: el.offsetWidth - inset * 2 });
   }, []);
 
   useIsoLayoutEffect(() => {

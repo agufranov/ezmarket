@@ -97,9 +97,10 @@
   color: var(--c-bonus-text);
 }
 
+// шаги через 6; в шаге значок 30 с отступом 11, текст через 10, справа 11 (25:51 - 25:55)
 .steps {
   display: flex;
-  gap: 8px;
+  gap: 6px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -118,9 +119,9 @@
 .step {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   height: 52px;
-  padding: 0 12px 0 10px;
+  padding: 0 11px;
   border-radius: 20px 20px 20px 6px;
   background: var(--c-peach);
   font-size: 14px;
@@ -166,39 +167,44 @@
 
 // --- мобилка (макеты 440 / 360): маскот и текст, под ними три шага, кнопка на всю ширину ---
 @include down($bp-sm) {
+  // слои 38:392 / 38:1357: сверху 20, маскот 84x87 по центру строки с текстом, шаги и кнопка через 16, снизу 19
   .bar {
     display: grid;
     grid-template-columns: 84px minmax(0, 1fr);
     gap: 16px 14px;
     align-items: center;
-    padding: 16px;
+    padding: 20px 16px 19px;
     border-radius: 28px;
   }
 
+  // пятно 240 - в 110 над плашкой и на 90 за правым краем (38:393, 38:1358)
   .blob {
     left: auto;
-    right: -60px;
+    right: -90px;
     top: -110px;
-    width: 230px;
-    height: 230px;
+    width: 240px;
+    height: 240px;
   }
 
   .mascot {
-    align-self: start;
+    align-self: center;
     margin: 0;
     padding: 0;
     transform: scale(0.75);
     transform-origin: left top;
     width: 84px;
-    height: 84px;
+    height: 87px;
   }
 
+  // заголовок строками по 25.5, подпись через 6 (38:414 / 38:1379)
   .text {
     width: auto;
     min-width: 0;
 
     .title {
+      margin-bottom: 6px;
       font-size: 22px;
+      line-height: 25.5px;
       white-space: normal;
     }
   }
@@ -210,9 +216,24 @@
   }
 
   .steps {
+    position: relative;
+    z-index: 0;
     grid-column: 1 / -1;
     order: 0;
     gap: 8px;
+
+    // пунктир от центра первой иконки до центра последней, виден в зазорах между шагами:
+    // 2 px, штрих 6 через 4, #ffc999 (38:419 / 38:1384)
+    &::before {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      left: calc((100% - 16px) / 6);
+      right: calc((100% - 16px) / 6);
+      top: 31px;
+      height: 2px;
+      background: repeating-linear-gradient(90deg, #ffc999 0 6px, transparent 6px 10px);
+    }
   }
 
   .step,
@@ -220,17 +241,18 @@
     flex: 1 1 0;
     flex-direction: column;
     justify-content: flex-start;
-    gap: 8px;
+    gap: 7px;
     height: 106px;
-    padding: 13px 6px 0;
+    padding: 12px 6px 0;
     border-radius: 18px;
     text-align: center;
     white-space: normal;
     line-height: 1.2;
 
+    // иконка 38 на 12 от верха шага, подпись через 7 (38:421, 38:424)
     .stepIcon {
-      width: 36px;
-      height: 36px;
+      width: 38px;
+      height: 38px;
       font-size: 16px;
     }
   }

@@ -118,18 +118,20 @@
 
 // --- мобилка (макеты 440 / 360): лента карточек со скроллом ---
 @include down($bp-sm) {
+  // под карточками 20 до низа секции (38:304: лента 245 при карточке 241, плюс 16)
   .panel {
     gap: 14px;
-    padding: 10px 10px 16px;
+    padding: 10px 10px 20px;
   }
 
+  // лента 136: заголовок на 14 от верха, таймер под ним через 9, снизу 14 (38:277 / 38:1240)
   .ribbon {
     display: grid;
     grid-template-columns: 40px minmax(0, 1fr) auto;
     column-gap: 12px;
-    row-gap: 14px;
+    row-gap: 9px;
     align-items: center;
-    padding: 13px 14px 11px;
+    padding: 14px;
     border-radius: 22px;
   }
 
@@ -151,8 +153,9 @@
     gap: 8px;
   }
 
+  // первая ячейка таймера - x 155 (38:289)
   .timerLabel {
-    margin-right: 6px;
+    margin-right: 4px;
   }
 
   // «Все хиты» в строке заголовка, справа (как в макете)
@@ -167,15 +170,15 @@
     display: flex;
     gap: 12px;
     margin: 0 -10px;
-    padding: 0 22px;
-    scroll-padding-inline: 22px;
+    padding: 0 16px;
+    scroll-padding-inline: 16px;
   }
 
-  // ширина карточки по макету: (ширина ленты - 24) / 2.2 → 161 на 440, 124 на 360
+  // карточки с x 32 через 12: 125 на 360 (38:305), 161 на 440 (38:1270), между ними - по ширине экрана
   .card,
   .card:nth-child(n) {
     display: flex;
-    flex: 0 0 calc((100vw - 32px - 44px - 24px) / 2.2);
+    flex: 0 0 calc(45vw - 37px);
     scroll-snap-align: start;
   }
 }
@@ -191,12 +194,19 @@
     font-size: 15px;
     line-height: 18.8px;
   }
+
+  // на 360 «Хит» - внизу справа на обложке (38:329: в 9 от правого края и в 8 от низа обложки 81),
+  // на 440 - вверху справа, как у всех карточек
+  .card {
+    --badge-top: calc((45vw - 37px) * 81 / 125 - 34px);
+    --badge-right: 9px;
+  }
 }
 
 @include down($bp-sm) {
-  // обложка по пропорции макета: 161×105 на 440, 124×81 на 360
+  // обложка по пропорции макета: 125×81 на 360 (38:306), 161×104 на 440 (38:1271)
   .grid {
     --cover-h: auto;
-    --cover-ratio: 161 / 105;
+    --cover-ratio: 125 / 81;
   }
 }

@@ -45,15 +45,31 @@
     font-size: 22px;
     letter-spacing: -0.3px;
   }
+
+  // «Все …» на 440 - 34 в высоту, строка заголовка 34 (38:1601, 38:1688)
+  .action a {
+    height: 34px;
+  }
 }
 
-// на 360 у ссылки «Все …» остается только стрелка
+// на 360 у ссылки «Все …» остается только стрелка: кнопка 36x36 с кружком 26 по центру (38:638);
+// значок 26 и заголовок через 8, строка 36 (38:633 / 38:718; на 440 - 30 и 10, как выше)
 @media (max-width: 399px) {
+  .head {
+    gap: 8px;
+  }
+
+  .drop {
+    width: 26px;
+    height: 26px;
+  }
+
   .action a > span:first-child {
     display: none;
   }
 
-  .action {
-    padding: 0 4px;
+  .action a {
+    height: 36px;
+    padding: 5px;
   }
 }

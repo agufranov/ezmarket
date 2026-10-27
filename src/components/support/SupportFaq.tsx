@@ -10,7 +10,7 @@ type Props = { onBack: () => void; onClose: () => void; onWrite: (topic: string)
 const TAB_KEY = "ez_faq_tab";
 const FEEDBACK_KEY = "ez_faq_feedback";
 // «Нет» в «Ответ помог?» - какую тему подставить в «Написать нам»
-const topicFor: Record<string, string> = { orders: "Заказ не пришел", payment: "Оплата" };
+const topicFor: Record<string, string> = { orders: "Заказ не пришёл", payment: "Оплата" };
 
 function loadFeedback(): Record<string, "yes" | "no"> {
   try {

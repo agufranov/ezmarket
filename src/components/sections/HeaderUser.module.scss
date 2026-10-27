@@ -768,10 +768,11 @@
   animation: breathe 3.4s ease-in-out infinite;
 }
 
+// «z» у правого верхнего угла маскота: при 84 - x 80, y -3 (38:2675, 12:940)
 .zz {
   position: absolute;
-  top: -6px;
-  right: -16px;
+  top: -3px;
+  right: 4px;
 
   i {
     position: absolute;
@@ -884,9 +885,18 @@
     padding: 4px 14px 4px 2px;
   }
 
-  // плитки в 34 px под плашкой бонусов (она лежит поверх низа карточки)
+  // плитки в 34 px под плашкой бонусов (она лежит поверх низа карточки); по ширине содержимого,
+  // равномерно по строке с отступом 4 от краев (38:2200-38:2224, 38:5172-38:5196)
   .tiles {
+    display: flex;
+    justify-content: space-between;
     margin: 34px 0 5px;
+    padding: 0 4px;
+  }
+
+  // плитка - не уже иконки 52 с полями 6 (38:2200: 64, 38:2215 «Рефералы» - по подписи 74)
+  .tile {
+    min-width: 64px;
   }
 
   .divider {
@@ -930,11 +940,14 @@
     font-size: 15px;
   }
 
+  // вкладки через 6, у «Все» счетчик через 9 от подписи (38:2432-38:2441)
   .tabs {
+    gap: 6px;
     margin-top: 13px;
   }
 
   .tab {
+    gap: 9px;
     height: 40px;
     padding: 0 15px;
     font-size: 15px;

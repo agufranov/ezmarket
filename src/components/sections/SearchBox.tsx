@@ -355,7 +355,7 @@ export function SearchBox({ className, kbdClassName }: Props) {
                           {g.subtitle}
                           {g.hit && (
                             <em className={s.hit}>
-                              <MaskIcon src="/img/icons/fire.svg" size={12} />
+                              <MaskIcon src="/img/icons/fire.svg" size="var(--hit-icon)" />
                               хит
                             </em>
                           )}
@@ -475,7 +475,13 @@ export function SearchBox({ className, kbdClassName }: Props) {
                     >
                       <span className={s.thumb}>
                         {p.tint ? (
-                          <span className={s.thumbTint} style={{ background: p.tint }} />
+                          <span className={s.thumbTint} style={{ background: p.tint }}>
+                            {p.icon && (
+                              <span className={s.thumbIcon} style={{ color: p.icon.color }}>
+                                <MaskIcon src={p.icon.src} size={24} />
+                              </span>
+                            )}
+                          </span>
                         ) : (
                           <img src={asset(p.image)} alt="" width={52} height={52} />
                         )}
