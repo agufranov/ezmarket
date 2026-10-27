@@ -194,6 +194,19 @@
   color: var(--c-muted);
 }
 
+.delta {
+  display: inline-block;
+  min-width: 56px;
+
+  &[data-sign="plus"] {
+    color: var(--c-green-ink);
+  }
+
+  &[data-sign="minus"] {
+    color: var(--c-ink-2);
+  }
+}
+
 .id {
   margin-top: 10px;
   color: var(--c-muted-2);

@@ -3,13 +3,15 @@
 import { useCallback, useEffect, useState } from "react";
 import { asset } from "@/lib/asset";
 import { AuthProvider, useAuth } from "@/lib/auth";
+import { formatNumber, plural } from "@/lib/format";
 import { ModalProvider, useModal } from "@/lib/modal";
 import { apiEnabled, type ApiError } from "@/services/api";
+import { getBonuses, type BonusKind, type Bonuses } from "@/services/bonuses";
 import { cancelOrder, getOrder, listOrders, payOrder, type OrderDto, type OrderStatus } from "@/services/orders";
 import s from "./OrdersPage.module.scss";
 
-// Мои заказы: простая страница без макета - список заказов, статусы и история переходов.
-// Пока есть незавершенные заказы, список обновляется каждые 5 секунд.
+// Мои заказы: простая страница без макета - бонусы с историей, список заказов, статусы и история переходов.
+// Пока есть незавершенные заказы, список и бонусы обновляются каждые 5 секунд.
 
 const STATUS: Record<OrderStatus, { label: string; tone: "wait" | "ok" | "bad" | "off" }> = {
   created: { label: "Создан", tone: "wait" },
@@ -22,7 +24,17 @@ const STATUS: Record<OrderStatus, { label: string; tone: "wait" | "ok" | "bad" |
   expired: { label: "Истек", tone: "off" },
 };
 const FINAL: OrderStatus[] = ["completed", "failed", "canceled", "expired"];
+// при этих статусах списанные бонусы возвращаются, кэшбэка нет (триггер order_bonus_effects)
+const REFUNDED: OrderStatus[] = ["failed", "canceled", "expired"];
 const REFRESH_MS = 5000;
+
+const BONUS_KIND: Record<BonusKind, string> = {
+  signup: "За регистрацию",
+  spend: "Оплата заказа",
+  refund: "Возврат: заказ не выполнен",
+  accrual: "Кэшбэк за заказ",
+};
+const bonusWord = (n: number) => plural(n, ["бонус", "бонуса", "бонусов"]);
 
 const money = (minor: number, currency: string) =>
   new Intl.NumberFormat("ru-RU", { style: "currency", currency, maximumFractionDigits: 2 }).format(minor / 100);
@@ -50,11 +62,15 @@ function Orders() {
   const { user } = useAuth();
   const { openModal } = useModal();
   const [orders, setOrders] = useState<OrderDto[] | null>(null);
+  const [bonuses, setBonuses] = useState<Bonuses | null>(null);
   const [error, setError] = useState("");
 
   const load = useCallback(async () => {
     try {
-      setOrders(await listOrders());
+      // бонусы - вместе с заказами: возврат и кэшбэк видны, как только заказ сменит статус; без них заказы все равно видны
+      const [list, b] = await Promise.all([listOrders(), getBonuses().catch(() => null)]);
+      setOrders(list);
+      if (b) setBonuses(b);
       setError("");
     } catch (e) {
       setError((e as ApiError).error);
@@ -85,23 +101,69 @@ function Orders() {
     );
   if (error && !orders) return <p className={s.note}>{error}</p>;
   if (!orders) return <p className={s.note}>Загружаем…</p>;
-  if (!orders.length)
-    return (
-      <div className={s.note}>
-        <p>Заказов пока нет.</p>
-        <a href={asset("/")} className={s.btn}>
-          Пополнить Steam
-        </a>
-      </div>
-    );
 
   return (
-    <ul className={s.list}>
-      {orders.map((o) => (
-        <OrderRow key={`${o.id}:${o.status}`} order={o} onChange={load} />
-      ))}
-    </ul>
+    <div className={s.list}>
+      {bonuses && <BonusCard bonuses={bonuses} />}
+      {orders.length ? (
+        <ul className={s.list}>
+          {orders.map((o) => (
+            <OrderRow key={`${o.id}:${o.status}`} order={o} onChange={load} />
+          ))}
+        </ul>
+      ) : (
+        <div className={s.note}>
+          <p>Заказов пока нет.</p>
+          <a href={asset("/")} className={s.btn}>
+            Пополнить Steam
+          </a>
+        </div>
+      )}
+    </div>
   );
+}
+
+// баланс и история бонусов: начисления и списания с остатком после каждого
+function BonusCard({ bonuses }: { bonuses: Bonuses }) {
+  return (
+    <section className={s.card} aria-label="Бонусы">
+      <div className={s.sum}>
+        {formatNumber(bonuses.balance)} {bonusWord(bonuses.balance)}
+      </div>
+      <div className={s.meta}>1 бонус = 1 ₽ · бонусами можно оплатить до 30% заказа</div>
+      <details className={s.details}>
+        <summary>История бонусов</summary>
+        {bonuses.history.length ? (
+          <ol className={s.history}>
+            {bonuses.history.map((h) => (
+              <li key={h.id}>
+                <span className={s.histTime}>{when(h.at)}</span>
+                <b className={s.delta} data-sign={h.delta > 0 ? "plus" : "minus"}>
+                  {h.delta > 0 ? `+${formatNumber(h.delta)}` : `−${formatNumber(-h.delta)}`}
+                </b>
+                <span className={s.histReason}>
+                  {BONUS_KIND[h.kind]} · остаток {formatNumber(h.balanceAfter)}
+                </span>
+              </li>
+            ))}
+          </ol>
+        ) : (
+          <p className={s.hint}>Пока пусто</p>
+        )}
+      </details>
+    </section>
+  );
+}
+
+// бонусы заказа: сколько списано и вернулись ли, сколько начислится кэшбэком
+function OrderBonuses({ order }: { order: OrderDto }) {
+  const refunded = REFUNDED.includes(order.status);
+  const parts: string[] = [];
+  if (order.bonusSpent > 0)
+    parts.push(`Бонусами ${formatNumber(order.bonusSpent)}` + (refunded ? " - вернули на счет" : `, деньгами ${money(order.payAmount, order.currency)}`));
+  if (order.bonusAccrual > 0 && !refunded)
+    parts.push(`Кэшбэк +${formatNumber(order.bonusAccrual)}` + (order.status === "completed" ? " начислен" : " после выполнения"));
+  return parts.length ? <div className={s.meta}>{parts.join(" · ")}</div> : null;
 }
 
 function OrderRow({ order, onChange }: { order: OrderDto; onChange: () => void }) {
@@ -152,6 +214,7 @@ function OrderRow({ order, onChange }: { order: OrderDto; onChange: () => void }
           <div className={s.meta}>
             Пополнение Steam · <b>{order.steamLogin}</b> · {when(order.createdAt)}
           </div>
+          <OrderBonuses order={order} />
         </div>
         <span className={s.status} data-tone={st.tone}>
           {st.label}

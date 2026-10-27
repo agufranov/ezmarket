@@ -1,6 +1,6 @@
 // Заказ пополнения Steam: сервер (server/src/orders, server/src/payments) или мок, если API не подключен.
 // GET /orders/limits -> { minAmount, maxAmount } в минимальных единицах (ТЗ 8.3: лимиты - с бэкенда)
-// POST /orders { steamLogin, amount, currency } + Idempotency-Key -> { order } | 422 { field, error } | 409
+// POST /orders { steamLogin, amount, currency, bonuses? } + Idempotency-Key -> { order } | 422 { field, error } | 409
 // POST /orders/:id/pay -> { order, paymentUrl } | 409 { error, status }
 import { site } from "@/config/site";
 import { api, apiEnabled, type ApiError } from "./api";
@@ -20,6 +20,9 @@ export type OrderDto = {
   amount: number;
   currency: string;
   payAmount: number;
+  // списано бонусов в оплату и начислится за выполненный заказ (1 бонус = 1 ₽)
+  bonusSpent: number;
+  bonusAccrual: number;
   status: OrderStatus;
   paymentUrl: string | null;
   expiresAt: string;

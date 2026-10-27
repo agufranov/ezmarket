@@ -26,6 +26,7 @@ created | pending -> canceled | expired
 
 ## Правила (критерии плана недели)
 - Суммы - целым числом в минимальных единицах валюты (`50000` = 500 ₽), CHECK `amount > 0`, `0 <= pay_amount <= amount`, валюта RUB/USD/KZT.
+  К оплате деньгами - `pay_amount = amount - bonus_spent × 100` (бонусы - [bonuses.md](bonuses.md)).
 - Лимиты: 100..50 000; минимум - настройкой `ORDER_MIN_AMOUNT` (по умолчанию 10000), отдается в `GET /api/orders/limits`.
 - Повтор с тем же `Idempotency-Key` (и 10 одновременных) - один заказ (уникальный индекс `user_id, idempotency_key`, P2002 -> отдать существующий); тот же ключ с другими данными - 409.
 - Чужой заказ - 404 (неотличим от несуществующего).
@@ -39,8 +40,8 @@ created | pending -> canceled | expired
 ## API
 | Метод | Путь | Ответ |
 |---|---|---|
-| GET | `/api/orders/limits` | `{ minAmount, maxAmount, currencies }` - без входа |
-| POST | `/api/orders` `{ steamLogin, amount, currency }` + `Idempotency-Key` | 201 / 200 повтор / 409 / 422 `{ field, error }` |
+| GET | `/api/orders/limits` | `{ minAmount, maxAmount, currencies, bonus }` - без входа |
+| POST | `/api/orders` `{ steamLogin, amount, currency, bonuses? }` + `Idempotency-Key` | 201 / 200 повтор / 409 / 422 `{ field, error }` |
 | GET | `/api/orders` | `{ orders }` свои, новые сверху (до 50) |
 | GET | `/api/orders/:id` | `{ order }` с `history` |
 | POST | `/api/orders/:id/cancel` | `{ order }`; 409 оплачен; 502 Crypto Pay не ответил |
@@ -49,4 +50,4 @@ created | pending -> canceled | expired
 В `OrderDto` поле `paymentUrl` есть только пока заказ `pending`.
 
 ## Не сделано
-Бонусы (списание до 30%, возврат, начисление, история), скидка 5% на первое пополнение, уведомления о статусах - см. todo.md.
+Скидка 5% на первое пополнение, уведомления о статусах - см. todo.md. Бонусы - [bonuses.md](bonuses.md).
