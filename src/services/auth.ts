@@ -6,7 +6,7 @@ import type { User } from "@/data/user";
 import { api, apiEnabled, type ApiError } from "./api";
 import * as mock from "./auth.mock";
 
-export type AuthError = Pick<ApiError, "error" | "retryIn" | "attemptsLeft"> & { field?: "email" | "promo" | "code" };
+export type AuthError = Pick<ApiError, "status" | "error" | "retryIn" | "attemptsLeft"> & { field?: "email" | "promo" | "code" };
 export type Mode = "login" | "register";
 
 // demoCode - только на демо-стенде (AUTH_DEMO_CODE): код подставляется в поле без похода в почту

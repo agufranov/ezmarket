@@ -84,8 +84,9 @@ export function CodeStep({
     } catch (x) {
       const e = x as AuthError;
       setError(e.error);
-      // без attemptsLeft код сгорел или истек - вводить больше нечего
-      if (e.attemptsLeft === undefined) setLocked(true);
+      // 422 без attemptsLeft - код сгорел или истек, вводить больше нечего;
+      // сбой сети, прокси или сервера (0, 5xx) код не тратит - поле остается доступным
+      if (e.status === 422 && e.attemptsLeft === undefined) setLocked(true);
       setCode("");
       onShake();
       setChecking(false);
