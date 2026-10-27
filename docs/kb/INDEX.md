@@ -15,6 +15,7 @@
 | [features/auth.md](features/auth.md) | Вход по коду из письма: правила, сессии, демо-режим |
 | [features/orders.md](features/orders.md) | Заказ пополнения Steam: статусы и переходы, история, ключ повтора, истечение, выполнение, API |
 | [features/payments.md](features/payments.md) | Оплата: тестовая платежка и Crypto Pay, подпись уведомлений, опрос, истечение и отмена со счетом |
+| [features/notifications.md](features/notifications.md) | Уведомления: на каждую смену статуса заказа и на бонусы - триггерами, тексты, письмо об итоге заказа, прочитано и счетчик, API |
 | [features/bonuses.md](features/bonuses.md) | Бонусы: регистрация, оплата до 30% заказа, возврат, кэшбэк 5%; списание без гонок, триггер возврата и начисления, история, API |
 | [decisions.md](decisions.md) | Принятые решения и почему (статус в заказе + история триггером, суммы в копейках, лимиты с бэкенда...) |
 | [pitfalls.md](pitfalls.md) | Грабли: Figma MCP, браузеры, часовой пояс базы, Windows и Git Bash, Prisma, Next export, всплывающие окна |

@@ -7,6 +7,8 @@ import { routes } from "@/config/routes";
 import { asset } from "@/lib/asset";
 import { formatNumber, plural } from "@/lib/format";
 import { Mascot } from "@/components/ui/Mascot";
+import { apiEnabled } from "@/services/api";
+import { listNotifications, markAllNotificationsRead, markNotificationsRead } from "@/services/notifications";
 import { useHeaderPopover, focusFirst } from "./useHeaderPopover";
 import {
   BellIcon,
@@ -34,6 +36,8 @@ type Props = {
 
 const READ_KEY = "ez_notif_read";
 const TAB_KEY = "ez_notif_tab";
+// с сервером список и счетчик обновляются раз в 30 с (не в скрытой вкладке) и при открытии колокольчика
+const POLL_MS = 30_000;
 const bonusWord = (n: number) => plural(n, ["бонус", "бонуса", "бонусов"]);
 const badge = (n: number, max: number) => (n > max ? `${max}+` : String(n));
 
@@ -58,19 +62,43 @@ export function HeaderUser({ user, open, setOpen, rowRef, onLogout, onHelp }: Pr
   const profileRef = useRef<HTMLDivElement>(null);
   const notifRef = useRef<HTMLDivElement>(null);
 
-  // Уведомления: ?notif=0 - пустой список для демо «Пока тихо»; прочитанные - в localStorage
+  // Уведомления: с API - с сервера, отметка о прочтении - там же; без API - моки (?notif=0 - пустой список
+  // для демо «Пока тихо»), прочитанные - в localStorage
   const [items, setItems] = useState<AppNotification[]>([]);
+  // счетчик непрочитанных с сервера - по всем, не только по 50 в списке
+  const [serverUnread, setServerUnread] = useState<number | null>(null);
+  // номер последней отметки о прочтении: ответ, начатый до отметки, не возвращает старое состояние
+  const marks = useRef(0);
   const [tab, setTab] = useState<(typeof tabs)[number]["id"]>("all");
-  useEffect(() => {
-    const empty = new URLSearchParams(window.location.search).get("notif") === "0";
-    let read: string[] = [];
+
+  const load = useCallback(async () => {
+    const mark = marks.current;
     try {
-      read = JSON.parse(localStorage.getItem(READ_KEY) ?? "[]");
+      const r = await listNotifications();
+      if (mark !== marks.current) return;
+      setItems(r.items);
+      setServerUnread(r.unread);
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    try {
       const t = sessionStorage.getItem(TAB_KEY);
       if (tabs.some((x) => x.id === t)) setTab(t as typeof tab);
     } catch {}
-    setItems(empty ? [] : mockNotifications.map((n) => ({ ...n, read: n.read || read.includes(n.id) })));
-  }, []);
+    if (!apiEnabled) {
+      const empty = new URLSearchParams(window.location.search).get("notif") === "0";
+      let read: string[] = [];
+      try {
+        read = JSON.parse(localStorage.getItem(READ_KEY) ?? "[]");
+      } catch {}
+      setItems(empty ? [] : mockNotifications.map((n) => ({ ...n, read: n.read || read.includes(n.id) })));
+      return;
+    }
+    load();
+    const id = window.setInterval(() => !document.hidden && load(), POLL_MS);
+    return () => window.clearInterval(id);
+  }, [load]);
 
   const saveRead = (list: AppNotification[]) => {
     try {
@@ -78,9 +106,18 @@ export function HeaderUser({ user, open, setOpen, rowRef, onLogout, onHelp }: Pr
     } catch {}
   };
   const markRead = (ids: string[] | "all") => {
+    const hit = items.filter((n) => !n.read && (ids === "all" || ids.includes(n.id))).length;
     const next = items.map((n) => (ids === "all" || ids.includes(n.id) ? { ...n, read: true } : n));
     setItems(next);
-    saveRead(next);
+    if (!apiEnabled) return saveRead(next);
+    if (ids !== "all" && !hit) return;
+    // сразу на экране, счетчик - из ответа сервера (если за это время не было новой отметки)
+    const mark = ++marks.current;
+    setServerUnread((u) => (u === null ? u : ids === "all" ? 0 : Math.max(0, u - hit)));
+    (ids === "all" ? markAllNotificationsRead() : markNotificationsRead(ids)).then(
+      (r) => mark === marks.current && setServerUnread(r.unread),
+      () => {},
+    );
   };
   const pickTab = (id: typeof tab) => {
     setTab(id);
@@ -89,7 +126,7 @@ export function HeaderUser({ user, open, setOpen, rowRef, onLogout, onHelp }: Pr
     } catch {}
   };
 
-  const unread = items.filter((n) => !n.read).length;
+  const unread = serverUnread ?? items.filter((n) => !n.read).length;
   const shown = useMemo(() => (tab === "all" ? items : items.filter((n) => n.type === tab)), [items, tab]);
 
   const close = useCallback(
@@ -118,6 +155,7 @@ export function HeaderUser({ user, open, setOpen, rowRef, onLogout, onHelp }: Pr
         aria-controls="notif-panel"
         aria-label={unread ? `Уведомления, непрочитанных: ${unread}` : "Уведомления"}
         onClick={(e) => {
+          if (open !== "notif" && apiEnabled) load();
           setOpen(open === "notif" ? null : "notif");
           if (open !== "notif" && e.detail === 0) focusFirst(notifRef.current);
         }}

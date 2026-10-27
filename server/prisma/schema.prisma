@@ -10,18 +10,19 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(uuid())
+  id                String             @id @default(uuid())
   // email храним в нижнем регистре - уникальность без учета регистра
-  email        String    @unique
-  name         String?
+  email             String             @unique
+  name              String?
   // промокод или код друга, с которым пришел при регистрации
-  promo        String?
+  promo             String?
   // 1 бонус = 1 ₽; не ниже нуля - CHECK в миграции
-  bonusBalance Int       @default(0) @map("bonus_balance")
-  createdAt    DateTime  @default(now()) @map("created_at")
-  sessions     Session[]
-  orders       Order[]
+  bonusBalance      Int                @default(0) @map("bonus_balance")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  sessions          Session[]
+  orders            Order[]
   bonusTransactions BonusTransaction[]
+  notifications     Notification[]
 
   @@map("users")
 }
@@ -42,37 +43,38 @@ enum OrderStatus {
 
 // Заказ пополнения Steam. Текущий статус - здесь, каждая его смена пишется триггером в order_status_history
 model Order {
-  id             String               @id @default(uuid())
-  userId         String               @map("user_id")
-  user           User                 @relation(fields: [userId], references: [id], onDelete: Restrict)
+  id                String               @id @default(uuid())
+  userId            String               @map("user_id")
+  user              User                 @relation(fields: [userId], references: [id], onDelete: Restrict)
   // ключ повтора от клиента: повторный POST с тем же ключом вернет тот же заказ
-  idempotencyKey String               @map("idempotency_key")
-  steamLogin     String               @map("steam_login")
+  idempotencyKey    String               @map("idempotency_key")
+  steamLogin        String               @map("steam_login")
   // суммы - целым числом в минимальных единицах валюты (копейки, центы, тиыны)
-  amount         Int
-  currency       String
-  // сколько платить деньгами (пока равно amount; скидка и бонусы уменьшат)
-  payAmount      Int                  @map("pay_amount")
-  status         OrderStatus          @default(created)
+  amount            Int
+  currency          String
+  // сколько платить деньгами: amount минус бонусы (bonus_spent × 100) - CHECK в миграции бонусов
+  payAmount         Int                  @map("pay_amount")
+  status            OrderStatus          @default(created)
   // неоплаченный заказ истекает через 30 минут после создания
-  expiresAt      DateTime             @map("expires_at")
+  expiresAt         DateTime             @map("expires_at")
   // выполнение: когда заказ последний раз взят в работу и сколько было попыток. Захват с ограниченным сроком:
   // если процесс упал или не записал итог, заказ в processing берется снова (OrdersWorker)
-  fulfilClaimedAt DateTime?           @map("fulfil_claimed_at")
-  fulfilAttempts Int                  @default(0) @map("fulfil_attempts")
+  fulfilClaimedAt   DateTime?            @map("fulfil_claimed_at")
+  fulfilAttempts    Int                  @default(0) @map("fulfil_attempts")
   // платеж: какая платежная система (fake | cryptopay) и его id у нее
-  paymentProvider String?             @map("payment_provider")
-  paymentId      String?              @unique @map("payment_id")
+  paymentProvider   String?              @map("payment_provider")
+  paymentId         String?              @unique @map("payment_id")
   // куда отправить покупателя платить (страница тестовой платежки или счет в боте Crypto Pay)
-  paymentUrl     String?              @map("payment_url")
+  paymentUrl        String?              @map("payment_url")
   // бонусы: списано в оплату (1 бонус = 1 ₽, не больше 30% суммы, только RUB) и начислится за выполненный заказ (кэшбэк)
-  bonusSpent     Int                  @default(0) @map("bonus_spent")
-  bonusAccrual   Int                  @default(0) @map("bonus_accrual")
+  bonusSpent        Int                  @default(0) @map("bonus_spent")
+  bonusAccrual      Int                  @default(0) @map("bonus_accrual")
   bonusTransactions BonusTransaction[]
-  createdAt      DateTime             @default(now()) @map("created_at")
-  updatedAt      DateTime             @updatedAt @map("updated_at")
-  history        OrderStatusHistory[]
-  paymentEvents  PaymentEvent[]
+  createdAt         DateTime             @default(now()) @map("created_at")
+  updatedAt         DateTime             @updatedAt @map("updated_at")
+  history           OrderStatusHistory[]
+  paymentEvents     PaymentEvent[]
+  notifications     Notification[]
 
   @@unique([userId, idempotencyKey])
   @@index([userId, createdAt])
@@ -82,13 +84,14 @@ model Order {
 
 // История статусов: строки добавляет только триггер, приложение их не пишет
 model OrderStatusHistory {
-  id         BigInt       @id @default(autoincrement())
-  orderId    String       @map("order_id")
-  order      Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  fromStatus OrderStatus? @map("from_status")
-  toStatus   OrderStatus  @map("to_status")
-  reason     String?
-  createdAt  DateTime     @default(now()) @map("created_at")
+  id           BigInt        @id @default(autoincrement())
+  orderId      String        @map("order_id")
+  order        Order         @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  fromStatus   OrderStatus?  @map("from_status")
+  toStatus     OrderStatus   @map("to_status")
+  reason       String?
+  createdAt    DateTime      @default(now()) @map("created_at")
+  notification Notification?
 
   @@index([orderId, id])
   @@map("order_status_history")
@@ -170,9 +173,9 @@ model PaymentEvent {
 
 // Виды движения бонусов
 enum BonusKind {
-  signup  // за регистрацию
-  spend   // списание в оплату заказа
-  refund  // возврат списанного: заказ отменен, истек или завершился ошибкой
+  signup // за регистрацию
+  spend // списание в оплату заказа
+  refund // возврат списанного: заказ отменен, истек или завершился ошибкой
   accrual // кэшбэк за выполненный заказ
 
   @@map("bonus_kind")
@@ -181,16 +184,46 @@ enum BonusKind {
 // История бонусов: каждое начисление и списание - строка; users.bonus_balance всегда равен сумме delta.
 // Возврат и кэшбэк по заказу пишет триггер на смену статуса (миграция 20261027090000_bonuses), один раз на заказ
 model BonusTransaction {
-  id           BigInt    @id @default(autoincrement())
-  userId       String    @map("user_id")
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  orderId      String?   @map("order_id")
-  order        Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  id           BigInt        @id @default(autoincrement())
+  userId       String        @map("user_id")
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId      String?       @map("order_id")
+  order        Order?        @relation(fields: [orderId], references: [id], onDelete: SetNull)
   kind         BonusKind
   delta        Int
-  balanceAfter Int       @map("balance_after")
-  createdAt    DateTime  @default(now()) @map("created_at")
+  balanceAfter Int           @map("balance_after")
+  createdAt    DateTime      @default(now()) @map("created_at")
+  notification Notification?
 
   @@index([userId, id])
   @@map("bonus_transactions")
+}
+
+// Тип уведомления - как вкладки колокольчика на сайте (рефералы и акции сервер пока не шлет)
+enum NotificationType {
+  order
+  bonus
+
+  @@map("notification_type")
+}
+
+// Уведомления колокольчика. Строки создают триггеры (миграция 20261027150000_notifications) в той же транзакции,
+// что и источник: на каждую смену статуса заказа - по строке истории статусов, на каждое движение бонусов - по строке
+// истории бонусов; уникальный источник - ровно одно уведомление. Текст собирает API (server/src/notifications/texts.ts)
+model Notification {
+  id        BigInt              @id @default(autoincrement())
+  userId    String              @map("user_id")
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      NotificationType
+  orderId   String?             @map("order_id")
+  order     Order?              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  historyId BigInt?             @unique @map("history_id")
+  history   OrderStatusHistory? @relation(fields: [historyId], references: [id], onDelete: Cascade)
+  bonusTxId BigInt?             @unique @map("bonus_tx_id")
+  bonusTx   BonusTransaction?   @relation(fields: [bonusTxId], references: [id], onDelete: Cascade)
+  readAt    DateTime?           @map("read_at")
+  createdAt DateTime            @default(now()) @map("created_at")
+
+  @@index([userId, id])
+  @@map("notifications")
 }

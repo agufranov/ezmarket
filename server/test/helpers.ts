@@ -43,7 +43,7 @@ export async function startApp(overrides: Record<string, string> = {}): Promise<
 }
 
 export async function resetDb(prisma: PrismaService) {
-  await prisma.$executeRawUnsafe(`TRUNCATE "bonus_transactions", "payment_events", "order_status_history", "orders", "sessions", "auth_codes", "email_outbox", "users" CASCADE`);
+  await prisma.$executeRawUnsafe(`TRUNCATE "notifications", "bonus_transactions", "payment_events", "order_status_history", "orders", "sessions", "auth_codes", "email_outbox", "users" CASCADE`);
 }
 
 // Код «из письма»: последнее письмо на адрес в очереди

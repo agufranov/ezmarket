@@ -2,6 +2,7 @@ import { Inject, Injectable, Logger } from "@nestjs/common";
 import { Interval } from "@nestjs/schedule";
 import type { Order } from "@prisma/client";
 import { CONFIG, type Config } from "../config";
+import { NotificationsService } from "../notifications/notifications.service";
 import { PrismaService } from "../prisma.service";
 import { OrderStatusService, UNPAID } from "./order-status.service";
 import { SteamTopUpService, TopUpError } from "./steam-topup.service";
@@ -23,6 +24,7 @@ export class OrdersWorker {
     private readonly prisma: PrismaService,
     private readonly status: OrderStatusService,
     private readonly steam: SteamTopUpService,
+    private readonly notifications: NotificationsService,
     @Inject(CONFIG) private readonly config: Config,
   ) {}
 
@@ -114,7 +116,7 @@ export class OrdersWorker {
       await this.steam.topUp(order);
     } catch (e) {
       if (e instanceof TopUpError) {
-        await this.status.move(order.id, ["processing"], "failed", e.message);
+        await this.finish(order.id, "failed", e.message);
         return;
       }
       const why = e instanceof Error ? e.message : String(e);
@@ -126,9 +128,16 @@ export class OrdersWorker {
       return;
     }
     try {
-      await this.status.move(order.id, ["processing"], "completed", "Steam пополнен");
+      await this.finish(order.id, "completed", "Steam пополнен");
     } catch (e) {
       this.log.error(`заказ ${order.id}: Steam пополнен, но итог не записан (${e instanceof Error ? e.message : String(e)}) - повторим`);
     }
+  }
+
+  // итог заказа и письмо о нем - одной транзакцией: письмо только при состоявшемся переходе и ровно одно
+  private finish(id: string, to: "completed" | "failed", reason: string) {
+    return this.prisma.$transaction(async (tx) => {
+      if (await this.status.move(id, ["processing"], to, reason, {}, tx)) await this.notifications.enqueueOrderEmail(tx, id, to);
+    });
   }
 }

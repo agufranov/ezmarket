@@ -1,5 +1,5 @@
-// Мок пользователя и уведомлений (ТЗ 12.4, 12.10, 12.11).
-// API: GET /me, GET /notifications
+// Мок пользователя и уведомлений (ТЗ 12.4, 12.10, 12.11) - когда сайт без API (GitHub Pages).
+// API: GET /me, GET /notifications (src/services/notifications.ts)
 
 export type User = {
   name: string;

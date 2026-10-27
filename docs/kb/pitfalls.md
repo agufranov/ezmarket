@@ -23,6 +23,10 @@
 - Shell-скрипт `server/docker-entrypoint.sh` - только LF (иначе контейнер не стартует); проверять `sh -n` и `grep -c $'\r'`.
 - `npm install` здесь меняет `package-lock.json` (другая версия npm) - не коммитить.
 - `taskkill` выводит кракозябры (cp866) - смотреть код возврата, а не текст.
+- Остановка фоновой задачи `npm run local` не гасит дочерние процессы: API, Next, MailDev и PostgreSQL остаются на портах
+  3001, 3010, 1025/1080, 5434. Гасить по портам (`netstat -ano` -> `taskkill //PID <pid> //T //F`); у PostgreSQL рабочий
+  процесс может пережить главный и держать порт - найти по `ParentProcessId` (`wmic process where "name='postgres.exe'"`).
+  Не задеть тестовую базу на 5433.
 
 ## База и Prisma
 - **Часовой пояс**: embedded PostgreSQL на Windows работает в `Asia/Yekaterinburg`, Docker - в UTC. Prisma пишет время в UTC
