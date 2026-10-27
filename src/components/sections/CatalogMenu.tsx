@@ -221,7 +221,7 @@ function Card({ item, tabbable }: { item: CatalogItem; tabbable: boolean }) {
           <span className={s.subText}>{item.subtitle}</span>
           {item.badge?.kind === "hit" && (
             <span className={s.hit}>
-              <MaskIcon src="/img/icons/fire.svg" size="var(--hit-icon)" />
+              <MaskIcon src="/img/icons/fire.svg" size="var(--hit-icon)" className={s.hitIcon} />
               хит
             </span>
           )}

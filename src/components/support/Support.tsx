@@ -78,7 +78,9 @@ export function SupportProvider({ children }: { children: ReactNode }) {
     <SupportContext.Provider value={value}>
       {children}
       <div ref={rootRef} className={s.root}>
-        {screen === "menu" && <SupportMenu onPick={go} onTelegram={() => close()} />}
+        {/* меню закрываем после перехода, а не в самом клике (как карточку «Готово»): ссылку, которую
+            убрали со страницы во время клика, браузер может и не открыть */}
+        {screen === "menu" && <SupportMenu onPick={go} onTelegram={() => window.setTimeout(() => close())} />}
         {isPanel && (
           <div key={screen} className={s.panel} data-screen={screen} role="dialog" aria-labelledby="support-title">
             {screen === "faq" && (

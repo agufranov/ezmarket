@@ -245,43 +245,43 @@
   gap: 8px;
 }
 
+// карточка 316x68 (12:1034, 12:1051): скругление 24, отступы 9 / 12, промежуток 12 - логотип 50 с x 9, текст с x 71,
+// цена до x 304. Подложка логотипа 62 выступает на 6 px, поэтому здесь отступ 3 и промежуток 6
 .card {
   position: relative;
   isolation: isolate;
   overflow: hidden;
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 6px;
   height: 68px;
-  padding: 0 13px 0 3px;
-  border-radius: 22px;
+  padding: 0 12px 0 3px;
+  border-radius: 24px;
   box-shadow: inset 0 0 0 1.5px var(--c-line);
   transition:
     background var(--t-fast) ease,
     box-shadow var(--t-fast) ease,
     transform 0.1s ease;
 
-  // под курсором - вся карточка персиковая (градиент до белого) с оранжевой обводкой 2 px, как Brawl Stars в макете 12:945
+  // под курсором - вся карточка персиковая (градиент до белого) с оранжевой обводкой 2 px, как Brawl Stars в макете 12:1034:
+  // #ffead6 -> #fff (панель Figma); угол и конец сняты по пикселям кадра - белый с 79% по линии под 100°
   @include hover {
-    background: linear-gradient(90deg, #ffeedd 0%, #fff 77%);
+    background: linear-gradient(100deg, #ffead6 0%, #fff 79.2%);
     box-shadow: inset 0 0 0 2px var(--c-orange);
 
-    // в макете у карточки под курсором подпись коричневая, «хит» на светлой плашке
+    // подпись #b5571a (12:1043), плашка «хит» остается персиковой (12:1044)
     .cardSub {
-      color: var(--c-peach-ink);
+      color: #b5571a;
     }
 
-    .hit {
-      background: rgba(255, 255, 255, 0.6);
-    }
-
+    // чип 12:1048: оранжевый градиент без обводки, тень 0 6 14 #ff6e00 30%, «от» #b5571a (12:1049)
     .price {
       background: var(--g-orange);
-      box-shadow: 0 6px 12px rgba(255, 122, 0, 0.18);
+      box-shadow: 0 6px 14px rgba(255, 110, 0, 0.3);
       color: #fff;
 
       small {
-        color: rgba(110, 40, 0, 0.55);
+        color: #b5571a;
       }
     }
   }
@@ -307,14 +307,14 @@
   }
 }
 
+// подложка логотипа - круг 62 своего цвета (12:1037, 12:1054: скругление 31), логотип 50 по центру
 .logoWrap {
   display: grid;
   flex: none;
   place-items: center;
-  // «капля» 62 px с острым углом слева снизу, как в макете (сверка по пикселям)
   width: 62px;
   height: 62px;
-  border-radius: 31px 31px 31px 12px;
+  border-radius: 50%;
   background: var(--c-fill);
 }
 
@@ -326,29 +326,36 @@
 }
 
 
+// текст от верха карточки, как в макете: название 18/21.6 с y 10.8, строка подписи с y 34.5
+// (12:1039 - 12:1043, 12:1056 - 12:1060); по центру карточки название вставало на 2 px ниже
 .cardText {
   display: flex;
   flex: 1;
   flex-direction: column;
+  align-self: flex-start;
   min-width: 0;
+  margin-top: 10.8px;
 
   b {
     overflow: hidden;
     font-size: 18px;
     font-weight: 900;
-    line-height: 1.2;
+    line-height: 21.6px;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
 }
 
+// подпись 15.5/20.93 #5d616b, «хит» и скидка в 6 от нее, все по верху строки (12:1042 - 12:1044, 12:1060)
 .cardSub {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 6px;
-  color: var(--c-muted);
-  font-size: 15px;
+  margin-top: 2.07px;
+  color: #5d616b;
+  font-size: 15.5px;
   font-weight: 700;
+  line-height: 20.93px;
   white-space: nowrap;
   overflow: hidden;
 }
@@ -363,46 +370,62 @@
   flex: none;
 }
 
-// «хит» - персиковая плашка с огоньком, как в макете
+// «хит» - персиковая плашка 22: огонек 12 с x 7, y 5 и слово 12.5/900 с x 21, y 1.56 (12:1044 - 12:1047)
 .hit {
   --hit-icon: 12px;
   display: inline-flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 2px;
-  padding: 0 6px;
-  border-radius: var(--r-pill);
+  height: 22px;
+  padding: 1.56px 6.46px 3.44px 7px;
+  border-radius: 20px;
   background: var(--c-peach);
   color: var(--c-orange);
-  font-weight: 800;
+  font-size: 12.5px;
+  font-weight: 900;
+  line-height: 16.88px;
 }
 
+.hitIcon {
+  margin-top: 3.44px;
+}
+
+// скидка - темная «таблетка» 22, текст 12.5/900 с отступами 1.56 / 7 / 3.44 (12:1075, 12:1076)
 .discount {
-  padding: 1px 6px;
-  border-radius: 8px;
+  height: 22px;
+  padding: 1.56px 7px 3.44px;
+  border-radius: 20px;
   background: var(--c-ink);
   color: #fff;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 12.5px;
+  font-weight: 900;
+  line-height: 16.88px;
 }
 
+// чип цены 40 (12:1061, 12:1062): скругление 20 / 20 / 20 / 6, отступы 8.2 / 14 / 9.8, «от» и цена через 4;
+// обводка 1.5 #ffe2c6 внутрь и тень 0 4 12 #ff7a00 16%
 .price {
+  display: inline-flex;
   flex: none;
-  padding: 8px 13px 8px 14px;
-  border-radius: var(--r-pill);
+  align-items: center;
+  gap: 4px;
+  height: 40px;
+  padding: 8.2px 14px 9.8px;
+  border-radius: 20px 20px 20px 6px;
   background: #fff;
-  // в макете чип цены с теплой обводкой и легкой оранжевой тенью
   box-shadow:
-    0 0 0 1px #ffe2c6,
-    0 4px 10px rgba(255, 122, 0, 0.1);
+    inset 0 0 0 1.5px #ffe2c6,
+    0 4px 12px rgba(255, 122, 0, 0.16);
   font-size: 16px;
   font-weight: 900;
+  line-height: 21.6px;
 
-  // «от» мельче и серое, цена жирная
+  // «от» 13.5/800 #5d616b, цена 16/900 (12:1063, 12:1064)
   small {
-    margin-right: 4px;
-    color: var(--c-ink-2);
-    font-size: 13px;
-    font-weight: 700;
+    color: #5d616b;
+    font-size: 13.5px;
+    font-weight: 800;
+    line-height: 18.23px;
     transition: color var(--t-fast) ease;
   }
   white-space: nowrap;
@@ -783,6 +806,12 @@
     height: 40px;
   }
 
+  // в мобильном макете текст идет сверху вниз в ячейке сетки - без отступа десктопа от верха карточки
+  .cardText {
+    align-self: auto;
+    margin-top: 0;
+  }
+
   .cardText b {
     color: var(--c-ink-3);
     font-size: 16px;
@@ -791,6 +820,7 @@
 
   // подпись 14/18.2, «хит» и скидка в ~6 от нее (38:4805, 38:4806, 38:4839)
   .cardSub {
+    align-items: center;
     gap: 6px;
     min-height: 18px;
     margin-top: 2px;
@@ -802,9 +832,18 @@
   // «хит» в мобильном макете без плашки: огонек 13 и слово оранжевым; строка с ним 22, как со скидкой (38:4806)
   .hit {
     --hit-icon: 13px;
+    align-items: center;
     height: 22px;
     padding: 0;
+    border-radius: var(--r-pill);
     background: none;
+    font-size: inherit;
+    font-weight: 800;
+    line-height: inherit;
+  }
+
+  .hitIcon {
+    margin-top: 0;
   }
 
   // плашка 22 со скруглением 11, текст 14 (38:4839, 38:4840)
@@ -813,6 +852,7 @@
     padding: 1px 7px 2px;
     border-radius: 11px;
     font-size: 14px;
+    font-weight: 800;
     line-height: 19px;
   }
 
@@ -825,14 +865,18 @@
     height: 32px;
     margin-top: 5.6px;
     padding: 0 10px;
+    border-radius: var(--r-pill);
     box-shadow:
       0 0 0 1px #f0f2f4,
       0 4px 10px rgba(30, 34, 41, 0.06);
     font-size: 15px;
+    line-height: inherit;
 
     small {
       color: #8a909a;
       font-size: 14px;
+      font-weight: 700;
+      line-height: inherit;
     }
   }
 
