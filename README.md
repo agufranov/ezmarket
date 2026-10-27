@@ -21,12 +21,12 @@ docker compose up --build
 ## Стенд
 
 http://166.88.253.195 - тот же `docker compose` на VPS (Ubuntu 24.04), проект в `/opt/ezmarket`.
-Письма с кодами уходят через Resend по SMTP (порт 2587: 25, 465 и 587 хостинг закрывает). Без своего домена Resend
-доставляет только на почту владельца аккаунта, поэтому `AUTH_DEMO_CODE=true` пока оставлен. Mailpit стенда
-(http://166.88.253.195:8025, логин и пароль - `MAILPIT_UI_AUTH` в `/opt/ezmarket/.env`) с этой настройкой писем не получает.
+Письма с кодами уходят через Resend по SMTP (порт 2587: 25, 465 и 587 хостинг закрывает) с подтвержденного в Resend
+домена - на любые адреса. Mailpit стенда (http://166.88.253.195:8025, логин и пароль - `MAILPIT_UI_AUTH` в `/opt/ezmarket/.env`)
+с этой настройкой писем не получает.
 В `.env` на сервере: `WEB_PORT=80`, случайный `POSTGRES_PASSWORD`, `COOKIE_SECURE=false` (пока без HTTPS),
-`AUTH_DEMO_CODE=true` - код входа подставляется в поле сам, почта не нужна (для настоящего запуска - `false` и SMTP),
-`AUTH_RESEND_SECONDS=5`.
+`AUTH_DEMO_CODE=false` - код входа приходит только в письме, `SMTP_*` и `MAIL_FROM` - Resend,
+`AUTH_RESEND_SECONDS=5`, `AUTH_CODES_PER_HOUR=1000` (для проверок).
 
 Обновить стенд после пуша в main:
 
