@@ -55,33 +55,37 @@
   overflow: hidden;
 }
 
+// круги обложки - доли ее размера, одинаковые во всех кадрах (24:249/24:250 при 216x140, 38:323/38:324 при 125x81,
+// 38:496/38:497 при 142x92, 38:1288 и 38:1460 на 440): кольцо 70% ширины белым 14% с левым краем посередине
+// и в -35% высоты, пунктир 2 белым 30% - 40% ширины, в -12% слева и 56.3% высоты сверху
 .brandRing {
   position: absolute;
-  right: -43px;
-  top: -49px;
-  width: 151px;
-  height: 151px;
+  left: 50%;
+  top: -35%;
+  width: 70%;
+  aspect-ratio: 1;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.14);
 }
 
 .brandDash {
   position: absolute;
-  left: -26px;
-  bottom: -25px;
-  width: 86px;
-  height: 86px;
+  left: -12%;
+  top: 56.3%;
+  width: 40%;
+  aspect-ratio: 1;
   border-radius: 50%;
   border: 2px dashed rgba(255, 255, 255, 0.3);
 }
 
+// плитка с логотипом 68 белым 20%, скругление 34/34/34/14.96 (24:251); на мобилке 55.76 с логотипом 41 (38:325)
 .brandTile {
   position: relative;
   display: grid;
   place-items: center;
   width: 68px;
   height: 68px;
-  border-radius: 34px 34px 34px 15px;
+  border-radius: 50% 50% 50% 22%;
   background: rgba(255, 255, 255, 0.2);
   transition: transform var(--t-img) ease;
 }
@@ -183,6 +187,16 @@
 
 // --- мобилка (макеты 440 / 360) ---
 @include down($bp-sm) {
+  .brandTile {
+    width: 55.76px;
+    height: 55.76px;
+  }
+
+  .brandLogo {
+    width: 41px;
+    height: 41px;
+  }
+
   // скидка 55x26 и «Хит» 44x26 - в 8 от краев обложки (38:308, 38:1273, 38:1294)
   .discount,
   .badge {

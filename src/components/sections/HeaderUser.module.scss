@@ -287,6 +287,8 @@
   padding: 14px;
 }
 
+// круги на карточке по слоям 12:751 - 12:753 (карточка 332x146): большой 160 белым 14% справа сверху,
+// точка 12 белым 60%, снизу выглядывает круг 60 белым 14%
 .card {
   position: relative;
   display: flex;
@@ -298,6 +300,17 @@
   background: var(--g-orange);
   color: #fff;
 
+  &::after {
+    content: "";
+    position: absolute;
+    left: 202px;
+    top: 110.39px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+  }
+
   @include hover {
     .cardCircle,
     .cardDot {
@@ -308,23 +321,23 @@
 
 .cardCircle {
   position: absolute;
-  right: -40px;
-  top: -50px;
-  width: 170px;
-  height: 170px;
+  right: -50px;
+  top: -60px;
+  width: 160px;
+  height: 160px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.14);
   transition: transform 400ms ease;
 }
 
 .cardDot {
   position: absolute;
-  right: 44px;
-  top: 64px;
-  width: 10px;
-  height: 10px;
+  right: 40px;
+  top: 58px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.6);
   transition: transform 400ms ease;
 }
 
@@ -843,26 +856,28 @@
     padding: 27px 16px 39px;
   }
 
-  // круги на карточке как в макете: большой справа сверху и выглядывающий снизу
+  // круги на мобильной карточке (38:2179 - 38:2181, на 440 - 38:5151 - 38:5153): большой 200 белым 12% и точка 12
+  // белым 55% - от правого края, круг 60 белым 14% - в 202 от левого
   .card {
     padding: 17px 16px 79px;
     border-radius: 24px;
 
     &::after {
-      content: "";
-      position: absolute;
-      left: 202px;
-      top: 112px;
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.12);
+      top: 111px;
     }
   }
 
   .cardCircle {
-    right: -31px;
-    top: -72px;
+    right: -60px;
+    top: -102px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.12);
+  }
+
+  .cardDot {
+    right: 60px;
+    background: rgba(255, 255, 255, 0.55);
   }
 
   .cardWho {

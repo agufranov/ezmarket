@@ -25,12 +25,26 @@
     linear-gradient(160deg, #ffa940 0%, #ff8a14 45%, #ff6a00 100%);
   color: #fff;
   text-align: center;
+
+  // белое сияние 220 за маскотом: радиальный градиент белым 35% -> 0 (12:474, в 35/11 от угла плашки)
+  &::before {
+    content: "";
+    position: absolute;
+    left: 35px;
+    top: 11px;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    background: radial-gradient(circle closest-side, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0));
+    pointer-events: none;
+  }
 }
 
 // Правки 22.10: маскот парит постоянно (−10 px, наклон ±4°, 2,4 s), под ним мягкая тень,
 // которая сжимается, когда маскот поднимается
 .mascotWrap {
   position: relative;
+  isolation: isolate;
   margin-bottom: 26px;
 }
 
@@ -39,16 +53,18 @@
   animation: mascotFly 2.4s ease-in-out infinite;
 }
 
+// тень под маскотом по слою 12:475: 150x22, верх в 138 от верха маскота, #963200 22%, размытие 2 в Figma
+// (в CSS blur вдвое меньше); под маскотом, а не поверх
 .mascotShadow {
   position: absolute;
-  left: 50%;
-  bottom: -16px;
-  width: 120px;
-  height: 18px;
-  margin-left: -60px;
-  border-radius: 50%;
-  background: rgba(150, 50, 0, 0.32);
-  filter: blur(6px);
+  left: 0;
+  top: 138px;
+  z-index: -1;
+  width: 150px;
+  height: 22px;
+  border-radius: 43px;
+  background: rgba(150, 50, 0, 0.22);
+  filter: blur(1px);
   animation: shadowSqueeze 2.4s ease-in-out infinite;
 }
 
@@ -632,14 +648,24 @@
     padding: 38px 16px 0 138px;
     border-radius: 0 0 28px 28px;
     text-align: left;
+
+    // сияние 103.4 за маскотом (38:3221: в 18.3/11 от угла шапки)
+    &::before {
+      left: 18.31px;
+      top: 10.95px;
+      width: 103.39px;
+      height: 103.39px;
+    }
   }
 
+  // маскот 70.5 (масштаб 0.47 от 150) в 34.75/34.92 от угла шапки - во всех мобильных кадрах входа и регистрации
+  // (38:3246, 38:3122, 38:6222, 38:6098); тень под ним масштабируется вместе с ним до 70.5x10.3 (38:3222)
   .mascotWrap {
     position: absolute;
-    left: 30px;
-    top: 28px;
+    left: 34.75px;
+    top: 34.92px;
     margin: 0;
-    transform: scale(0.55);
+    transform: scale(0.47);
     transform-origin: left top;
   }
 

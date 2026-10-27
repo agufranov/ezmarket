@@ -93,27 +93,17 @@
 
 // мобилка: слои под текстом баннера, позиции по макету 360/440 - от центра баннера
 @include down($bp-sm) {
-  // сияние 220 за маскотом (радиальный градиент из макета) и полупрозрачный круг 220 внизу
-  .art::before,
-  .art::after {
+  // сияние 220 за маскотом (радиальный градиент из макета, 38:179 / 38:1142); второго круга внизу в макете нет
+  .art::before {
     content: "";
     position: absolute;
+    left: calc(50% - 140px);
+    top: 287px;
     width: 220px;
     height: 220px;
     border-radius: 50%;
-    pointer-events: none;
-  }
-
-  .art::before {
-    left: calc(50% - 140px);
-    top: 287px;
     background: radial-gradient(circle 155px, rgba(255, 255, 255, 0.5) 0, rgba(255, 255, 255, 0.18) 45%, rgba(255, 255, 255, 0) 100%);
-  }
-
-  .art::after {
-    left: calc(50% - 68px);
-    top: 419px;
-    background: rgba(255, 255, 255, 0.06);
+    pointer-events: none;
   }
 
   .halo {
