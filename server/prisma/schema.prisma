@@ -21,6 +21,7 @@ model User {
   createdAt    DateTime  @default(now()) @map("created_at")
   sessions     Session[]
   orders       Order[]
+  bonusTransactions BonusTransaction[]
 
   @@map("users")
 }
@@ -64,6 +65,10 @@ model Order {
   paymentId      String?              @unique @map("payment_id")
   // куда отправить покупателя платить (страница тестовой платежки или счет в боте Crypto Pay)
   paymentUrl     String?              @map("payment_url")
+  // бонусы: списано в оплату (1 бонус = 1 ₽, не больше 30% суммы, только RUB) и начислится за выполненный заказ (кэшбэк)
+  bonusSpent     Int                  @default(0) @map("bonus_spent")
+  bonusAccrual   Int                  @default(0) @map("bonus_accrual")
+  bonusTransactions BonusTransaction[]
   createdAt      DateTime             @default(now()) @map("created_at")
   updatedAt      DateTime             @updatedAt @map("updated_at")
   history        OrderStatusHistory[]
@@ -161,4 +166,31 @@ model PaymentEvent {
   @@index([paymentId])
   @@index([orderId])
   @@map("payment_events")
+}
+
+// Виды движения бонусов
+enum BonusKind {
+  signup  // за регистрацию
+  spend   // списание в оплату заказа
+  refund  // возврат списанного: заказ отменен, истек или завершился ошибкой
+  accrual // кэшбэк за выполненный заказ
+
+  @@map("bonus_kind")
+}
+
+// История бонусов: каждое начисление и списание - строка; users.bonus_balance всегда равен сумме delta.
+// Возврат и кэшбэк по заказу пишет триггер на смену статуса (миграция 20261027090000_bonuses), один раз на заказ
+model BonusTransaction {
+  id           BigInt    @id @default(autoincrement())
+  userId       String    @map("user_id")
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orderId      String?   @map("order_id")
+  order        Order?    @relation(fields: [orderId], references: [id], onDelete: SetNull)
+  kind         BonusKind
+  delta        Int
+  balanceAfter Int       @map("balance_after")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  @@index([userId, id])
+  @@map("bonus_transactions")
 }

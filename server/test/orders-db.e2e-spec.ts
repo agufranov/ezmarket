@@ -73,7 +73,7 @@ describe("orders: база", () => {
   it("сумма - целое положительное, валюта из списка, к оплате не больше суммы", async () => {
     const order = await newOrder();
     await expect(t.prisma.order.update({ where: { id: order.id }, data: { amount: 0 } })).rejects.toThrow(/orders_amount_positive/);
-    await expect(t.prisma.order.update({ where: { id: order.id }, data: { payAmount: 50001 } })).rejects.toThrow(/orders_pay_amount_range/);
+    await expect(t.prisma.order.update({ where: { id: order.id }, data: { payAmount: 50001 } })).rejects.toThrow(/orders_pay_amount_(range|formula)/);
     await expect(t.prisma.order.update({ where: { id: order.id }, data: { currency: "EUR" } })).rejects.toThrow(/orders_currency_known/);
   });
 });
