@@ -42,3 +42,15 @@ ssh root@<стенд> "cd /opt/ezmarket && git pull --ff-only && docker compose 
 Миграции применяются при старте контейнера `api`. Перед правкой `.env` на сервере - копия (`.env.bak-ГГГГММДД`);
 секреты передавать через stdin (`printf ... | ssh ... "cat >> .env"`), а не в командной строке.
 После выкладки: `docker compose logs api` (миграции, ошибки), `curl` по `/`, `/api/orders/limits`, `/api/me`.
+
+## Проверка с нуля по README
+Docker Desktop на этой машине не запускается (нет виртуализации для WSL2), поэтому - на VPS, рядом со стендом и не трогая его:
+свежий клон с GitHub, отдельный проект, порты только на localhost сервера, смотреть через SSH-туннель.
+```bash
+ssh root@<стенд> "cd /tmp && git clone -q https://github.com/agufranov/ezmarket.git ezfresh && cd ezfresh &&
+  WEB_PORT=127.0.0.1:8090 MAILPIT_PORT=127.0.0.1:8026 docker compose up --build -d"
+ssh -N -L 18090:127.0.0.1:8090 -L 18026:127.0.0.1:8026 root@<стенд>   # сайт :18090, Mailpit :18026
+ssh root@<стенд> "cd /tmp/ezfresh && docker compose run --rm test && docker compose --profile test down -v --rmi local"
+```
+Дальше - шаги «Как проверить руками» из README. Код входа - в Mailpit (`/api/v1/messages`, код в теме письма).
+27.10: все шаги прошли, нашлась ошибка редиректа nginx (`pitfalls.md`).

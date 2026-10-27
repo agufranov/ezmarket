@@ -50,6 +50,13 @@
   сервер не стартовал без `.env`. `loadConfig` считает пустую переменную не заданной; тест берет пустые переменные прямо из `docker-compose.yml`.
 - **Смотреть CI после пуша**: workflow «Docker» был красным 5 пушей подряд (тесты в контейнере проходили, а API не стартовал) -
   заметил только ревьюер. Статус - `curl -s https://api.github.com/repos/agufranov/ezmarket/actions/runs?per_page=5` (без `gh`).
+- **Редирект nginx терял порт**: сборка для Docker - со слешем на конце (`orders/index.html`), `/orders` -> 301, и nginx писал
+  в `Location` абсолютный адрес со своим портом 80: на http://localhost:8080 «Мои заказы» уводили на http://localhost/orders/.
+  На стенде (порт 80) не видно - нашла проверка с нуля. Лечит `absolute_redirect off;`, CI проверяет `curl -sfL :8080/orders`.
+  Браузер запоминает 301 - после правки открыть `/orders/` или очистить кэш.
+- `docker compose run --rm test` оставляет запущенной базу тестов (профиль `test`): `docker compose --profile test down`.
+- Docker Desktop на этой машине не стартует: «не включена виртуализация» для WSL2 (это системные настройки - не трогаем).
+  Проверки в Docker - на VPS (`workflow.md`, «Проверка с нуля»).
 
 ## Next.js
 - `@Headers()` в Nest не принимает пайпы - проверять заголовок в методе (`new ZodPipe(schema).transform(raw)`).

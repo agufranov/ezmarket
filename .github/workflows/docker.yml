@@ -34,6 +34,8 @@ jobs:
           done
           test "$code" = "401"
           curl -sf http://localhost:8080/ | grep -q "EzMarket"
+          # страница без слеша открывается на том же порту (редирект nginx не теряет :8080)
+          curl -sfL http://localhost:8080/orders | grep -q "Мои заказы"
 
       - name: Код входа приходит письмом в Mailpit
         run: |
