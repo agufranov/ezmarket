@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { loadConfig } from "../src/config";
 
@@ -10,22 +10,35 @@ describe("config", () => {
     PAYMENT_WEBHOOK_SECRET: "y".repeat(32),
   };
 
-  it("пустые необязательные настройки из docker-compose считаются не заданными", () => {
-    // все переменные сервиса api, у которых в docker-compose.yml значение по умолчанию пустое: `${NAME:-}`
-    const compose = readFileSync(path.join(__dirname, "../../docker-compose.yml"), "utf8");
+  // файлы из корня репозитория: в Docker-образе тестов есть только server/ - там эти проверки пропускаются,
+  // а настоящий запуск без .env проверяет шаг CI «Весь проект (docker compose up)»
+  const composeFile = path.join(__dirname, "../../docker-compose.yml");
+  const exampleFile = path.join(__dirname, "../../.env.example");
+  const withRepoFiles = existsSync(composeFile) && existsSync(exampleFile) ? it : it.skip;
+
+  it("пустые необязательные настройки считаются не заданными", () => {
+    // значения, которые docker compose передает пустыми (`${NAME:-}`) при запуске без .env
+    const empty = { SITE_URL: "", CRYPTOPAY_TOKEN: "", SMTP_USER: "", SMTP_PASS: "", CRYPTOPAY_API_URL: " " };
+    const c = loadConfig({ ...empty, ...required });
+    expect(c.SITE_URL).toBeUndefined();
+    expect(c.CRYPTOPAY_TOKEN).toBeUndefined();
+    expect(c.SMTP_USER).toBeUndefined();
+    expect(c.CRYPTOPAY_API_URL).toBeUndefined();
+    expect(c.PAYMENT_PROVIDER).toBe("fake");
+  });
+
+  withRepoFiles("все пустые по умолчанию переменные из docker-compose.yml не роняют запуск", () => {
+    const compose = readFileSync(composeFile, "utf8");
     const empty = [...compose.matchAll(/^\s+([A-Z0-9_]+): \$\{[A-Z0-9_]+:-\}\s*$/gm)].map((m) => m[1]);
     expect(empty).toEqual(expect.arrayContaining(["SITE_URL", "CRYPTOPAY_TOKEN", "AUTH_CODE_SECRET", "SMTP_USER"]));
-
     const env = Object.fromEntries(empty.map((k) => [k, ""]));
     const c = loadConfig({ ...env, ...required });
     expect(c.SITE_URL).toBeUndefined();
     expect(c.CRYPTOPAY_TOKEN).toBeUndefined();
-    expect(c.SMTP_USER).toBeUndefined();
-    expect(c.PAYMENT_PROVIDER).toBe("fake");
   });
 
-  it("пустые строки из .env.example тоже не роняют запуск", () => {
-    const example = readFileSync(path.join(__dirname, "../../.env.example"), "utf8");
+  withRepoFiles("пустые строки из .env.example тоже не роняют запуск", () => {
+    const example = readFileSync(exampleFile, "utf8");
     const env = Object.fromEntries([...example.matchAll(/^([A-Z0-9_]+)=(.*)$/gm)].map((m) => [m[1], m[2]]));
     expect(() => loadConfig({ ...env, ...required })).not.toThrow();
   });
