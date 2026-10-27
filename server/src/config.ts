@@ -36,6 +36,10 @@ const base = z.object({
   CRYPTOPAY_API_URL: z.string().url().optional(),
   // адрес сайта: кнопка «Вернуться в магазин» после оплаты в боте
   SITE_URL: z.string().url().optional(),
+  // бонусы: за регистрацию (ТЗ 12.8: «+100 бонусов») и кэшбэк за выполненный заказ в % от оплаченного рублями
+  // (макет: «кэшбэк до 5%»); 1 бонус = 1 ₽, только для заказов в рублях
+  BONUS_SIGNUP: z.coerce.number().int().min(0).default(100),
+  BONUS_CASHBACK_PERCENT: z.coerce.number().min(0).max(100).default(5),
   // минимальная сумма заказа в минимальных единицах (по умолчанию 10000 = 100 ₽/$/₸); меньше - только для проверок оплаты
   ORDER_MIN_AMOUNT: z.coerce.number().int().min(1).default(10_000),
   // фоновые задачи (отправка писем) - выключаются в тестах, там их зовут вручную
@@ -72,6 +76,10 @@ export const CONFIG = Symbol("CONFIG");
 export const ORDER_RULES = {
   currencies: ["RUB", "USD", "KZT"] as const,
   maxAmount: 50_000_00,
+  // бонусами - не больше 30% суммы заказа (макет: «оплачивайте ими до 30% заказа»; то же ограничение - CHECK в базе)
+  bonusMaxPercent: 30,
+  // бонусы - только для заказов в этой валюте: 1 бонус = 1 ₽
+  bonusCurrency: "RUB",
   // неоплаченный заказ истекает через 30 минут
   ttlMs: 30 * 60 * 1000,
 } as const;

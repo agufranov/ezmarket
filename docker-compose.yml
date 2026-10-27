@@ -54,6 +54,9 @@ services:
       SITE_URL: ${SITE_URL:-}
       # минимальная сумма заказа в копейках/центах (10000 = 100); меньше - только для проверки оплаты
       ORDER_MIN_AMOUNT: ${ORDER_MIN_AMOUNT:-10000}
+      # бонусы за регистрацию и кэшбэк за выполненный заказ в % (1 бонус = 1 ₽)
+      BONUS_SIGNUP: ${BONUS_SIGNUP:-100}
+      BONUS_CASHBACK_PERCENT: ${BONUS_CASHBACK_PERCENT:-5}
     volumes:
       - apidata:/data
     depends_on:

@@ -92,11 +92,13 @@ export class AuthService {
       }
 
       await tx.authCode.update({ where: { id: row.id }, data: { usedAt: new Date() } });
-      const user = await tx.user.upsert({
-        where: { email },
-        create: { email, promo: row.promo },
-        update: {},
-      });
+      let user = await tx.user.findUnique({ where: { email } });
+      if (!user) {
+        // новый пользователь - бонусы за регистрацию (ТЗ 12.8), в той же транзакции и под той же блокировкой email
+        const bonus = this.config.BONUS_SIGNUP;
+        user = await tx.user.create({ data: { email, promo: row.promo, bonusBalance: bonus } });
+        if (bonus > 0) await tx.bonusTransaction.create({ data: { userId: user.id, kind: "signup", delta: bonus, balanceAfter: bonus } });
+      }
       const token = newToken();
       await tx.session.create({
         data: { tokenHash: hashToken(token), userId: user.id, expiresAt: new Date(Date.now() + AUTH_RULES.sessionTtlMs) },

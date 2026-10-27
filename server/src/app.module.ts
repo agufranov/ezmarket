@@ -1,6 +1,7 @@
 import { type DynamicModule, Global, Module } from "@nestjs/common";
 import { ScheduleModule } from "@nestjs/schedule";
 import { AuthModule } from "./auth/auth.module";
+import { BonusesModule } from "./bonuses/bonuses.module";
 import { CONFIG, type Config } from "./config";
 import { MailModule } from "./mail/mail.module";
 import { OrdersModule } from "./orders/orders.module";
@@ -22,6 +23,6 @@ class CoreModule {
 @Module({})
 export class AppModule {
   static with(config: Config): DynamicModule {
-    return { module: AppModule, imports: [CoreModule.with(config), ScheduleModule.forRoot(), MailModule, AuthModule, OrdersModule, PaymentsModule] };
+    return { module: AppModule, imports: [CoreModule.with(config), ScheduleModule.forRoot(), MailModule, AuthModule, OrdersModule, PaymentsModule, BonusesModule] };
   }
 }

@@ -159,7 +159,12 @@ describe("orders: лимиты", () => {
     t = await startApp();
     const res = await request(t.url).get("/api/orders/limits");
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ minAmount: 100_00, maxAmount: 50_000_00, currencies: ["RUB", "USD", "KZT"] });
+    expect(res.body).toEqual({
+      minAmount: 100_00,
+      maxAmount: 50_000_00,
+      currencies: ["RUB", "USD", "KZT"],
+      bonus: { currency: "RUB", maxPercent: 30, cashbackPercent: 5, signup: 100 },
+    });
   });
 
   it("ORDER_MIN_AMOUNT снижает минимум и для проверки, и в лимитах", async () => {

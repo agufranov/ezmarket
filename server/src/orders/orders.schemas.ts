@@ -18,6 +18,12 @@ export const createOrderSchema = (minAmount: number) =>
       .min(minAmount, `Минимум ${fmt(minAmount)}`)
       .max(ORDER_RULES.maxAmount, `Максимум ${fmt(ORDER_RULES.maxAmount)}`),
     currency: z.enum(ORDER_RULES.currencies, { errorMap: () => ({ message: "Выберите валюту" }) }),
+    // сколько бонусов списать в оплату (1 бонус = 1 ₽); правила - в OrdersService.checkBonuses
+    bonuses: z
+      .number({ invalid_type_error: "Бонусы - целым числом" })
+      .int("Бонусы - целым числом")
+      .min(0, "Бонусы - целым числом")
+      .default(0),
   });
 
 // ключ повтора - заголовок Idempotency-Key, его генерирует клиент на одно нажатие «Оплатить»

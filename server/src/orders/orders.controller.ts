@@ -9,14 +9,25 @@ import { OrdersService, toOrderDto } from "./orders.service";
 
 const notFound = () => new ApiError(HttpStatus.NOT_FOUND, "Заказ не найден");
 
-// GET /api/orders/limits -> { minAmount, maxAmount, currencies } - лимиты для плашки Steam, без входа
+// GET /api/orders/limits -> { minAmount, maxAmount, currencies, bonus } - лимиты для плашки Steam, без входа
 @Controller("orders/limits")
 export class OrderLimitsController {
   constructor(@Inject(CONFIG) private readonly config: Config) {}
 
   @Get()
   limits() {
-    return { minAmount: this.config.ORDER_MIN_AMOUNT, maxAmount: ORDER_RULES.maxAmount, currencies: ORDER_RULES.currencies };
+    return {
+      minAmount: this.config.ORDER_MIN_AMOUNT,
+      maxAmount: ORDER_RULES.maxAmount,
+      currencies: ORDER_RULES.currencies,
+      // бонусы: валюта, доля суммы, которую можно оплатить бонусами, кэшбэк и бонус за регистрацию
+      bonus: {
+        currency: ORDER_RULES.bonusCurrency,
+        maxPercent: ORDER_RULES.bonusMaxPercent,
+        cashbackPercent: this.config.BONUS_CASHBACK_PERCENT,
+        signup: this.config.BONUS_SIGNUP,
+      },
+    };
   }
 }
 

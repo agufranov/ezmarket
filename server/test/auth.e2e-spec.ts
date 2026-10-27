@@ -48,7 +48,8 @@ describe("auth", () => {
     await askCode();
     const res = await verify(await codeFromMail(t.prisma, email));
     expect(res.status).toBe(200);
-    expect(res.body.user).toMatchObject({ email, bonuses: 0 });
+    // новый пользователь - бонусы за регистрацию
+    expect(res.body.user).toMatchObject({ email, bonuses: 100 });
 
     const cookie = sessionCookie(res);
     expect(cookie).toMatch(/HttpOnly/i);
