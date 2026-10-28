@@ -18,9 +18,11 @@
     transform var(--t-base) ease,
     box-shadow var(--t-base) ease;
 
+  // ТЗ 0.1, 7, 8: под курсором подъем -4 px и тень за 0.25 s, как у статей и отзывов (--sh-hover); иконки без анимации.
+  // С тенью --sh подъем был почти не виден
   @include hover {
     transform: translateY(-4px);
-    box-shadow: var(--sh);
+    box-shadow: var(--sh-hover);
   }
 }
 

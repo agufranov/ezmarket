@@ -78,9 +78,8 @@ export function SupportProvider({ children }: { children: ReactNode }) {
     <SupportContext.Provider value={value}>
       {children}
       <div ref={rootRef} className={s.root}>
-        {/* меню закрываем после перехода, а не в самом клике (как карточку «Готово»): ссылку, которую
-            убрали со страницы во время клика, браузер может и не открыть */}
-        {screen === "menu" && <SupportMenu onPick={go} onTelegram={() => window.setTimeout(() => close())} />}
+        {/* «Telegram-чат» открывает карточку «Готово, мы на связи!» с кнопкой Telegram (решение заказчика 28.10) */}
+        {screen === "menu" && <SupportMenu onPick={go} onTelegram={finish} />}
         {isPanel && (
           <div key={screen} className={s.panel} data-screen={screen} role="dialog" aria-labelledby="support-title">
             {screen === "faq" && (

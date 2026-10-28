@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { Mascot } from "@/components/ui/Mascot";
 import { MailIcon, PlaneIcon, QuestionIcon } from "./SupportIcons";
-import { telegramUrl, type Screen } from "./Support";
+import type { Screen } from "./Support";
 import s from "./Support.module.scss";
 
 type Props = { onPick: (screen: Screen) => void; onTelegram: () => void };
@@ -21,19 +21,13 @@ export function SupportMenu({ onPick, onTelegram }: Props) {
         </span>
         Привет! Чем помочь?
       </div>
-      <a
-        href={telegramUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className={s.bubble}
-        style={{ animationDelay: "40ms" }}
-        onClick={onTelegram}
-      >
+      {/* открывает карточку «Готово, мы на связи!», в ней - кнопка Telegram (решение заказчика 28.10) */}
+      <button type="button" className={s.bubble} style={{ animationDelay: "40ms" }} onClick={onTelegram}>
         <span className={`${s.bubbleIcon} ${s.iconTg}`}>
           <PlaneIcon />
         </span>
         Telegram-чат
-      </a>
+      </button>
       <button type="button" className={s.bubble} style={{ animationDelay: "80ms" }} onClick={() => onPick("faq")}>
         <span className={`${s.bubbleIcon} ${s.iconFaq}`}>
           <QuestionIcon />
